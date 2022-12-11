@@ -1,0 +1,51 @@
+import { createApp } from 'vue'
+import App from './App.vue'
+import './assets/scss/style.scss'
+import 'remixicon/fonts/remixicon.css'
+import store from './store'
+import axios from 'axios';
+import { createWebHistory, createRouter } from "vue-router";
+import { routes } from './router'
+import Toast from "vue-toastification"
+import "vue-toastification/dist/index.css"
+import { loadSettings } from './helpers/settings'
+
+axios.defaults.baseURL = 'http://192.168.0.125:8080/';
+window.axios = axios;
+loadSettings();
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+    mode: 'history',
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition) {
+        return savedPosition
+      } else {
+        return { top: 0, left: 0 }
+      }
+    },
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.path.includes('/step/')) {
+    if (!store.state.inspection?.driver_id) {
+      return router.push({ name: 'home'});
+    }
+  }
+
+  if (to.name === 'home') {
+    store.state.inspection = {};
+  }
+
+  return next();
+})
+
+createApp(App)
+    .use(store)
+    .use(Toast, {
+        position: 'top-center',
+        timeout: 2500
+    })
+    .use(router)
+    .mount('#app')

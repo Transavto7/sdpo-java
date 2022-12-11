@@ -1,0 +1,86 @@
+.driver-form, .login-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 100px;
+    flex-direction: column;
+    margin: 0 auto;
+
+    &__title {
+        color: #3c495c;
+        font-size: 2.2em;
+        font-weight: 500;
+    }
+
+    &__input input, .number-buttons {
+        max-width: 600px;
+    }
+
+    &__input input {
+        margin: 50px 0;
+        box-sizing: border-box;
+        text-align: center;
+        caret-color: transparent;
+        border: none;
+        padding: 10px 20px 10px 40px;
+        font-size: 46px;
+        letter-spacing: 40px;
+        -moz-appearance: textfield;
+        font-weight: 500;
+        outline:none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+        width: 100%;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+        &:focus {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+        }
+    }
+
+    .btn {
+        margin-top: 50px;
+    }
+}
+
+.number-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 5px;
+
+    &__item {
+        width: 32%;
+        background-color: rgba(0, 0, 0, 0.05);
+        border: none;
+        min-height: 80px;
+        border-radius: 10px;
+        font-size: 24px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: ease-in-out 0.2s;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+.help {
+    text-align: center;
+    padding: 100px;
+}
+
+h1 {
+    font-size: 46px;
+}
+
+h3 {
+    font-size: 36px;
+}

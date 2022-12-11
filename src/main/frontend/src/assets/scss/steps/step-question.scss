@@ -1,0 +1,15 @@
+.step-question {
+    text-align: center;
+
+    &__outer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 150px;
+    }
+
+    button {
+        min-width: 200px;
+        margin: 0 10px;
+    }
+}

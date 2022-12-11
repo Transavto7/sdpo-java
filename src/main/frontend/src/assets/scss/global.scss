@@ -1,0 +1,132 @@
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .2s ease;
+}
+  
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+
+.btn {
+    background-color: #c53936;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 7px;
+    transition: ease-in-out 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0);
+        color: #c53936;
+        border: 1px solid #c53936;
+    }
+
+    &.opacity {
+        background-color: rgba(0, 0, 0, 0);
+        color: #c53936;
+        border: 1px solid #c53936;
+
+        &:hover {
+            background-color: #c53936;
+            color: #fff;
+        }
+    }
+
+    &.icon {
+        background-color: rgba(0, 0, 0, 0);
+        color: #244673;
+        font-size: 25px;
+        padding: 0 30px;
+
+        &:hover {
+            border: none;
+            color: #c53936;
+        }
+    }
+
+    &.blue {
+        background-color: #244673;
+        color: #fff;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0);
+            color: #244673;
+            border-color: #244673;
+        }
+
+        &.opacity {
+            background-color: rgba(0, 0, 0, 0);
+            color: #244673;
+            border-color: #244673;
+
+            &:hover {
+                background-color: #244673;
+                color: #fff;
+            }
+        }
+    }
+}
+
+.step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__item {
+        background-color: rgba(0, 0, 0, 0.3);
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        position: relative;
+        margin-left: 120px;
+        color: white;
+        font-weight: 600;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        font-size: 18px;
+        transition: ease-in-out 0.2s;
+
+        i {
+            display: none;
+        }
+
+        &.active {
+            background-color: #1c910df8;
+            i {
+                display: inline;
+            }
+
+            &:before {
+                background-color: #1c910df8;
+            }
+        }
+
+        &:before {
+            content: "";
+            transition: ease-in-out 0.2s;
+            background-color: rgba(0, 0, 0, 0.3);;
+            width: 120px;
+            height: 3px;
+            position: absolute;
+            top: 50%;
+            right: 25px;
+        }
+    }
+}
+
+.step-buttons {
+    position: absolute;
+    bottom: 150px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10%;
+    box-sizing: border-box;
+    width: 100%;
+
+    .btn {
+        min-width: 220px;
+    }
+}

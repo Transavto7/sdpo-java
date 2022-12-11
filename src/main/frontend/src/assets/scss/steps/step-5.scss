@@ -1,0 +1,54 @@
+.step-5 {
+    &__outer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 60px;
+    }
+
+    &__items {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+        gap: 20px;
+    }
+    
+    &__item {
+        width: 300px;
+        height: 250px;
+        text-align: center;
+        padding: 15px 25px 25px 15px;
+        border: 2px solid #244673;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-weight: 500;
+
+        img {
+            margin-bottom: 50px;
+        }
+
+        span {
+            width: 30px;
+            align-self: flex-start;
+            height: 30px;
+            background-color: #244673;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+    }
+
+    &__text {
+        align-self: flex-start;
+        font-size: 20px;
+        font-weight: 600;
+    }
+}

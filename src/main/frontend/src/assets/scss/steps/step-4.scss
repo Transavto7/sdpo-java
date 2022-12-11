@@ -1,0 +1,13 @@
+.step-4 {
+    &__outer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+        text-align: center;
+
+        img {
+            margin-top: 30px;
+        }
+    }
+}

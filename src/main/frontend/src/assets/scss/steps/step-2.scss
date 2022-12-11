@@ -1,0 +1,35 @@
+.step-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 100px;
+    flex-direction: column;
+
+    &__select {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__item {
+        background-color: rgba(0, 0, 0, 0);
+        border: none;
+        outline: none;
+        border: 3px solid #244673;
+        padding: 25px;
+        color: #244673;
+        cursor: pointer;
+        border-radius: 15px;
+        font-size: 22px;
+        font-weight: 500;
+        border-left: 30px solid rgba(#244673, 1);
+        box-sizing: border-box;
+        transition: ease-in-out 0.2s;
+        
+        &.active, &:hover {
+            border: 3px solid #c53936;
+            border-left: 30px solid rgba(#c53936, 1);
+        }
+    }
+}
