@@ -1,5 +1,7 @@
 
 .nav { 
+    height: 50px;
+    box-sizing: border-box;
     &__logo img {
         max-height: 35px;
     }

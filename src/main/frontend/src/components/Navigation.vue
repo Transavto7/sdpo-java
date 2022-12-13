@@ -12,6 +12,10 @@ export default {
         pageNumber() {
             const split = this.$route.path.split('/');
             return split[split.length - 1];
+        },
+        logout() {
+            this.$store.state.admin = false;
+            $router.push('/');
         }
     }
 }
@@ -25,6 +29,10 @@ export default {
 
         <div class="nav__buttons" v-if="['/help', '/login'].includes(currentRouter) || currentRouter.includes('/step/')">
             <button @click="$router.push('/')" class="btn opacity blue">В начало</button>
+        </div>
+
+        <div class="nav__buttons" v-else-if="currentRouter.includes('/admin')">
+            <button @click="logout()" class="btn opacity blue">Выйти</button>
         </div>
 
         <div class="nav__buttons" v-else>

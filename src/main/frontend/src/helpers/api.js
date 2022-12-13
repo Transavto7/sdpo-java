@@ -13,6 +13,4 @@ function defaultError(error) {
         case 400: toast.error('Ошибка авторизации запроса')
         default: toast.error('Неизвестная ошибка запроса')
     }
-
-    throw new Error('API Error request');
 }

@@ -10,7 +10,7 @@ import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
 import { loadSettings } from './helpers/settings'
 
-axios.defaults.baseURL = 'http://192.168.0.125:8080/';
+axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
 loadSettings();
 
@@ -31,6 +31,12 @@ router.beforeEach((to, from, next) => {
   if (to.path.includes('/step/')) {
     if (!store.state.inspection?.driver_id) {
       return router.push({ name: 'home'});
+    }
+  }
+
+  if (to.path.includes('/admin/')) {
+    if (!store.state.admin) {
+      return router.push({ name: 'home' });
     }
   }
 

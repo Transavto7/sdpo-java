@@ -40,19 +40,20 @@ public class FileBase {
 
         for (String path : args) {
             if (path.length() > 0) {
-                if (path.charAt(0) == '/') {
+                if (path.charAt(0) == '/' || String.valueOf(path.charAt(0)) == File.separator) {
                     path = path.substring(1);
                 }
 
-                if (path.charAt(path.length() - 1) == '/') {
+                if (path.charAt(path.length() - 1) == '/' ||
+                        String.valueOf(path.charAt(path.length() - 1)) == File.separator) {
                     path = path.substring(0, path.length() - 1);
                 }
             }
 
-            result += "/" + path;
+            result += File.separator + path;
         }
 
-        return result;
+        return result.substring(1, result.length());
     }
 
     public static String getMainFolderUrl() {

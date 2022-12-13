@@ -8,8 +8,8 @@
 
 .btn {
     background-color: #c53936;
+    border: 1px solid #c53936;
     color: #fff;
-    border: none;
     padding: 15px 30px;
     text-transform: uppercase;
     font-weight: 600;
@@ -20,13 +20,11 @@
     &:hover {
         background-color: rgba(0, 0, 0, 0);
         color: #c53936;
-        border: 1px solid #c53936;
     }
 
     &.opacity {
         background-color: rgba(0, 0, 0, 0);
         color: #c53936;
-        border: 1px solid #c53936;
 
         &:hover {
             background-color: #c53936;
@@ -39,6 +37,7 @@
         color: #244673;
         font-size: 25px;
         padding: 0 30px;
+        border: none;
 
         &:hover {
             border: none;
@@ -49,17 +48,16 @@
     &.blue {
         background-color: #244673;
         color: #fff;
+        border-color: #244673;
 
         &:hover {
             background-color: rgba(0, 0, 0, 0);
             color: #244673;
-            border-color: #244673;
         }
 
         &.opacity {
             background-color: rgba(0, 0, 0, 0);
             color: #244673;
-            border-color: #244673;
 
             &:hover {
                 background-color: #244673;
@@ -130,3 +128,5 @@
         min-width: 220px;
     }
 }
+
+

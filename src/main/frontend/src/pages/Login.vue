@@ -22,6 +22,9 @@ export default {
             this.password = '';
             return;
         }
+
+        this.$store.state.admin = true;
+        this.$router.push('/admin');
     }
    },
    computed: {

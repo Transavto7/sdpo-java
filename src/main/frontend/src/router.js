@@ -2,6 +2,7 @@ export const routes = [
     { path: '', name: 'home',  component: () => import('./pages/Home') },
     { path: '/help', component: () => import('./pages/Help') },
     { path: '/login', component: () => import('./pages/Login') },
+    { path: '/admin', component: () => import('./pages/admin/Index') },
     { path: '/step/1', component: () => import('./pages/steps/Step-1') },
     { path: '/step/2', component: () => import('./pages/steps/Step-2') },
     { path: '/step/3', component: () => import('./pages/steps/Step-3') },

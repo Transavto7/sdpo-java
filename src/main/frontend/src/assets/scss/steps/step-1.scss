@@ -1,6 +1,6 @@
 .step-1 {
-    padding-top: 100px;
     display: inline-flex;
+    height: 100%;
     align-items: baseline;
     justify-content: center;
     flex-direction: column;
@@ -9,6 +9,7 @@
 
     &__outer {
         text-align: center;
+        height: calc(100vh - 350px);
     }
 
     &__label {

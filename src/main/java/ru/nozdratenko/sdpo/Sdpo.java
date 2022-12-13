@@ -1,12 +1,16 @@
 package ru.nozdratenko.sdpo;
 
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
+import ru.nozdratenko.sdpo.helper.BrowserHelper;
 
+@Component
 public class Sdpo {
     public static FileConfiguration mainConfig;
 
     public static void init() {
         initMainConfig();
+        BrowserHelper.openUrl("http://localhost:8080");
     }
 
     private static void initMainConfig() {

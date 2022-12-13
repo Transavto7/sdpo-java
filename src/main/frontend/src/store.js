@@ -6,7 +6,8 @@ const store = createStore({
     state() {
         return {
             inspection: {},
-            config: {}
+            config: {},
+            admin: false
         }
     },
     getters: {

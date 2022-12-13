@@ -15,6 +15,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.json', name: 'json', version: '20210307'
+	implementation group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.12'
+	implementation group: 'io.humble', name: 'humble-video-all', version: '0.3.0'
+	implementation group: 'io.ultreia', name: 'bluecove', version: '2.1.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
