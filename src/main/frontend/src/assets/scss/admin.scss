@@ -136,4 +136,13 @@
             background-color: rgba(#244673, 0.4);
         }
     }
+
+    &__testing-temp {
+        font-size: 40px;
+        font-weight: 500;
+        background-color: rgba(#244673, 0.2);
+        display: inline;
+        padding: 10px;
+        border-radius: 10px;
+    }
 }

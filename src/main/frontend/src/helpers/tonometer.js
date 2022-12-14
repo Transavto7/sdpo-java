@@ -3,12 +3,7 @@ import { useToast } from "vue-toastification";
 const toast = useToast();
 
 export async function checkPulse() {
-        await axios.post(`device/tonometer`).then(({ data }) => {
-            // if (data == 'next') {
-            //     await sleep(1000);
-            //     return await checkPulse();
-            // }
-            
+        await axios.post(`device/tonometer`).then(({ data }) => {            
             return data;
         }).catch((error) => {
             defaultError(error);

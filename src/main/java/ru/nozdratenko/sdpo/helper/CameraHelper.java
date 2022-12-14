@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Base64;
 
 public class CameraHelper {
-    public static Thread videoThread = null;
 
     public static BufferedImage makePhoto() throws IOException {
         Webcam webcam = Webcam.getDefault();
@@ -29,17 +28,14 @@ public class CameraHelper {
     }
 
     public static void makeVideo(int duration, int snaps) throws VideoRunException {
-        if (videoThread != null && videoThread.isAlive()) {
-            throw new VideoRunException("video record is run");
-        }
-            final String codecname = null;
-            final String formatname = null;
             final String filename = FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4");
 
             try {
-                recordScreen(filename, formatname, codecname, duration, snaps);
+                recordScreen(filename, duration, snaps);
             } catch (AWTException | InterruptedException | IOException e) {
-                e.printStackTrace();
+                throw new VideoRunException("Невозможно записать видео");
+            } catch (IllegalStateException e) {
+                throw new VideoRunException("Запись видео уже идет");
             }
 
     }
@@ -50,7 +46,7 @@ public class CameraHelper {
         return Base64.getEncoder().encodeToString(os.toByteArray());
     }
 
-    private static void recordScreen(String filename, String formatname, String codecname, int duration, int snapsPerSecond)
+    private static void recordScreen(String filename, int duration, int snapsPerSecond)
             throws AWTException, InterruptedException, IOException {
         final Webcam webcam = Webcam.getDefault();
         webcam.setViewSize(WebcamResolution.VGA.getSize());
@@ -58,15 +54,11 @@ public class CameraHelper {
         final Rectangle size = new Rectangle(webcam.getViewSize());
         final Rational framerate = Rational.make(1, snapsPerSecond);
 
-        final Muxer muxer = Muxer.make(filename, null, formatname);
+        final Muxer muxer = Muxer.make(filename, null, null);
 
         final MuxerFormat format = muxer.getFormat();
         final Codec codec;
-        if (codecname != null) {
-            codec = Codec.findEncodingCodecByName(codecname);
-        } else {
-            codec = Codec.findEncodingCodec(format.getDefaultVideoCodecId());
-        }
+        codec = Codec.findEncodingCodec(format.getDefaultVideoCodecId());
 
         Encoder encoder = Encoder.make(codec);
 
@@ -86,47 +78,44 @@ public class CameraHelper {
 
         webcam.open();
 
-        videoThread = new Thread(() -> {
-            MediaPictureConverter converter = null;
-            final MediaPicture picture = MediaPicture
-                    .make(encoder.getWidth(),
-                            encoder.getHeight(),
-                            pixelformat);
-            picture.setTimeBase(framerate);
+        MediaPictureConverter converter = null;
+        final MediaPicture picture = MediaPicture
+                .make(encoder.getWidth(),
+                        encoder.getHeight(),
+                        pixelformat);
+        picture.setTimeBase(framerate);
 
-            final MediaPacket packet = MediaPacket.make();
-            for (int i = 0; i < duration / framerate.getDouble(); i++) {
-                final BufferedImage image = webcam.getImage();
-                final BufferedImage frame = convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
+        final MediaPacket packet = MediaPacket.make();
+        for (int i = 0; i < duration / framerate.getDouble(); i++) {
+            final BufferedImage image = webcam.getImage();
+            final BufferedImage frame = convertToType(image, BufferedImage.TYPE_3BYTE_BGR);
 
-                if (converter == null) {
-                    converter = MediaPictureConverterFactory.createConverter(frame, picture);
-                }
-                converter.toPicture(picture, frame, i);
-
-                do {
-                    encoder.encode(packet, picture);
-                    if (packet.isComplete()) {
-                        muxer.write(packet, false);
-                    }
-                } while (packet.isComplete());
-
-                try {
-                    Thread.sleep((long) (1000 * framerate.getDouble()));
-                } catch (InterruptedException e) { }
+            if (converter == null) {
+                converter = MediaPictureConverterFactory.createConverter(frame, picture);
             }
+            converter.toPicture(picture, frame, i);
 
             do {
-                encoder.encode(packet, null);
+                encoder.encode(packet, picture);
                 if (packet.isComplete()) {
                     muxer.write(packet, false);
                 }
             } while (packet.isComplete());
 
-            webcam.close();
-            muxer.close();
-        });
-        videoThread.start();
+            try {
+                Thread.sleep((long) (1000 * framerate.getDouble()));
+            } catch (InterruptedException e) { }
+        }
+
+        do {
+            encoder.encode(packet, null);
+            if (packet.isComplete()) {
+                muxer.write(packet, false);
+            }
+        } while (packet.isComplete());
+
+        webcam.close();
+        muxer.close();
     }
 
     public static BufferedImage convertToType(BufferedImage sourceImage, int targetType) {

@@ -2,13 +2,13 @@ package ru.nozdratenko.sdpo.exception;
 
 import org.json.JSONObject;
 
-public class VideoRunException extends Exception {
+public class AlcometerException extends Throwable {
     public String message;
-    public VideoRunException(String message) {
+    public AlcometerException(String message) {
         this.message = message;
     }
 
-    public JSONObject getResponse () {
+    public JSONObject getResponse() {
         JSONObject json = new JSONObject();
         json.put("message", this.message);
         return json;

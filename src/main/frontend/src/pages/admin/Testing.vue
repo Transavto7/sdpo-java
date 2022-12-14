@@ -1,12 +1,15 @@
 <script>
 import { makePhoto, makeVideo } from '@/helpers/camera';
 import { checkPulse } from '@/helpers/tonometer';
+import { getTemp } from '@/helpers/thermometer';
+import { getAlcometerResult } from '@/helpers/alcometer';
 
 export default {
     data() {
         return {
             show: '',
             image64: null,
+            temp: null,
             timeout: 0,
             loading: false,
         }
@@ -26,42 +29,31 @@ export default {
             this.show = '';
 
             if (videoData.duration) {
-                this.show = 'timer';
-                this.timeout = videoData.duration;
-
-                setInterval(() => {
-                    this.timeout--;
-
-                    if (this.timeout == 0) {
-                        this.show = 'loading';
-                    }
-
-                    if (this.timeout <= -30) {
-                        this.show = 'video';
-                        clearInterval(this);
-                    }
-                }, 1000);
+                this.show = 'video';
             }
         },
-        async tonometer() {
+        async thermometer() {
             this.show = 'loading';
-            const pulse = await checkPulse();
-            console.log(pulse);
+            this.temp = await getTemp();
             this.show = '';
             
-            if (pulse) {
-                // 
+            if (this.temp) {
+                this.show = 'temp';
             }
-        }
+        },
+        async alcometer() {
+            await getAlcometerResult();
+        },
     }
 }
 </script>
 
 <template>
     <div class="admin__testing">
-        <button @click="photo()" class="btn blue">Тестовый снимок</button>
-        <button @click="video()" class="btn blue">Тестовый видео</button>
-        <button @click="tonometer()" class="btn blue">Тестовый танометра</button>
+        <button :disabled="show === 'loading'" @click="photo()" class="btn blue">Тестовый снимок</button>
+        <button :disabled="show === 'loading'" @click="video()" class="btn blue">Тестовое видео</button>
+        <button :disabled="show === 'loading'" @click="thermometer()" class="btn blue">Изерить температуру</button>
+        <button :disabled="show === 'loading'" @click="alcometer()" class="btn blue">Тест алкоголя</button>
 
         <div v-if="show === 'loading'" class="admin__loading">
             <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
@@ -70,16 +62,15 @@ export default {
 
         <div v-else class="admin__testing-result">
             <img v-if="show === 'image'" :src="'data:image/jpg;base64,' + image64">
-            
-            <div v-if="show === 'timer'" class="admin__testing-timer">
-                Подождите
-                <span>{{ timeout }}</span>
-            </div>
 
             <div v-if="show === 'video'" class="admin__testing-video">
                 <video autoplay="autoplay" controls>
                     <source src="http://localhost:8080/video" type="video/mp4">
                 </video>
+            </div>
+
+            <div v-if="show === 'temp'" class="admin__testing-temp">
+                {{ temp }} <span>°C</span>
             </div>
         </div>
     </div>

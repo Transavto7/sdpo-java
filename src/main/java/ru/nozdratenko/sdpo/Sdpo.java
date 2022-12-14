@@ -1,8 +1,12 @@
 package ru.nozdratenko.sdpo;
 
 import org.springframework.stereotype.Component;
+import org.usb4java.Context;
+import org.usb4java.LibUsb;
+import org.usb4java.LibUsbException;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
+import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 
 @Component
 public class Sdpo {

@@ -16,8 +16,13 @@
     border-radius: 7px;
     transition: ease-in-out 0.2s;
     cursor: pointer;
+    
+    &:disabled {
+        opacity: 0.8;
+        cursor: default;
+    }
 
-    &:hover {
+    &:hover:not([disabled]) {
         background-color: rgba(0, 0, 0, 0);
         color: #c53936;
     }
@@ -26,7 +31,7 @@
         background-color: rgba(0, 0, 0, 0);
         color: #c53936;
 
-        &:hover {
+        &:hover:not([disabled]) {
             background-color: #c53936;
             color: #fff;
         }
@@ -39,7 +44,7 @@
         padding: 0 30px;
         border: none;
 
-        &:hover {
+        &:hover:not([disabled]) {
             border: none;
             color: #c53936;
         }
@@ -50,7 +55,7 @@
         color: #fff;
         border-color: #244673;
 
-        &:hover {
+        &:hover:not([disabled]) {
             background-color: rgba(0, 0, 0, 0);
             color: #244673;
         }
@@ -59,7 +64,7 @@
             background-color: rgba(0, 0, 0, 0);
             color: #244673;
 
-            &:hover {
+            &:hover:not([disabled]) {
                 background-color: #244673;
                 color: #fff;
             }

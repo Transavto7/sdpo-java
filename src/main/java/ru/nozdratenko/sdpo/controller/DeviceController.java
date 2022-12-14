@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.controller;
 
+import jssc.SerialPortException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,12 +8,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.exception.VideoRunException;
+import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.helper.TonometerHelper;
 
+import javax.usb.UsbException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 @RestController
 public class DeviceController {
@@ -34,16 +40,14 @@ public class DeviceController {
         try {
             JSONObject json = new JSONObject();
             int duration = 20;
-            int snaps = 15;
+            int snaps = 24;
 
             json.put("duration", duration);
             json.put("snaps", snaps);
             CameraHelper.makeVideo(duration, snaps);
             return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
         } catch (VideoRunException e) {
-            JSONObject json = new JSONObject();
-            json.put("message", "Запись уже запущена.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toMap());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getResponse().toMap());
         }
     }
 
@@ -55,23 +59,51 @@ public class DeviceController {
         return ResponseEntity.ok().body(json.toMap());
     }
 
+    @PostMapping(value = "/device/tonometer")
+    @ResponseBody
+    public ResponseEntity tonometer() {
+        JSONObject json = TonometerHelper.scan();
+        return ResponseEntity.ok().body("next");
+    }
+
     @PostMapping(value = "/device/tonometer/{id}")
     @ResponseBody
     public ResponseEntity connect(@PathVariable String id) {
         try {
-            String connectedAddress = TonometerHelper.connect(id);
-            return ResponseEntity.ok().body(connectedAddress);
+//            String connectedAddress = TonometerHelper.connect(id);
+//            ThermometerHelper.searchPort();
+            return ResponseEntity.ok().body("connectedAddress");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("error connect");
         }
     }
 
-
-    @PostMapping(value = "/device/tonometer")
+    @PostMapping(value = "/device/thermometer")
     @ResponseBody
-    public ResponseEntity tonometer() {
-        JSONObject json = TonometerHelper.scan();
-        return ResponseEntity.ok().body("next");
+    public ResponseEntity thermometer() {
+        try {
+            double result = ThermometerHelper.getTemp();
+            return ResponseEntity.ok().body(result);
+        } catch (SerialPortException e) {
+            JSONObject json = new JSONObject();
+            json.put("message", "Ошибка подключения термометра");
+            return ResponseEntity.status(500).body(json.toMap());
+        }
+    }
+
+    @PostMapping(value = "/device/alcometer")
+    @ResponseBody
+    public ResponseEntity alcometer() {
+        try {
+            String result = AlcometerHelper.getResult();
+            return ResponseEntity.ok().body(result);
+        } catch (SerialPortException | UnsupportedEncodingException e) {
+            JSONObject json = new JSONObject();
+            json.put("message", "Ошибка подключения алкометра");
+            return ResponseEntity.status(500).body(json.toMap());
+        } catch (AlcometerException e) {
+            return ResponseEntity.status(500).body(e.getResponse().toMap());
+        }
     }
 }
