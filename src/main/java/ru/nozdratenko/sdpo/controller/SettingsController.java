@@ -10,22 +10,24 @@ import java.util.Map;
 
 @RestController
 public class SettingsController {
-
-    @PostMapping(value = "/login")
-    @ResponseBody
-    public ResponseEntity login(@RequestBody Map<String, String> json) {
-        if (!json.get("password").equals(Sdpo.mainConfig.getString("password"))) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password error");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("success");
-    }
-
-    @PostMapping(value = "/setting/load")
+    @PostMapping("/setting/load")
     @ResponseBody
     public ResponseEntity loadSettings() {
         JSONObject json = new JSONObject();
         json.put("main", Sdpo.mainConfig.getJson());
         return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
+    }
+
+    @PostMapping("/setting/password")
+    @ResponseBody
+    public ResponseEntity login(@RequestBody Map<String, String> json) {
+        if (json.get("password") == null && json.get("password").isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password error");
+        }
+
+        Sdpo.mainConfig.set("password", json.get("password"));
+        Sdpo.mainConfig.saveFile();
+
+        return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 }

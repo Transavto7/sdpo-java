@@ -9,6 +9,7 @@ import { routes } from './router'
 import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
 import { loadSettings } from './helpers/settings'
+import 'animate.css'
 
 axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;

@@ -15,7 +15,7 @@ export default {
         },
         logout() {
             this.$store.state.admin = false;
-            $router.push('/');
+            this.$router.push('/');
         }
     }
 }
@@ -23,22 +23,22 @@ export default {
 
 <template>
     <div class="nav">
-        <div class="nav__logo">
+        <div class="nav__logo animate__animated animate__fadeInDown">
             <img src="@/assets/images/logo.png" alt="">
         </div>
 
         <div class="nav__buttons" v-if="['/help', '/login'].includes(currentRouter) || currentRouter.includes('/step/')">
-            <button @click="$router.push('/')" class="btn opacity blue">В начало</button>
+            <button @click="$router.push('/')" class="btn opacity blue animate__animated animate__fadeInDown d-1">В начало</button>
         </div>
 
         <div class="nav__buttons" v-else-if="currentRouter.includes('/admin')">
-            <button @click="logout()" class="btn opacity blue">Выйти</button>
+            <button @click="logout()" class="btn opacity blue animate__animated animate__fadeInDown d-1">Выйти</button>
         </div>
 
         <div class="nav__buttons" v-else>
-            <button class="btn opacity">Мед работник</button>
-            <button @click="$router.push('/help')" class="btn opacity">Помощь</button>
-            <button @click="$router.push('/login')" class="btn icon">
+            <button class="btn opacity animate__animated animate__fadeInDown d-1">Мед работник</button>
+            <button @click="$router.push('/help')" class="btn opacity animate__animated animate__fadeInDown d-2">Помощь</button>
+            <button @click="$router.push('/login')" class="btn icon animate__animated animate__fadeInDown d-3">
                 <i class="ri-tools-fill"></i>
             </button>
         </div>

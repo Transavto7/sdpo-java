@@ -7,7 +7,8 @@ export default {
    data() {
     return {
         driver_id: '',
-        toast: useToast()
+        toast: useToast(),
+        loading: false,
     }
    },
    methods: {
@@ -17,32 +18,67 @@ export default {
             this.driver_id = '';
             this.toast.error('Водитель с указаным ID не найден');
             return;
-        } 
+        }
 
         this.$store.state.inspection.driver_id = driver.hash_id;
         this.$store.state.inspection.driver_fio = driver.fio;
 
         this.$router.push('/step/1');
+    },
+    async checkDriver() {
+        if (this.driver_id.length < 6) {
+            this.$store.state.inspection = {};
+            return;
+        }
+
+        this.loading = true;
+        const driver = await getDriver(this.driver_id);
+        this.loading = false;
+        if (!driver) {
+            this.$store.state.inspection = {};
+            return;
+        }
+
+        this.$store.state.inspection.driver_id = driver.hash_id;
+        this.$store.state.inspection.driver_fio = driver.fio;
     }
+   },
+   watch: {
+        driver_id: function (val) {
+            this.checkDriver();
+        }
    },
    computed: {
     config() {
         return this.$store.state.config;
+    },
+    inspection() {
+        return this.$store.state.inspection;
     }
+   },
+   mounted() {
+    this.$refs.numbers.querySelectorAll('button').forEach((button, index) => {
+        button.classList.add('animate__animated');
+        button.classList.add('animate__fadeInUp');
+        button.style.setProperty('animation-delay', `${0.6 + (0.05 * index)}s`);
+    });
    }
 }
 </script>
 
 <template>
     <div class="driver-form">
-        <div class="driver-form__title">
+        <div v-if="inspection.driver_fio" class="driver-form__title animate__animated animate__fadeInDown d-2">
+            {{ inspection.driver_fio }}
+        </div>
+        <div v-else class="driver-form__title animate__animated animate__fadeInDown d-2">
             Введите ваш идентификатор
         </div>
         <div class="driver-form__input">
-            <input type="number" v-model="driver_id" />
+            <input type="number" class="animate__animated animate__fadeIn d-5" v-model="driver_id" @input="checkDriver" />
         </div>
 
-        <div class="number-buttons">
+        <div class="number-buttons" ref="numbers">
             <button class="number-buttons__item" @click="driver_id += '1'">1</button>
             <button class="number-buttons__item" @click="driver_id += '2'">2</button>
             <button class="number-buttons__item" @click="driver_id += '3'">3</button>
@@ -56,6 +92,7 @@ export default {
             <button class="number-buttons__item" @click="driver_id += '0'">0</button>
             <button class="number-buttons__item" @click="driver_id = driver_id.slice(0, -1)"><i class="ri-delete-back-line"></i></button>
         </div>
-        <button @click="start" class="btn">начать осмотр</button>
+        <button v-if="inspection.driver_id" @click="start" class="btn animate__animated animate__fadeInUp">начать осмотр</button>
+        <div v-else-if="driver_id.length >= 6 && !loading" class="driver-form__not-found animate__animated animate__fadeInUp">Водитель не найден</div>
     </div>
 </template>

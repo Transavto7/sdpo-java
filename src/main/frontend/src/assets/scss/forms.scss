@@ -1,10 +1,11 @@
-.driver-form, .login-form {
+.driver-form, .login-form, .password-form {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     height: calc(100vh - 120px);
     flex-direction: column;
     margin: 0 auto;
+    margin-top: 15vh;
 
     &__title {
         color: #3c495c;
@@ -14,6 +15,13 @@
 
     &__input input, .number-buttons {
         max-width: 600px;
+    }
+
+    &__not-found {
+        margin-top: 10vh;
+        font-size: 22px;
+        font-weight: 500;
+        color: #c53936;
     }
 
     &__input input {
@@ -83,4 +91,9 @@ h1 {
 
 h3 {
     font-size: 36px;
+}
+
+.password-form {
+    margin-top: 80px;
+    height: auto;
 }

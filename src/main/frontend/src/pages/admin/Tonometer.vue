@@ -29,13 +29,13 @@ export default {
 </script>
 
 <template>
-    <div v-if="!result" class="admin__loading">
+    <div v-if="!result" class="admin__loading animate__animated animate__fadeInUp">
         <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
         Загрузка
     </div>
 
     <div v-else class="admin__tonometer">
-        <div class="admin__tonometer-card">
+        <div class="admin__tonometer-card animate__animated animate__fadeInUp d-1">
             <div class="admin__tonometer-card-title">
                 Информация
             </div> 
@@ -43,7 +43,7 @@ export default {
             <p>Адрес устройства: {{ result?.main?.address || 'Неизвестный адрес'}} </p>
             <p>Подключенный тонометр: {{ connected || '-'}} </p>
         </div>
-        <div class="admin__tonometer-devices">
+        <div class="admin__tonometer-devices animate__animated animate__fadeInUp d-3">
             <button class="admin__tonometer-device"
                 v-for="device in result?.devices" 
                 :key="device.address"
