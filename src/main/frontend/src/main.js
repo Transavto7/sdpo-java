@@ -29,10 +29,23 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  loadSettings();
+  
   if (to.path.includes('/step/')) {
     if (!store.state.inspection?.driver_id) {
       return router.push({ name: 'home'});
     }
+
+    if (to.meta?.visible && store.state.config?.system) {
+      if (!JSON.parse(store.state.config.system[to.meta.visible])) {
+        if (from.meta?.number > to.meta.number) {
+          return router.push({ name: to.meta.prev });
+        }
+
+        return router.push({ name: to.meta.next });
+      }
+    }
+
   }
 
   if (to.path.includes('/admin/')) {

@@ -145,4 +145,46 @@
         padding: 10px;
         border-radius: 10px;
     }
+
+    &__system {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 50px;
+        flex-wrap: wrap;
+    }
+
+    &__system-card {
+        background-color: rgba(#244673, 0.2);
+        padding: 20px;
+        border-radius: 10px;
+        font-weight: 500;
+        text-transform: uppercase;
+
+        &__title {
+            font-size: 18px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(#244673, 0.2);
+            font-weight: 600;
+        }
+
+        &__item {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: space-between;
+        }
+    }
+    
+    &__system-footer {
+        width: 100%;
+        justify-content: end;
+        align-items: center;
+        display: flex;
+        padding: 0 200px; 
+    }
 }

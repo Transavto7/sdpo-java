@@ -9,6 +9,14 @@ public class FileConfiguration extends FileBase {
 
     public FileConfiguration(String path) {
         super(path);
+        try {
+            String str = read();
+            if (!str.isEmpty()) {
+                json = new JSONObject(read());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public FileConfiguration set(String key, String value) {
@@ -18,6 +26,30 @@ public class FileConfiguration extends FileBase {
 
     public FileConfiguration set(String key, int value) {
         json.put(key, value);
+        return this;
+    }
+    public FileConfiguration set(String key, boolean value) {
+        json.put(key, value);
+        return this;
+    }
+
+    public FileConfiguration setDefault(String key, String value) {
+        if (!json.has(key)) {
+            json.put(key, value);
+        }
+        return this;
+    }
+
+    public FileConfiguration setDefault(String key, int value) {
+        if (!json.has(key)) {
+            json.put(key, value);
+        }
+        return this;
+    }
+    public FileConfiguration setDefault(String key, boolean value) {
+        if (!json.has(key)) {
+            json.put(key, value);
+        }
         return this;
     }
 
@@ -46,7 +78,7 @@ public class FileConfiguration extends FileBase {
             create();
             this.writeFile(json.toString(10));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         return this;

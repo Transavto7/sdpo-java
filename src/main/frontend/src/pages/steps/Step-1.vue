@@ -8,7 +8,7 @@ export default {
     computed: {
         inspection() {
             return this.$store.state.inspection;
-        }
+        },
     }
 }
 </script>
@@ -17,10 +17,10 @@ export default {
     <div class="step-1__outer">
         <div class="step-1">
             <div class="step-1__item">
-                <div class="step-1__label">
+                <div class="step-1__label animate__animated animate__fadeInDown">
                     Ваш идентификатор
                 </div>
-                <div class="step-1__id">
+                <div class="step-1__id animate__animated animate__fadeInDown d-1">
                     <span v-for="number in inspection?.driver_id?.split('') || []" :key="number">
                         {{ number }}
                     </span>
@@ -28,10 +28,10 @@ export default {
             </div>
 
             <div class="step-1__item">
-                <div class="step-1__label">
+                <div class="step-1__label animate__animated animate__fadeInDown d-2">
                     Ваше полное имя
                 </div>
-                <div class="step-1__name">
+                <div class="step-1__name animate__animated animate__fadeInDown d-3">
                     {{ inspection.driver_fio }}
                 </div>
             </div>

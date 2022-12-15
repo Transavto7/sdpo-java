@@ -1,8 +1,6 @@
 package ru.nozdratenko.sdpo.file;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class FileBase {
 
@@ -14,10 +12,27 @@ public class FileBase {
         this.path = getBase(path);
     }
 
+    public String read() throws IOException {
+        File file = getFile();
+        if (!file.exists() || !file.isFile()) {
+            return "";
+        }
+
+        InputStream inputStream = new FileInputStream(file);
+        StringBuilder resultStringBuilder = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                resultStringBuilder.append(line).append("\n");
+            }
+        }
+        return resultStringBuilder.toString();
+    }
+
     public void create() throws IOException {
         File file = getFile();
         file.getParentFile().mkdirs();
-        file.createNewFile();
+        boolean b = file.createNewFile();
     }
 
     public File getFile() {
@@ -53,7 +68,11 @@ public class FileBase {
             result += File.separator + path;
         }
 
-        return result.substring(1, result.length());
+        if(System.getProperty("os.name").toLowerCase().contains("win")) {
+            result = result.substring(1);
+        }
+
+        return result;
     }
 
     public static String getMainFolderUrl() {

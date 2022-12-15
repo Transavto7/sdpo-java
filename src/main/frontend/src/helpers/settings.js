@@ -16,3 +16,11 @@ export async function savePassword(password) {
         console.log(error);
     });
 }
+
+export async function saveSystem(system) {
+    await axios.post('/setting/system', {
+        system
+    }).catch(error => {
+        console.log(error);
+    });
+}

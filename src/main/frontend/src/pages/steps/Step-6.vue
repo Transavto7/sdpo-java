@@ -7,6 +7,9 @@ export default {
     computed: {
         inspection() {
             return this.$store.state.inspection;
+        },
+        system() {
+            return this.$store.state.config?.system || {};
         }
     },
     methods: {
@@ -21,9 +24,9 @@ export default {
 <template>
     <div class="step-question__outer">
         <div class="step-question">
-            <h3>Вы выспались?</h3>
-            <button @click="next('Нет')" class="btn opacity">Нет</button>
-            <button @click="next('Да')" class="btn">Да</button>
+            <h3 class="animate__animated animate__fadeInDown">Вы выспались?</h3>
+            <button @click="next('Нет')" class="btn opacity  animate__animated animate__fadeInUp d-1">Нет</button>
+            <button @click="next('Да')" class="btn animate__animated animate__fadeInUp d-2">Да</button>
         </div>
 
         <div class="step-buttons">

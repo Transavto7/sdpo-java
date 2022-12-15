@@ -15,18 +15,35 @@ public class SettingsController {
     public ResponseEntity loadSettings() {
         JSONObject json = new JSONObject();
         json.put("main", Sdpo.mainConfig.getJson());
+        json.put("system", Sdpo.systemConfig.getJson());
         return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
     }
 
     @PostMapping("/setting/password")
     @ResponseBody
-    public ResponseEntity login(@RequestBody Map<String, String> json) {
+    public ResponseEntity savePassword(@RequestBody Map<String, String> json) {
         if (json.get("password") == null && json.get("password").isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password error");
         }
 
         Sdpo.mainConfig.set("password", json.get("password"));
         Sdpo.mainConfig.saveFile();
+
+        return ResponseEntity.status(HttpStatus.OK).body("success");
+    }
+
+    @PostMapping("/setting/system")
+    @ResponseBody
+    public ResponseEntity saveSystem(@RequestBody Map<String,  Map<String, String>> json) {
+        if (json.get("system") == null && json.get("system").isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("system error");
+        }
+
+        for (String key : json.get("system").keySet()) {
+            Sdpo.systemConfig.set(key, json.get("system").get(key));
+        }
+
+        Sdpo.systemConfig.saveFile();
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }

@@ -2,12 +2,13 @@
 import Testing from "./Testing.vue"
 import Tonometer from "./Tonometer.vue";
 import Password from "./Password.vue";
+import System from "./System.vue";
 
 export default {
-    components: { Testing, Tonometer, Password },
+    components: { Testing, Tonometer, Password, System },
     data() {
         return {
-            selected: 'main',
+            selected: 'system',
         }
     }
 }
@@ -16,7 +17,7 @@ export default {
 <template>
     <div class="admin">
         <div class="admin__tabs">
-            <button class="admin__tab animate__animated animate__fadeInDown d-1" @click="selected = 'main'" :class="{active: selected === 'main'}">
+            <button class="admin__tab animate__animated animate__fadeInDown d-1" @click="selected = 'system'" :class="{active: selected === 'system'}">
                 Основные настройки
             </button>
             <button class="admin__tab animate__animated animate__fadeInDown d-2" @click="selected = 'password'" :class="{active: selected === 'password'}">
@@ -33,5 +34,6 @@ export default {
         <testing v-if="selected === 'testing'" />
         <tonometer v-if="selected === 'tonometer'" />
         <password  v-if="selected === 'password'" />
+        <system v-if="selected === 'system'" />
     </div>
 </template>
