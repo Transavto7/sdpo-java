@@ -1,10 +1,12 @@
 package ru.nozdratenko.sdpo.controller;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.Map;
 
@@ -28,6 +30,7 @@ public class SettingsController {
 
         Sdpo.mainConfig.set("password", json.get("password"));
         Sdpo.mainConfig.saveFile();
+        SdpoLog.info("Save new password: " + json.get("password"));
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
@@ -44,6 +47,14 @@ public class SettingsController {
         }
 
         Sdpo.systemConfig.saveFile();
+        try {
+            SdpoLog.info("Save new settings system");
+            SdpoLog.debug("-----[settings]------");
+            SdpoLog.debug(new JSONObject(json.get("system")).toString(10));
+            SdpoLog.debug("-----------");
+        } catch (JSONException e) {
+            //
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }

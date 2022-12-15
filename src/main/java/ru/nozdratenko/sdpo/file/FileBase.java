@@ -1,5 +1,7 @@
 package ru.nozdratenko.sdpo.file;
 
+import ru.nozdratenko.sdpo.util.SdpoLog;
+
 import java.io.*;
 
 public class FileBase {
@@ -18,6 +20,8 @@ public class FileBase {
             return "";
         }
 
+        SdpoLog.debug("Read file " + getFile().getAbsolutePath());
+
         InputStream inputStream = new FileInputStream(file);
         StringBuilder resultStringBuilder = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -32,7 +36,8 @@ public class FileBase {
     public void create() throws IOException {
         File file = getFile();
         file.getParentFile().mkdirs();
-        boolean b = file.createNewFile();
+        file.createNewFile();
+        SdpoLog.debug("Create file:" + file.getAbsolutePath());
     }
 
     public File getFile() {
@@ -41,6 +46,7 @@ public class FileBase {
     }
 
     public void writeFile(String str) throws IOException {
+        SdpoLog.debug("Write file:" + getFile().getAbsolutePath());
         FileWriter fooWriter = new FileWriter(getFile(), false);
         fooWriter.write(str);
         fooWriter.close();

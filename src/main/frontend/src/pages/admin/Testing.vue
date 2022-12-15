@@ -10,6 +10,7 @@ export default {
             show: '',
             image64: null,
             temp: null,
+            alcometerPpm: null,
             timeout: 0,
             loading: false,
         }
@@ -42,7 +43,9 @@ export default {
             }
         },
         async alcometer() {
-            await getAlcometerResult();
+           this.show = 'loading';
+           this.alcometerPpm = await getAlcometerResult();
+           this.show = 'alcometer';
         },
     }
 }
@@ -71,6 +74,10 @@ export default {
 
             <div v-if="show === 'temp'" class="admin__testing-temp animate__animated animate__fadeInUp">
                 {{ temp }} <span>°C</span>
+            </div>
+
+            <div v-if="show === 'alcometer'" class="admin__testing-temp animate__animated animate__fadeInUp">
+                {{ alcometerPpm === undefined ? 'Не удалось получить результат' : alcometerPpm + ' ‰' }}
             </div>
         </div>
     </div>

@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.helper;
 
 import jssc.*;
 import org.usb4java.*;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.usb.*;
 public class ThermometerHelper {
@@ -11,6 +12,7 @@ public class ThermometerHelper {
 
         while (true) {
             try {
+                SdpoLog.info("Listen port: " + PORT);
                 serialPort.openPort();
                 serialPort.setParams(2400,
                         SerialPort.DATABITS_8,
@@ -23,12 +25,13 @@ public class ThermometerHelper {
                 int[] receivedData = serialPort.readIntArray(8);
                 double temp = receivedData[5] + 256;
                 temp /= 10;
-                System.out.println(temp);
                 if (temp > 32 && temp < 43) {
+                    SdpoLog.info("Result temp: " + temp);
                     return temp;
                 }
             } finally {
                 if (serialPort.isOpened()) {
+                    SdpoLog.info("Close port: " + PORT);
                     serialPort.closePort();
                 }
             }

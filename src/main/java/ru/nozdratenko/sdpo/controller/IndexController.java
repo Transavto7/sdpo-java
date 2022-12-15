@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.nozdratenko.sdpo.file.FileBase;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.*;
 import java.net.URI;
@@ -34,7 +35,7 @@ public class IndexController {
                     .header("Content-Type", "video/mp4")
                     .body(CameraHelper.readVideoByte());
         } catch (IOException e) {
-            e.printStackTrace();
+            SdpoLog.error("Error open viode: " + e);
             return ResponseEntity.status(503).body(FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4"));
         }
     }

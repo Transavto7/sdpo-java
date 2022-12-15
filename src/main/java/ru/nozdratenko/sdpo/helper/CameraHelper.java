@@ -29,7 +29,6 @@ public class CameraHelper {
 
     public static void makeVideo(int duration, int snaps) throws VideoRunException {
             final String filename = FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4");
-
             try {
                 recordScreen(filename, duration, snaps);
             } catch (AWTException | InterruptedException | IOException e) {

@@ -3,6 +3,7 @@ package ru.nozdratenko.sdpo;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 @Component
 public class Sdpo {
@@ -13,6 +14,7 @@ public class Sdpo {
         initMainConfig();
         initSystemConfig();
         BrowserHelper.openUrl("http://localhost:8080");
+        SdpoLog.info("Run project");
     }
 
     private static void initMainConfig() {

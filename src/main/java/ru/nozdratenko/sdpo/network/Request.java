@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.network;
 
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -30,6 +31,8 @@ public class Request {
     public String sendGet(Map<String, String> parameters) throws IOException {
         this.url = new URL(this.url.toString() + ParameterStringBuilder.getParamsString(parameters));
 
+        SdpoLog.debug("Request get to: " + url.toString());
+
         this.connection = (HttpsURLConnection)  this.url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
@@ -38,6 +41,8 @@ public class Request {
         connection.setDoOutput(true);
 
         int responseCode = connection.getResponseCode();
+        SdpoLog.debug("Response code: " + responseCode);
+
         InputStream inputStream;
         if (200 <= responseCode && responseCode <= 299) {
             inputStream = connection.getInputStream();
@@ -57,6 +62,7 @@ public class Request {
 
         in.close();
         connection.disconnect();
+        SdpoLog.debug("Response: " + response.toString());
         return response.toString();
     }
 
@@ -64,6 +70,8 @@ public class Request {
         return sendPost("");
     }
     public String sendPost(String json) throws IOException {
+        SdpoLog.debug("Request post to: " + url.toString());
+
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
         connection.setRequestProperty("Content-Length", "1");
@@ -76,6 +84,7 @@ public class Request {
         wr.close();
 
         int responseCode = connection.getResponseCode();
+        SdpoLog.debug("Response code: " + responseCode);
         InputStream inputStream;
         if (200 <= responseCode && responseCode <= 299) {
             inputStream = connection.getInputStream();
@@ -94,6 +103,7 @@ public class Request {
 
         in.close();
         connection.disconnect();
+        SdpoLog.debug("Response: " + response.toString());
         return response.toString();
     }
 

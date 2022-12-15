@@ -1,5 +1,7 @@
 package ru.nozdratenko.sdpo.helper;
 
+import ru.nozdratenko.sdpo.util.SdpoLog;
+
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -12,12 +14,14 @@ public class BrowserHelper {
             Desktop desktop = Desktop.getDesktop();
             try {
                 desktop.browse(new URI(url));
+                SdpoLog.info("Open browser: " + url.toString());
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             Runtime runtime = Runtime.getRuntime();
             try {
+                SdpoLog.info("Open browser: " + url.toString());
                 runtime.exec("xdg-open " + url);
             } catch (IOException e) {
                 e.printStackTrace();
