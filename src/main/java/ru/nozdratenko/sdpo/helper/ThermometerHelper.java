@@ -1,14 +1,16 @@
 package ru.nozdratenko.sdpo.helper;
 
 import jssc.*;
-import org.usb4java.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.usb.*;
 public class ThermometerHelper {
     public static final String PORT = "COM5";
     public static double getTemp() throws SerialPortException {
         SerialPort serialPort = new SerialPort(PORT);
+
+        for (String key: SerialPortList.getPortNames()) {
+            SdpoLog.debug(key);
+        }
 
         while (true) {
             try {

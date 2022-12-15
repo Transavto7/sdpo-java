@@ -17,7 +17,6 @@ import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.helper.TonometerHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.usb.UsbException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
