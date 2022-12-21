@@ -57,7 +57,7 @@ public class Request {
             inputStream = connection.getErrorStream();
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
         String inputLine;
         StringBuffer response = new StringBuffer();
@@ -100,7 +100,7 @@ public class Request {
             inputStream = connection.getErrorStream();
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
         String inputLine;
         StringBuffer response = new StringBuffer();

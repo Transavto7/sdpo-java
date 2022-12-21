@@ -9,7 +9,8 @@ export default {
     data() {
         return {
             show: '',
-            image64: null,
+            image: null,
+            video: null,
             temp: null,
             alcometerPpm: null,
             pressure: null,
@@ -22,19 +23,21 @@ export default {
         async photo() {
             this.show = 'loading';
             clearInterval(this.interval);
-            this.image64 = await makePhoto();
+            this.image = await makePhoto();
             this.show = '';
-            if (this.image64) {
-                this.show = 'image';
+            if (this.image) {
+                setTimeout(() => {
+                    this.show = 'image';
+                }, 2000);
             }
         },
         async video() {
             this.show = 'loading';
             clearInterval(this.interval);
-            const videoData = await makeVideo();
+            this.video = await makeVideo();
             this.show = '';
 
-            if (videoData.duration) {
+            if (this.video) {
                 this.show = 'video';
             }
         },
@@ -109,7 +112,7 @@ export default {
         </div>
 
         <div v-else class="admin__testing-result">
-            <img class="animate__animated animate__fadeInUp" v-if="show === 'image'" :src="'data:image/jpg;base64,' + image64">
+            <img class="animate__animated animate__fadeInUp" v-if="show === 'image'" :src="image">
 
             <div v-if="show === 'video'" class="admin__testing-video animate__animated animate__fadeInUp">
                 <video autoplay="autoplay" controls>

@@ -50,6 +50,7 @@ body {
         font-size: 25px;
         padding: 0 30px;
         border: none;
+        max-width: 50px;
 
         &:hover:not([disabled]) {
             border: none;
@@ -249,7 +250,7 @@ body {
   }
 
 .footer {
-    position: absolute;
+    position: fixed;
     display: flex;
     align-items: center;
     justify-content: center;

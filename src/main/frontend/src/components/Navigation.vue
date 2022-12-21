@@ -1,9 +1,24 @@
 <script>
+import { close } from '@/helpers/api';
 export default {
     data() {
         return {
 
         }
+    },
+    methods: {
+        close,
+        requestFullScreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen(
+                Element.ALLOW_KEYBOARD_INPUT
+                );
+            }
+        },
     },
     computed: {
         currentRouter() {
@@ -22,6 +37,9 @@ export default {
         },
         inspection() {
             return this.$store.state.inspection;
+        },
+        medic() {
+            return this.$store.state.medic;
         }
     },
 }
@@ -43,11 +61,17 @@ export default {
         </div>
 
         <div class="nav__buttons" v-else-if="currentRouter.includes('/admin')">
-            <button @click="logout()" class="btn opacity blue animate__animated animate__fadeInDown d-1">Выйти</button>
+            <button @click="requestFullScreen()" class="btn icon animate__animated animate__fadeInDown d-1">
+                <i class="ri-fullscreen-line"></i>
+            </button>
+            <button @click="close()" class="btn opacity animate__animated animate__fadeInDown d-1">
+                Закрыть
+            </button>
+            <button @click="logout()" class="btn opacity blue animate__animated animate__fadeInDown d-2">Выйти</button>
         </div>
 
         <div class="nav__buttons" v-else>
-            <button class="btn opacity animate__animated animate__fadeInDown">Мед работник</button>
+            <button @click="medic.selecting = true" class="btn opacity animate__animated animate__fadeInDown">Мед работник</button>
             <button @click="$router.push('/help')" class="btn opacity animate__animated animate__fadeInDown d-2">Помощь</button>
             <button @click="$router.push('/login')" class="btn icon animate__animated animate__fadeInDown d-3">
                 <i class="ri-tools-fill"></i>

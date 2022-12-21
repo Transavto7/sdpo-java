@@ -102,7 +102,7 @@ public class AlcometerHelper {
                     SerialPort.PARITY_NONE);
             serialPort.writeString("$RESET\r\n", "ascii");
         } catch (SerialPortException | UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            SdpoLog.error(e);
         } finally {
             if (serialPort.isOpened()) {
                 SdpoLog.info("Close port: " + PORT);

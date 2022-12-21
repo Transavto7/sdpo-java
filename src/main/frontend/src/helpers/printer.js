@@ -7,6 +7,7 @@ export async function print() {
     }).catch(defaultError);
 }
 
+
 function defaultError(error) {
     const data = error.response?.data;
     

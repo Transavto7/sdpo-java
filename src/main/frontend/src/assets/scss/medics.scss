@@ -1,0 +1,83 @@
+.medics {
+    position: fixed;
+    right: 0;
+    z-index: 10;
+    top: 0;
+    background-color: rgba(#244673, 0.15);
+    font-weight: 500;
+    border-radius: 5px;
+    text-align: right;
+    padding-bottom: 10px;
+    width: 600px;
+    max-height: 100vh;
+    overflow-y: scroll;
+
+    &__form {
+        background-color: #dfe5ec;
+        padding: 30px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: none;
+    
+        input {
+            background-color: #dfe5ec;
+        }
+
+        .login-form__title {
+            text-align: center;
+        }
+    }
+
+    &__form-selected {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    &__overlay {
+        content: '';
+        width: 100%;
+        z-index: 5;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    &__town {
+        text-align: center;
+        background-color: #244673;
+        font-weight: 600;
+        color: #fff;
+        padding: 20px 0;
+        font-size: 18px;
+    }
+
+    &__point {
+        font-weight: 600;
+        padding: 10px 0;
+        background-color: #b0bccc;
+        text-align: center;
+        color: #202426;
+    }
+
+    
+    &__item {
+        padding: 20px 10px;
+        width: 100%;
+        text-align: right;
+        border: none;
+        outline: none;
+        font-size: 17px;
+        font-weight: 500;
+        background-color: #dfe5ec;
+        cursor: pointer;
+        transition: ease-in-out 0.1s;
+
+        &:hover {
+            background-color: #c8d8e9;
+        }
+    }
+}

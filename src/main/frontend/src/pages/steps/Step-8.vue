@@ -4,6 +4,7 @@ import { saveInspection } from '@/helpers/api';
 export default {
     data() {
         return {
+            result: {}
         }
     },
     async mounted() {
@@ -17,7 +18,7 @@ export default {
             return status === 'Да' ? 'Выспались' : 'Не выспались';
         },
         async save() {
-            await saveInspection();
+            this.result = await saveInspection();
         }
     },
     computed: {
@@ -58,7 +59,9 @@ export default {
             </div>
         </div>
         <div class="step-result__footer">
-            <span class="step-result__text animate__animated animate__fadeInUp">Допущен</span>
+            <span v-if="result.admitted" class="step-result__text animate__animated animate__fadeInUp">
+                {{ result.admitted || 'ожидание ответа' }}
+            </span>
             <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
             <button class="btn opacity animate__animated animate__fadeInUp">Повтор печати</button>
         </div>

@@ -1,5 +1,9 @@
 package ru.nozdratenko.sdpo.network;
 
+import org.json.JSONObject;
+import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.util.SdpoLog;
+
 import java.io.BufferedReader;
 
 import java.io.File;
@@ -23,6 +27,8 @@ import java.util.List;
  */
 public class MultipartUtility {
     private final String boundary;
+    public static final String BACKEND_URL = "https://sdpo.ta-7.ru";
+    private final String BACKEND_TOKEN = "v0jcCj0XNBJtaipT5odUP0HhVXzJ2FosCpVxe6SqmO2Uc7jVLvRMFZTfC5Ct0H8Nv2mMtPUT27";
     private static final String LINE_FEED = "\r\n";
     private HttpURLConnection httpConn;
     private String charset;
@@ -43,7 +49,7 @@ public class MultipartUtility {
         // creates a unique boundary based on time stamp
         boundary = "===" + System.currentTimeMillis() + "===";
 
-        URL url = new URL(requestURL);
+        URL url = new URL(BACKEND_URL + requestURL);
         httpConn = (HttpURLConnection) url.openConnection();
         httpConn.setUseCaches(false);
         httpConn.setRequestMethod("POST");
@@ -52,6 +58,7 @@ public class MultipartUtility {
         httpConn.setRequestProperty("Content-Type",
                 "multipart/form-data; boundary=" + boundary);
         httpConn.setRequestProperty("User-Agent", "CodeJava Agent");
+        httpConn.setRequestProperty("Authorization", "Bearer " + BACKEND_TOKEN);
         outputStream = httpConn.getOutputStream();
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
     }
@@ -123,8 +130,8 @@ public class MultipartUtility {
      * status OK, otherwise an exception is thrown.
      * @throws IOException
      */
-    public List<String> finish() throws IOException {
-        List<String> response = new ArrayList<String>();
+    public JSONObject finish() throws IOException {
+        String result = "";
 
         writer.append(LINE_FEED).flush();
         writer.append("--" + boundary + "--").append(LINE_FEED);
@@ -137,7 +144,7 @@ public class MultipartUtility {
                     httpConn.getInputStream()));
             String line = null;
             while ((line = reader.readLine()) != null) {
-                response.add(line);
+                result += line;
             }
             reader.close();
             httpConn.disconnect();
@@ -145,6 +152,6 @@ public class MultipartUtility {
             throw new IOException("Server returned non-OK status: " + status);
         }
 
-        return response;
+        return new JSONObject(result);
     }
 }

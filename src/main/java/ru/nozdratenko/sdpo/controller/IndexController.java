@@ -1,13 +1,11 @@
 package ru.nozdratenko.sdpo.controller;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.json.JSONObject;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.file.FileBase;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
@@ -68,6 +66,37 @@ public class IndexController {
             SdpoLog.error(e);
         }
         return ResponseEntity.status(403).body("error");
+    }
+
+    @GetMapping(value = "api/pv", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity apiGetPoint() {
+        try {
+            Request request = new Request( "sdpo/pv");
+            String response = request.sendGet();
+            return ResponseEntity.ok().body(response);
+        } catch (IOException e) {
+            SdpoLog.error(e);
+        }
+        return ResponseEntity.status(403).body("error");
+    }
+
+    @GetMapping(value = "api/medics", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity aptMedics() {
+        try {
+            Request request = new Request( "sdpo/medics");
+            String response = request.sendGet();
+            return ResponseEntity.ok().body(new JSONObject(response).toMap());
+        } catch (IOException e) {
+            SdpoLog.error(e);
+        }
+        return ResponseEntity.status(403).body("error");
+    }
+
+    @PostMapping(value = "/exit")
+    public void exit() {
+        System.exit(0);
     }
 
     @RequestMapping("/**/{path:[^.]*}")

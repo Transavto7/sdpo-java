@@ -8,13 +8,19 @@ export default {
             interval: null,
         }
     },
+    methods: {
+       async saveWebCam() {
+            if (JSON.parse(this.system.camera_photo) && !this.inspection.photo) {
+                this.inspection.photo = await makePhoto();
+            }
+            if (JSON.parse(this.system.camera_video) && !this.inspection.video) {
+                this.inspection.video = await makeVideo();
+            }
+        }
+    },
     async mounted() {
-        if (JSON.parse(this.system.camera_photo)) {
-            await makePhoto();
-        }
-        if (JSON.parse(this.system.camera_video)) {
-            makeVideo();
-        }
+        this.saveWebCam();
+
         this.interval = setInterval(async () => {
             const result = await getAlcometerResult();
 

@@ -1,9 +1,12 @@
 package ru.nozdratenko.sdpo.lib;
 
+import ru.nozdratenko.sdpo.file.FileBase;
+
 public class Bluetooth {
 
     static {
-        System.load("C:/Users/ellidey/AppData/Roaming/sdpo/native/blecpp.dll");
+        String url = FileBase.exportLibrary("blecpp.dll");
+        System.load(url.replace("\\", "/"));
     }
     public static native String findDevice();
     public static native String getTonometerResult(String uuid);

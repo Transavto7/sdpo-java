@@ -7,7 +7,14 @@ const store = createStore({
         return {
             inspection: {},
             config: {},
-            admin: false
+            admin: false,
+            connection: false,
+            point: '',
+            medic: {
+                selecting: false,
+                id: null,
+                name: null,
+            },
         }
     },
     getters: {

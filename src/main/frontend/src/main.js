@@ -60,18 +60,6 @@ router.beforeEach((to, from, next) => {
   return next();
 })
 
-function requestFullScreen() {
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen();
-  } else if (document.documentElement.mozRequestFullScreen) {
-    document.documentElement.mozRequestFullScreen();
-  } else if (document.documentElement.webkitRequestFullscreen) {
-    document.documentElement.webkitRequestFullscreen(
-      Element.ALLOW_KEYBOARD_INPUT
-    );
-  }
-}
-
 setInterval(async () => {
   if (store.state.config?.main?.url) {
     store.state.connection = await checkConnect(store.state.config.main.url);

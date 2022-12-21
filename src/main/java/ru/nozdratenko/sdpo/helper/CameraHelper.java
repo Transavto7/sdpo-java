@@ -1,14 +1,15 @@
 package ru.nozdratenko.sdpo.helper;
 
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.util.ImageUtils;
 import io.humble.video.*;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
+import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.VideoRunException;
 import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.imageio.ImageIO;
@@ -19,12 +20,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CameraHelper {
 
-    public static BufferedImage makePhoto() throws IOException {
+    public static String makePhoto() throws IOException {
         Webcam webcam = Webcam.getDefault();
 
         try {
@@ -33,6 +35,8 @@ public class CameraHelper {
             webcam.setViewSize(dim);
         } catch (IllegalArgumentException e) {
             //
+        } catch (IllegalStateException e) {
+            return "";
         }
 
         webcam.open();
@@ -40,13 +44,18 @@ public class CameraHelper {
         File outputfile = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "photo.jpg"));
         ImageIO.write(image, "jpg", outputfile);
         webcam.close();
-        return image;
+
+        String url = savePhoto();
+        return url;
     }
 
-    public static void makeVideo(int duration, int snaps) throws VideoRunException {
+    public static String makeVideo(int duration, int snaps) throws VideoRunException {
             final String filename = FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4");
             try {
                 recordScreen(filename, duration, snaps);
+                SdpoLog.info("Saving video");
+                String url = saveVideo();
+                return url;
             } catch (AWTException | InterruptedException | IOException e) {
                 throw new VideoRunException("Невозможно записать видео");
             } catch (IllegalStateException e) {
@@ -203,5 +212,55 @@ public class CameraHelper {
         }
         bufferedOutputStream.flush();
         return bufferedOutputStream.toByteArray();
+    }
+
+    public static String savePhoto() {
+        File photo = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "photo.jpg"));
+
+        if (!photo.exists() || photo.isDirectory()) {
+            return null;
+        }
+
+        Long time = new Date().getTime();
+        String name = MultipartUtility.BACKEND_URL + "/get_file/photo/" + time + ".png";
+
+        new Thread(() -> {
+            try {
+                MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
+                multipartUtility.addFormField("type_content", "photo");
+                multipartUtility.addFormField("name",  "" + time);
+                multipartUtility.addFilePart("filename", photo);
+                multipartUtility.finish();
+            } catch (Exception e) {
+                SdpoLog.error(e);
+            }
+        }).start();
+
+        return name;
+    }
+
+    public static String saveVideo() {
+        File video = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4"));
+
+        if (!video.exists() || video.isDirectory()) {
+            return null;
+        }
+        Long time = new Date().getTime();
+        String name = MultipartUtility.BACKEND_URL + "/get_file/video/" + time + ".mp4";
+
+        new Thread(() -> {
+
+            try {
+                MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
+                multipartUtility.addFormField("type_content", "video");
+                multipartUtility.addFormField("name",  "" + time);
+                multipartUtility.addFilePart("filename", video);
+                multipartUtility.finish();
+            } catch (Exception e) {
+                SdpoLog.error(e);
+            }
+        }).start();
+
+        return name;
     }
 }

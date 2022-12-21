@@ -24,8 +24,8 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity photo() {
         try {
-            BufferedImage image = CameraHelper.makePhoto();
-            return ResponseEntity.status(HttpStatus.OK).body(CameraHelper.imageToBase64String(image));
+            String image = CameraHelper.makePhoto();
+            return ResponseEntity.status(HttpStatus.OK).body(image);
         } catch (IOException e) {
             SdpoLog.error("Error photo: " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error photo");
@@ -36,14 +36,10 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity video() {
         try {
-            JSONObject json = new JSONObject();
-            int duration = 20;
-            int snaps = 24;
-
-            json.put("duration", duration);
-            json.put("snaps", snaps);
-            CameraHelper.makeVideo(duration, snaps);
-            return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
+            int duration = 10;
+            int snaps = 5;
+            String url = CameraHelper.makeVideo(duration, snaps);
+            return ResponseEntity.status(HttpStatus.OK).body(url);
         } catch (VideoRunException e) {
             SdpoLog.error("Video run exception: " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getResponse().toMap());
@@ -123,7 +119,14 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity printer() {
         try {
-            PrinterHelper.print();
+            BufferedImage image = PrinterHelper.getImage("Тестовый Тест Тестович",
+                    "ПРОШЕЛ",
+                    "Предрейсовый/Предсменный",
+                    "ДОПУЩЕН",
+                    "23-10-2022 06:00:00",
+                    "test-cat-test");
+
+            PrinterHelper.print(image);
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error printer: " + e);

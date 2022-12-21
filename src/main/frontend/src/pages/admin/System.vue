@@ -2,6 +2,7 @@
 import { saveSystem, saveApi } from '@/helpers/settings';
 import { useToast } from "vue-toastification";
 import { getSizes } from '@/helpers/camera';
+import { getPoint } from '@/helpers/api';
 
 export default {
     data() {
@@ -17,6 +18,7 @@ export default {
         async save() {
             await saveSystem(this.system);
             await saveApi(this.config.url, this.config.token);
+            this.$store.state.point = await getPoint();
             this.toast.success('Настройки сохранены');
         },
     },

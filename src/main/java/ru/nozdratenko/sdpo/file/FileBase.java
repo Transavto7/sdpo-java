@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.file;
 
+import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.*;
@@ -97,6 +98,36 @@ public class FileBase {
     public static String getBase(String path) {
         String[] split = path.split("/");
         return path.substring(0, path.length() - split[split.length - 1].length());
+    }
+
+    public static String exportLibrary(String resourceName) {
+        InputStream stream = null;
+        OutputStream resStreamOut = null;
+        try {
+            stream = FileBase.class.getClassLoader().getResourceAsStream(resourceName);
+            if (stream == null) {
+                SdpoLog.error("Cannot get resource \"" + resourceName + "\" from Jar file.");
+                return null;
+            }
+
+            int readBytes;
+            byte[] buffer = new byte[4096];
+            String out = concatPath(getMainFolderUrl(), "native", resourceName);
+            new File(out).getParentFile().mkdirs();
+            resStreamOut = new FileOutputStream(out);
+            while ((readBytes = stream.read(buffer)) > 0) {
+                resStreamOut.write(buffer, 0, readBytes);
+            }
+
+            stream.close();
+            resStreamOut.close();
+
+            return out;
+        } catch (Exception ex) {
+            SdpoLog.error(ex);
+        }
+
+        return null;
     }
 
     public String getName() {

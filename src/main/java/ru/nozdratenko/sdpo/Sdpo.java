@@ -89,6 +89,7 @@ public class Sdpo {
     private static void initMainConfig() {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/main.json");
         fileConfiguration.setDefault("password", "7344946")
+                .setDefault("medic_password", "0000000")
                 .setDefault("url", "https://test.ta-7.ru/api")
                 .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
                 .setDefault("tonometer_mac", null)

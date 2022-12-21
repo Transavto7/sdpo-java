@@ -1,9 +1,11 @@
 <script>
 import { getDriver } from '../helpers/api';
 import { useToast } from "vue-toastification";
+import MedicSelect from '@/components/MedicSelect.vue';
 
 export default {
    name: 'Home',
+   components: { MedicSelect },
    data() {
     return {
         driver_id: '',
@@ -67,6 +69,7 @@ export default {
 </script>
 
 <template>
+    <medic-select />
     <div class="driver-form">
         <div v-if="inspection.driver_fio" class="driver-form__title animate__animated animate__fadeInDown d-2">
             {{ inspection.driver_fio }}

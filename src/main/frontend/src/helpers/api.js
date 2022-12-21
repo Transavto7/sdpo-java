@@ -1,4 +1,5 @@
 import store from "@/store";
+import axios from "axios";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 
@@ -9,6 +10,9 @@ export async function getDriver(id) {
 }
 
 export async function saveInspection(inspection = store.state.inspection) {
+    if (store.state.medic?.id) {
+        inspection.user_id = store.state.medic.id;
+    }
     return await axios.post(`inspection/save`, inspection).then(({ data }) => {
         return data;
     }).catch(defaultError);
@@ -19,9 +23,37 @@ export async function checkConnect(address) {
         address
     }).then(({ data }) => {
         return data;
-    }).catch(defaultError);
+    }).catch((error) => {
+        //
+    });
 }
 
+export async function getPoint() {
+    return await axios.get('api/pv').then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function getMedics() {
+    return await axios.get('api/medics').then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+
+export async function close() {
+    axios.post('exit').then(({ data }) => {
+        
+    }).catch((error) => {
+        console.log(error);
+    });
+    
+    window.location.reload();
+}
 
 function defaultError(error) {
     const data = error.response?.data;

@@ -1,5 +1,6 @@
 import store from '@/store';
 import axios from 'axios';
+import { getPoint } from './api';
 
 export async function loadSettings() {
     await axios.post('/setting/load').then(({ data }) => {
@@ -7,6 +8,8 @@ export async function loadSettings() {
     }).catch(error => {
         console.log(error);
     })
+
+    store.state.point = await getPoint();
 }
 
 export async function savePassword(password) {
