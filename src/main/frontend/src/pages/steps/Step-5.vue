@@ -5,14 +5,30 @@ import { makePhoto, makeVideo } from '@/helpers/camera';
 export default {
     data() {
         return {
+            interval: null,
         }
     },
     async mounted() {
-        await makePhoto();
-        makeVideo();
-        const data = await getAlcometerResult();
-        this.inspection.alcometer_result = Number(data) || 0;
-        this.$router.push('/step/6');
+        if (JSON.parse(this.system.camera_photo)) {
+            await makePhoto();
+        }
+        if (JSON.parse(this.system.camera_video)) {
+            makeVideo();
+        }
+        this.interval = setInterval(async () => {
+            const result = await getAlcometerResult();
+
+            if (result === 'next') {
+                return;
+            }
+
+            this.inspection.alcometer_result = Number(result) || 0;
+            clearInterval(this.interval);
+            this.$router.push('/step/6');
+        }, 1000);
+    },
+    unmounted() {
+        clearInterval(this.interval);
     },
     computed: {
         inspection() {

@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 public class AlcometerHelper {
     public static String PORT = "COM3";
 
-    public static String getResult() throws SerialPortException, UnsupportedEncodingException, AlcometerException {
+    public static double getResult() throws SerialPortException, UnsupportedEncodingException, AlcometerException {
         SerialPort serialPort = new SerialPort(PORT);
         try {
             SdpoLog.info("Open port " + PORT);
@@ -64,23 +64,22 @@ public class AlcometerHelper {
 
 
                 if (result.contains("$R:")) {
+                    double rs = 0;
                     result = result.replace("$R:", "");
                     String[] split = result.split(",");
 
                     try {
-                        result = String.valueOf(Double.valueOf(split[0]));
+                        rs = Double.valueOf(split[0]);
                     } catch (IllegalArgumentException e) {
                         if (split[0].equals("PASS")) {
-                            result = "0";
+                            rs = 0;
                         } else if (split[0].equals("FAIL")) {
-                            result = "1";
-                        } else {
-                            result = split[0];
+                            rs = 1;
                         }
                     }
 
-                    SdpoLog.info("Result alcometer: " + result);
-                    return result;
+                    SdpoLog.info("Result alcometer: " + rs);
+                    return rs;
                 }
 
             }

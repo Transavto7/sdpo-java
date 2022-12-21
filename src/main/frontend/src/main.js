@@ -16,6 +16,7 @@ axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
 loadSettings();
 
+
 const router = createRouter({
     history: createWebHistory(),
     routes,
@@ -30,8 +31,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  loadSettings();
-  
   if (to.path.includes('/step/')) {
     if (!store.state.inspection?.driver_id) {
       return router.push({ name: 'home'});
@@ -46,7 +45,6 @@ router.beforeEach((to, from, next) => {
         return router.push({ name: to.meta.next });
       }
     }
-
   }
 
   if (to.path.includes('/admin/')) {

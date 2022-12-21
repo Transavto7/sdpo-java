@@ -12,7 +12,7 @@ function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {
         toast.error(data.message);
-    } else {    
+    } else {
         switch (error?.response?.status) {
             case 400: toast.error('Ошибка авторизации запроса')
             case 500: toast.error('Ошибка сервера')

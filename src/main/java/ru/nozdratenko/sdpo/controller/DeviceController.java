@@ -1,20 +1,21 @@
 package ru.nozdratenko.sdpo.controller;
 
-import jssc.SerialPortException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.exception.VideoRunException;
 import ru.nozdratenko.sdpo.helper.*;
+import ru.nozdratenko.sdpo.task.AlcometerResultTask;
+import ru.nozdratenko.sdpo.task.ThermometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class DeviceController {
@@ -66,51 +67,56 @@ public class DeviceController {
     @PostMapping(value = "/device/tonometer")
     @ResponseBody
     public ResponseEntity tonometer() throws InterruptedException {
-        Sdpo.tonometerResultTask.clear();
-        int time = 0;
-
-        while (true) {
-            if (!Sdpo.tonometerResultTask.json.isEmpty()) {
-                return ResponseEntity.ok().body(Sdpo.tonometerResultTask.json.toMap());
-            }
-            if (time++ > 180) {
-                return ResponseEntity.status(500).body("timeout");
-            }
-
-            Thread.sleep(1000);
+        if (!Sdpo.tonometerResultTask.json.isEmpty()) {
+            Map<String, Object> result = new HashMap<>(Sdpo.tonometerResultTask.json.toMap());
+            Sdpo.tonometerResultTask.clear();
+            return ResponseEntity.ok().body(result);
         }
+
+        return ResponseEntity.ok().body("next");
     }
 
     @PostMapping(value = "/device/thermometer")
     @ResponseBody
     public ResponseEntity thermometer() {
-        try {
-            double result = ThermometerHelper.getTemp();
+        ThermometerResultTask task = Sdpo.thermometerResultTask;
+
+        if (task.exist()) {
+            double result = task.result;
+            task.clear();
             return ResponseEntity.ok().body(result);
-        } catch (SerialPortException e) {
-            JSONObject json = new JSONObject();
-            json.put("message", "Ошибка подключения термометра");
-            SdpoLog.error("Thermometer exception: " + e);
-            return ResponseEntity.status(500).body(json.toMap());
         }
+
+        return ResponseEntity.ok().body("next");
     }
 
     @PostMapping(value = "/device/alcometer")
     @ResponseBody
     public ResponseEntity alcometer() {
-        try {
-            String result = AlcometerHelper.getResult();
-            return ResponseEntity.ok().body(result);
-        } catch (SerialPortException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            JSONObject json = new JSONObject();
-            json.put("message", "Ошибка подключения алкометра");
-            SdpoLog.error("Alcometer error: " + e);
-            return ResponseEntity.status(500).body(json.toMap());
-        } catch (AlcometerException e) {
-            SdpoLog.error("Alcometer exception: " + e);
-            return ResponseEntity.status(500).body(e.getResponse().toMap());
+        AlcometerResultTask task = Sdpo.alcometerResultTask;
+        if (task.currentStatus == AlcometerResultTask.Status.WAIT) {
+            return ResponseEntity.ok().body("next");
         }
+
+        if (task.currentStatus == AlcometerResultTask.Status.FREE) {
+            task.currentStatus = AlcometerResultTask.Status.WAIT;
+            return ResponseEntity.ok().body("next");
+        }
+
+        if (task.currentStatus == AlcometerResultTask.Status.ERROR) {
+            task.currentStatus = AlcometerResultTask.Status.FREE;
+            return ResponseEntity.status(500).body(task.error);
+        }
+
+        if (task.currentStatus == AlcometerResultTask.Status.RESULT) {
+            task.currentStatus = AlcometerResultTask.Status.FREE;
+            return ResponseEntity.ok().body(task.result);
+        }
+
+
+        JSONObject json = new JSONObject();
+        json.put("message", "Не удалось получить статус");
+        return ResponseEntity.status(500).body(json);
     }
 
     @PostMapping(value = "/device/printer")

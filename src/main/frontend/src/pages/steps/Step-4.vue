@@ -4,12 +4,25 @@ import { getTemp } from '@/helpers/thermometer';
 export default {
     data() {
         return {
+            interval: null,
         }
     },
     async mounted() {
-        const result = await getTemp();
-        this.inspection.t_people = Number(result) || 36.6;
-        this.$router.push('/step/5');
+        this.interval = setInterval(async () => {
+            const result = await getTemp();
+
+            if (result === 'next') {
+                return;
+            }
+
+            this.inspection.t_people = Number(result) || 36.6;
+            clearInterval(this.interval);
+            this.$router.push('/step/5');
+        }, 1000);
+       
+    },
+    unmounted() {
+        clearInterval(this.interval);
     },
     computed: {
         inspection() {

@@ -15,11 +15,13 @@ export default {
             pressure: null,
             timeout: 0,
             loading: false,
+            interval: null,
         }
     },
     methods: {
         async photo() {
             this.show = 'loading';
+            clearInterval(this.interval);
             this.image64 = await makePhoto();
             this.show = '';
             if (this.image64) {
@@ -28,6 +30,7 @@ export default {
         },
         async video() {
             this.show = 'loading';
+            clearInterval(this.interval);
             const videoData = await makeVideo();
             this.show = '';
 
@@ -37,31 +40,55 @@ export default {
         },
         async thermometer() {
             this.show = 'loading';
-            this.temp = await getTemp();
-            this.show = '';
-            
-            if (this.temp) {
+            clearInterval(this.interval);
+            this.interval = setInterval(async () => {
+                this.temp = await getTemp();
+                this.show = '';
+                
+                if (this.temp === 'next') {
+                    return;
+                }
+
                 this.show = 'temp';
-            }
+                clearInterval(this.interval);
+            }, 1000);
+            
         },
         async alcometer() {
            this.show = 'loading';
-           this.alcometerPpm = await getAlcometerResult();
-           this.show = 'alcometer';
+           clearInterval(this.interval);
+           this.interval = setInterval(async () => {
+                const result = await getAlcometerResult();
+
+                if (result === 'next') {
+                    return;
+                }
+
+                this.alcometerPpm = Number(result) || 0;
+                this.show = 'alcometer';
+                clearInterval(this.interval);
+            }, 1000);
         },
         async printer() {
-           this.show = 'loading';
-           this.alcometerPpm = await print();
-           this.show = '';
+            this.show = 'loading';
+            this.alcometerPpm = await print();
+            this.show = '';
         },
         async tonometer() {
-           this.show = 'loading';
-           this.pressure = await getPressure();
-           console.log(this.pressure);
-            this.show = '';
-           if (this.pressure) {
+            this.show = 'loading';
+            clearInterval(this.interval);
+            this.interval = setInterval(async () => {
+                const result = await getPressure();
+
+                if (result === 'next') {
+                    return;
+                }
+
+                this.pressure = result;
+
+                clearInterval(this.interval);
                 this.show = 'pressure';
-            }
+            }, 1000);
         },
     }
 }

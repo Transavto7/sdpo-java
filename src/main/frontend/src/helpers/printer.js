@@ -9,6 +9,7 @@ export async function print() {
 
 function defaultError(error) {
     const data = error.response?.data;
+    
     if (data?.message) {
         toast.error(data.message);
     } else {    

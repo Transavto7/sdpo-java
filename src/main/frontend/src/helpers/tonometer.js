@@ -3,9 +3,10 @@ import { useToast } from "vue-toastification";
 const toast = useToast();
 
 export async function getPressure() {
-        return await axios.post(`device/tonometer`).then(({ data }) => {            
-            return data;
-        }).catch(defaultError);
+    return await axios.post(`device/tonometer`).then(({ data }) => {            
+        return data;
+    }).catch(defaultError);
+
 }
 
 export async function checkDevices() {

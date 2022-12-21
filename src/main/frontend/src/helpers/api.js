@@ -19,9 +19,7 @@ export async function checkConnect(address) {
         address
     }).then(({ data }) => {
         return data;
-    }).catch(error => {
-        return false;
-    });
+    }).catch(defaultError);
 }
 
 
@@ -36,4 +34,6 @@ function defaultError(error) {
     
         }
     }
+
+    console.log(error);
 }

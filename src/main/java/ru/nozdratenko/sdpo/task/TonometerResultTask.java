@@ -29,7 +29,6 @@ public class TonometerResultTask extends Thread {
                 SdpoLog.info("result: " + result);
 
                 if (result.startsWith("error_")) {
-
                     continue;
                 }
 

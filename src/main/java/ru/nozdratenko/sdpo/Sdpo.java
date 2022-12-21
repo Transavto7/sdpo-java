@@ -11,7 +11,9 @@ import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
+import ru.nozdratenko.sdpo.task.AlcometerResultTask;
 import ru.nozdratenko.sdpo.task.BluetoothUpdateTask;
+import ru.nozdratenko.sdpo.task.ThermometerResultTask;
 import ru.nozdratenko.sdpo.task.TonometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -29,6 +31,8 @@ public class Sdpo {
 
     public static final BluetoothUpdateTask bluetoothUpdateTask = new BluetoothUpdateTask();
     public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
+    public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
+    public static final AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
 
     public static void init() {
         SdpoLog.info("Run project");
@@ -42,7 +46,9 @@ public class Sdpo {
     public static void initComPorts() {
         new Thread(() -> {
             ThermometerHelper.PORT = getComPort("VID_10C4");
+            thermometerResultTask.start();
             AlcometerHelper.PORT = getComPort("VID_0483");
+            alcometerResultTask.start();
             SdpoLog.info("Thermometer set port: " + ThermometerHelper.PORT);
             SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
             AlcometerHelper.reset();

@@ -1,8 +1,34 @@
 <script>
+import { getPressure } from '@/helpers/tonometer';
+
 export default {
     data() {
         return {
+            interval: null,
         }
+    },
+    async mounted() {
+        this.interval = setInterval(async () => {
+            const result = await getPressure();
+
+            if (result === 'next') {
+                return;
+            }
+
+            if (result?.pulse) {
+            this.inspection.pulse = result.pulse;
+            }
+            
+            if (result?.systolic || result?.diastolic) {
+                this.inspection.tonometer = result.systolic + '/' + result.diastolic;
+            }
+
+            clearInterval(this.interval);
+            this.$router.push('/step/4');
+        }, 1000);
+    },
+    unmounted() {
+        clearInterval(this.interval);
     },
     computed: {
         inspection() {
