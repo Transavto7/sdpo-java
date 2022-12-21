@@ -19,9 +19,12 @@ public class SdpoLog extends FileAppender {
         logger.info(info);
     }
 
+    public static void nativeLog(String string) {
+        logger.info("[native] " + string);
+    }
+
     public static void debug(Object debug) {
-        if(logger.isDebugEnabled())
-            logger.debug(debug);
+        logger.debug(debug);
     }
 
     public static void warning(Object warning) {

@@ -11,8 +11,8 @@ export default {
     },
     methods: {
         next(result) {
-            this.$store.state.inspection.sleep_status = result;
-            this.$router.push('/step/7');
+            this.$store.state.inspection.people_status = result;
+            this.$router.push('/step/8');
         }
     }
 }

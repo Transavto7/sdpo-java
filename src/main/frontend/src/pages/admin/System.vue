@@ -1,23 +1,36 @@
 <script>
-import { saveSystem } from '@/helpers/settings';
+import { saveSystem, saveApi } from '@/helpers/settings';
 import { useToast } from "vue-toastification";
+import { getSizes } from '@/helpers/camera';
+
 export default {
     data() {
         return {
             toast: useToast(),
+            videoSizes: [],
         }
+    },
+    async mounted() {
+        this.videoSizes = await getSizes();
     },
     methods: {
         async save() {
             await saveSystem(this.system);
+            await saveApi(this.config.url, this.config.token);
             this.toast.success('Настройки сохранены');
+        },
+    },
+    computed: {
+        system() {
+            return this.$store.state.config?.system || {};
+        },
+        config() {
+            return this.$store.state.config?.main || {};
+        },
+        connection() {
+            return this.$store.state.connection || false;
         }
     },
-   computed: {
-    system() {
-       return this.$store.state.config?.system || {};
-    }
-   },
 }
 </script>
 
@@ -77,7 +90,7 @@ export default {
                 </label>
             </div>
             <div class="admin__system-card__item">
-                <span>Показывать</span>
+                <span>включен</span>
                 <label class="switch">
                     <input type="checkbox" v-model="system.alcometer_visible">
                     <div class="slider round"></div>
@@ -98,7 +111,7 @@ export default {
                 </label>
             </div>
             <div class="admin__system-card__item">
-                <span>Показывать</span>
+                <span>включен</span>
                 <label class="switch">
                     <input type="checkbox" v-model="system.tonometer_visible">
                     <div class="slider round"></div>
@@ -113,17 +126,17 @@ export default {
             </div>
             <div class="admin__system-card__item">
                 <span>Видео</span>
-                <label class="switch">
-                    <input type="checkbox" v-model="system.camera_video">
-                    <div class="slider round"></div>
-                </label>
+                <select v-model="system.camera_video">
+                    <option v-for="size in videoSizes" :key="size" :value="size">{{ size }}</option>
+                    <option value="false">Выкл</option>
+                </select>
             </div>
             <div class="admin__system-card__item">
                 <span>Фото</span>
-                <label class="switch">
-                    <input type="checkbox" v-model="system.camera_photo">
-                    <div class="slider round"></div>
-                </label>
+                <select v-model="system.camera_photo">
+                    <option v-for="size in videoSizes" :key="size" :value="size">{{ size }}</option>
+                    <option value="false">Выкл</option>
+                </select>
             </div>
         </div>
 
@@ -154,11 +167,29 @@ export default {
                 </label>
             </div>
             <div class="admin__system-card__item">
-                <span>Показывать</span>
+                <span>включен</span>
                 <label class="switch">
                     <input type="checkbox" v-model="system.thermometer_visible">
                     <div class="slider round"></div>
                 </label>
+            </div>
+        </div>
+        <div class="admin__system-card block animate__animated animate__fadeInUp d-6">
+            <div class="admin__system-card__title">
+                Настройки API 
+                <div class="connection-status"
+                    :class="{active: connection}"    
+                >
+                    <span>{{ connection }}</span>
+                </div>
+            </div>
+            <div class="admin__system-card__item">
+                <span>Адрес</span>
+                <input v-model="config.url">
+            </div>
+            <div class="admin__system-card__item">
+                <span>Токен</span>
+                <input v-model="config.token">
             </div>
         </div>
 

@@ -6,23 +6,40 @@ import com.github.sarxos.webcam.util.ImageUtils;
 import io.humble.video.*;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
+import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.VideoRunException;
 import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CameraHelper {
 
     public static BufferedImage makePhoto() throws IOException {
         Webcam webcam = Webcam.getDefault();
+
+        try {
+            double with = Double.valueOf(Sdpo.systemConfig.getString("camera_photo"));
+            Dimension dim = getSize(with);
+            webcam.setViewSize(dim);
+        } catch (IllegalArgumentException e) {
+            //
+        }
+
         webcam.open();
         BufferedImage image = webcam.getImage();
+        File outputfile = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "photo.jpg"));
+        ImageIO.write(image, "jpg", outputfile);
         webcam.close();
         return image;
     }
@@ -48,7 +65,14 @@ public class CameraHelper {
     private static void recordScreen(String filename, int duration, int snapsPerSecond)
             throws AWTException, InterruptedException, IOException {
         final Webcam webcam = Webcam.getDefault();
-        webcam.setViewSize(WebcamResolution.VGA.getSize());
+
+        try {
+            double with = Double.valueOf(Sdpo.systemConfig.getString("camera_photo"));
+            Dimension dim = getSize(with);
+            webcam.setViewSize(dim);
+        } catch (IllegalArgumentException e) {
+            //
+        }
 
         final Rectangle size = new Rectangle(webcam.getViewSize());
         final Rational framerate = Rational.make(1, snapsPerSecond);
@@ -115,6 +139,44 @@ public class CameraHelper {
 
         webcam.close();
         muxer.close();
+    }
+
+    public static Map<Integer, Dimension> getSizes() {
+        Map<Integer, Dimension> result = new HashMap<Integer, Dimension>();
+        for (Dimension dim : Webcam.getDefault().getViewSizes()) {
+            result.put((int) dim.getWidth(), dim);
+        }
+
+        return result;
+    }
+
+    public static Dimension getSize(Double width) {
+        for (Dimension dim : Webcam.getDefault().getViewSizes()) {
+            if (dim.getWidth() == width) {
+                return dim;
+            }
+        }
+
+        if (Webcam.getDefault().getViewSizes().length > 0) {
+            return Webcam.getDefault().getViewSizes()[0];
+        }
+
+        return null;
+    }
+
+    public static String getDefaultSize() {
+        double result = 0;
+        for (Dimension dim : Webcam.getDefault().getViewSizes()) {
+                if (result < dim.getWidth()) {
+                    result = dim.getWidth();
+                }
+        }
+
+        if (result == 0) {
+            return null;
+        }
+
+        return "" + (int) result;
     }
 
     public static BufferedImage convertToType(BufferedImage sourceImage, int targetType) {

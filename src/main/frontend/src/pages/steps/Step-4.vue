@@ -1,8 +1,15 @@
 <script>
+import { getTemp } from '@/helpers/thermometer';
+
 export default {
     data() {
         return {
         }
+    },
+    async mounted() {
+        const result = await getTemp();
+        this.inspection.t_people = Number(result) || 36.6;
+        this.$router.push('/step/5');
     },
     computed: {
         inspection() {

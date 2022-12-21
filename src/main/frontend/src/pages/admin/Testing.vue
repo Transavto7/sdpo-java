@@ -1,8 +1,9 @@
 <script>
 import { makePhoto, makeVideo } from '@/helpers/camera';
-import { checkPulse } from '@/helpers/tonometer';
+import { getPressure } from '@/helpers/tonometer';
 import { getTemp } from '@/helpers/thermometer';
 import { getAlcometerResult } from '@/helpers/alcometer';
+import { print } from '@/helpers/printer';
 
 export default {
     data() {
@@ -11,6 +12,7 @@ export default {
             image64: null,
             temp: null,
             alcometerPpm: null,
+            pressure: null,
             timeout: 0,
             loading: false,
         }
@@ -47,6 +49,20 @@ export default {
            this.alcometerPpm = await getAlcometerResult();
            this.show = 'alcometer';
         },
+        async printer() {
+           this.show = 'loading';
+           this.alcometerPpm = await print();
+           this.show = '';
+        },
+        async tonometer() {
+           this.show = 'loading';
+           this.pressure = await getPressure();
+           console.log(this.pressure);
+            this.show = '';
+           if (this.pressure) {
+                this.show = 'pressure';
+            }
+        },
     }
 }
 </script>
@@ -55,8 +71,10 @@ export default {
     <div class="admin__testing">
         <button :disabled="show === 'loading'" @click="photo()" class="btn blue animate__animated animate__fadeInUp">Тестовый снимок</button>
         <button :disabled="show === 'loading'" @click="video()" class="btn blue animate__animated animate__fadeInUp d-1">Тестовое видео</button>
-        <button :disabled="show === 'loading'" @click="thermometer()" class="btn blue animate__animated animate__fadeInUp d-2">Изерить температуру</button>
-        <button :disabled="show === 'loading'" @click="alcometer()" class="btn blue animate__animated animate__fadeInUp d-3">Тест алкоголя</button>
+        <button :disabled="show === 'loading'" @click="thermometer()" class="btn blue animate__animated animate__fadeInUp d-2">Тест пирометра</button>
+        <button :disabled="show === 'loading'" @click="alcometer()" class="btn blue animate__animated animate__fadeInUp d-3">Тест алкометра</button>
+        <button :disabled="show === 'loading'" @click="printer()" class="btn blue animate__animated animate__fadeInUp d-4">Тестовая печать</button>
+        <button :disabled="show === 'loading'" @click="tonometer()" class="btn blue animate__animated animate__fadeInUp d-5">Тест тонометра</button>
 
         <div v-if="show === 'loading'" class="admin__loading animate__animated animate__fadeInUp">
             <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
@@ -78,6 +96,21 @@ export default {
 
             <div v-if="show === 'alcometer'" class="admin__testing-temp animate__animated animate__fadeInUp">
                 {{ alcometerPpm === undefined ? 'Не удалось получить результат' : alcometerPpm + ' ‰' }}
+            </div>
+            
+            <div v-if="show === 'pressure'" class="admin__testing-pressure animate__animated animate__fadeInUp">
+                <div class="admin__testing-pressure-item">
+                    <span>Систолическое давление</span>
+                    {{ pressure?.systolic ? pressure.systolic + ' мм. рт.ст' : 'Результатов нет' }}
+                </div>
+                <div class="admin__testing-pressure-item">
+                    <span>Диастолическое давление</span>
+                    {{ pressure?.diastolic ? pressure.diastolic + ' мм. рт.ст' : 'Результатов нет' }}
+                </div>
+                <div class="admin__testing-pressure-item">
+                    <span>Пульс</span>
+                    {{ pressure?.pulse ? pressure.pulse + ' уд/мин' : 'Результатов нет' }}
+                </div>
             </div>
         </div>
     </div>

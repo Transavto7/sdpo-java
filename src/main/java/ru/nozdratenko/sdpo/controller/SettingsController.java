@@ -35,22 +35,50 @@ public class SettingsController {
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
-    @PostMapping("/setting/system")
+    @PostMapping("/setting/tonometer")
     @ResponseBody
-    public ResponseEntity saveSystem(@RequestBody Map<String,  Map<String, String>> json) {
-        if (json.get("system") == null && json.get("system").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("system error");
+    public ResponseEntity saveTonometer(@RequestBody Map<String, String> json) {
+        if (json.get("address") == null && json.get("address").isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("address error");
         }
 
-        for (String key : json.get("system").keySet()) {
-            Sdpo.systemConfig.set(key, json.get("system").get(key));
+        Sdpo.mainConfig.set("tonometer_mac", json.get("address").trim());
+        Sdpo.mainConfig.saveFile();
+        SdpoLog.info("Save new tonometer address: " + json.get("address"));
+
+        return ResponseEntity.status(HttpStatus.OK).body("success");
+    }
+
+    @PostMapping("/setting/api")
+    @ResponseBody
+    public ResponseEntity saveApi(@RequestBody Map<String, String> json) {
+        if (json.get("address") != null && !json.get("address").isEmpty()) {
+            Sdpo.mainConfig.set("url", json.get("address"));
+            SdpoLog.info("Save new url: " + json.get("address"));
+        }
+
+        if (json.get("token") != null && !json.get("token").isEmpty()) {
+            Sdpo.mainConfig.set("token", json.get("token"));
+            SdpoLog.info("Save new token: " + json.get("token"));
+        }
+
+        Sdpo.mainConfig.saveFile();
+
+        return ResponseEntity.status(HttpStatus.OK).body("success");
+    }
+
+    @PostMapping("/setting/system")
+    @ResponseBody
+    public ResponseEntity saveSystem(@RequestBody Map<String,  String> json) {
+        for (String key : json.keySet()) {
+            Sdpo.systemConfig.set(key, json.get(key));
         }
 
         Sdpo.systemConfig.saveFile();
         try {
             SdpoLog.info("Save new settings system");
             SdpoLog.debug("-----[settings]------");
-            SdpoLog.debug(new JSONObject(json.get("system")).toString(10));
+            SdpoLog.debug(new JSONObject(json).toString(10));
             SdpoLog.debug("-----------");
         } catch (JSONException e) {
             //

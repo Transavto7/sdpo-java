@@ -14,7 +14,6 @@
         background-color: rgba(#244673, 0.2);
         font-weight: 500;
         border-radius: 5px;
-        text-transform: lowercase;
         cursor: pointer;
         transition: ease-in-out 0.2s;
 
@@ -147,10 +146,11 @@
     }
 
     &__system {
+        margin: 0 auto;
+        width: 90%;
         display: flex;
         align-items: flex-start;
         gap: 20px;
-        justify-content: center;
         margin-top: 50px;
         flex-wrap: wrap;
     }
@@ -169,6 +169,12 @@
             text-align: center;
             border-bottom: 1px solid rgba(#244673, 0.2);
             font-weight: 600;
+            display: flex;
+            justify-content: center;
+
+            .connection-status {
+                margin-left: auto;
+            }
         }
 
         &__item {
@@ -178,6 +184,26 @@
             gap: 20px;
             justify-content: space-between;
         }
+
+        input {
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            font-weight: 500;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        &.block {
+            width: 50%;
+        }
+
+        select {
+            padding: 5px 10px;
+            border: none;
+            outline: none;
+            border-radius: 5px;
+        }
     }
     
     &__system-footer {
@@ -185,6 +211,33 @@
         justify-content: end;
         align-items: center;
         display: flex;
-        padding: 0 200px; 
+        padding: 0 60px; 
+    }
+
+    &__testing-pressure {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    &__testing-pressure-item {
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(#244673, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 18px;
+        font-weight: 500;
+        padding: 0 0 10px 0;
+        min-width: 170px;
+
+        span {
+            background-color: rgba(#244673, 0.9);
+            color: #fff;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+        }
     }
 }

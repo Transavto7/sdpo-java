@@ -10,6 +10,9 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+	flatDir {
+		dirs 'lib'
+	}
 }
 
 dependencies {

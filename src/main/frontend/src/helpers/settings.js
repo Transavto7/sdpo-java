@@ -18,8 +18,23 @@ export async function savePassword(password) {
 }
 
 export async function saveSystem(system) {
-    await axios.post('/setting/system', {
-        system
+    await axios.post('/setting/system', system).catch(error => {
+        console.log(error);
+    });
+}
+
+export async function saveApi(address, token) {
+    await axios.post('/setting/api', {
+        address,
+        token
+    }).catch(error => {
+        console.log(error);
+    });
+}
+
+export async function saveTonometerMac(address) {
+    await axios.post('/setting/tonometer', {
+        address
     }).catch(error => {
         console.log(error);
     });

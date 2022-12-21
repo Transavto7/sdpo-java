@@ -33,4 +33,8 @@ export const routes = [
         path: '/step/7', component: () => import('./pages/steps/Step-7'), name: 'step-7', 
         meta: {visible: 'question_helth', next: 'step-8', prev: 'step-6', number: 7 } 
     },
+    { 
+        path: '/step/8', component: () => import('./pages/steps/Step-8'), name: 'step-8', 
+        meta: { next: 'home', prev: 'step-7', number: 8 } 
+    },
 ]

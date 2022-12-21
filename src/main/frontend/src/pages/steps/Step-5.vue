@@ -1,8 +1,18 @@
 <script>
+import { getAlcometerResult } from '@/helpers/alcometer';
+import { makePhoto, makeVideo } from '@/helpers/camera';
+
 export default {
     data() {
         return {
         }
+    },
+    async mounted() {
+        await makePhoto();
+        makeVideo();
+        const data = await getAlcometerResult();
+        this.inspection.alcometer_result = Number(data) || 0;
+        this.$router.push('/step/6');
     },
     computed: {
         inspection() {
@@ -33,9 +43,13 @@ export default {
                 <div class="step-5__text  animate__animated animate__fadeInUp d-2">
                     Дождитесь ГОТОВ на экране алкометра<br><br>
                     Начните дуть с умеренной силой до окончания<br>
-                    звукового сигнала.
+                    звукового сигнала.<br><br>
                 </div>
             </div>
+            <p class="alert red">
+                <i class="ri-alarm-warning-fill"></i>
+                НЕ ПРИКАСАТЬСЯ К АЛКОТЕСТЕРУ ГУБАМИ
+            </p>
         </div>
         <div class="step-buttons">
             <button @click="$router.push('/step/4')" class="btn opacity blue">Назад</button>

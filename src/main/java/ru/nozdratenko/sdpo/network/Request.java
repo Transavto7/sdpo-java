@@ -1,6 +1,8 @@
 package ru.nozdratenko.sdpo.network;
 
+import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -23,6 +25,10 @@ public class Request {
         }
 
         this.url = new URL(baseURL + url);
+    }
+
+    public Request(URL url) throws IOException {
+        this.url = url;
     }
 
     public String sendGet() throws IOException {
@@ -66,26 +72,28 @@ public class Request {
         return response.toString();
     }
 
-    public String sendPost() throws IOException {
+    public String sendPost() throws IOException, ApiException {
         return sendPost("");
     }
-    public String sendPost(String json) throws IOException {
-        SdpoLog.debug("Request post to: " + url.toString());
-
+    public String sendPost(String json) throws IOException, ApiException {
+        SdpoLog.info("Request post to: " + url.toString());
+        this.connection = (HttpsURLConnection)  this.url.openConnection();
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", "1");
         connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
         connection.setDoOutput(true);
 
-        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-        wr.write(json);
-        wr.flush();
-        wr.close();
+        try(OutputStream os = connection.getOutputStream()) {
+            byte[] input = json.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
 
         int responseCode = connection.getResponseCode();
-        SdpoLog.debug("Response code: " + responseCode);
+        SdpoLog.info("Response code: " + responseCode);
         InputStream inputStream;
+
         if (200 <= responseCode && responseCode <= 299) {
             inputStream = connection.getInputStream();
         } else {
@@ -103,10 +111,26 @@ public class Request {
 
         in.close();
         connection.disconnect();
-        SdpoLog.debug("Response: " + response.toString());
+        SdpoLog.info("Response: " + response.toString());
+
+        if (200 > responseCode || responseCode > 299) {
+            String message = "Неизвестная ошибка запроса.";
+            try {
+                JSONObject jsonObject = new JSONObject(response.toString());
+                if (jsonObject.has("message")) {
+                    message = jsonObject.getString("message");
+                } else {
+                    message = "Ошибка запроса. Неизвестный ответ.";
+                }
+            } catch (Exception e) {
+
+            }
+
+            throw new ApiException(message);
+        }
+
         return response.toString();
     }
-
 
     public URL getUrl() {
         return url;

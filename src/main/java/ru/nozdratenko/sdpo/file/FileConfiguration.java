@@ -69,6 +69,14 @@ public class FileConfiguration extends FileBase {
         return 0;
     }
 
+    public boolean getBoolean(String key) {
+        if (json.has(key)) {
+            return json.getBoolean(key);
+        }
+
+        return false;
+    }
+
     public JSONObject getJson() {
         return json;
     }

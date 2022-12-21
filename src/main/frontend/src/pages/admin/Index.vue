@@ -24,7 +24,7 @@ export default {
                 Настройки пароля
             </button>
             <button class="admin__tab animate__animated animate__fadeInDown d-3" @click="selected = 'tonometer'" :class="{active: selected === 'tonometer'}">
-                Настройки танометра
+                Настройки тонометра
             </button>
             <button class="admin__tab animate__animated animate__fadeInDown d-4" @click="selected = 'testing'" :class="{active: selected === 'testing'}">
                 Тестирование

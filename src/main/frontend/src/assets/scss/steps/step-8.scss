@@ -1,0 +1,53 @@
+.step-result {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    &__cards {
+        display: flex;
+        max-width: 1200px;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 50px;
+    }
+
+    &__card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        font-size: 20px;
+        font-weight: 500;
+        background-color: rgba(#244673, 0.25);
+        padding: 0 0 10px;
+        border-radius: 10px;
+
+        span {
+            background-color: rgba(#244673, 0.9);
+            color: #fff;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+            min-width: 200px;
+            text-align: center;
+        }
+    }
+
+    &__text {
+        font-size: 30px;
+        font-weight: 600;
+        margin-bottom: 70px;
+    }
+
+    &__footer {
+        margin-top: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+    }
+}

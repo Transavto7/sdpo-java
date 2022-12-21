@@ -2,13 +2,14 @@ package ru.nozdratenko.sdpo.helper;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
+import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.UnsupportedEncodingException;
 
 public class AlcometerHelper {
-    public static final String PORT = "COM3";
+    public static String PORT = "COM3";
 
     public static String getResult() throws SerialPortException, UnsupportedEncodingException, AlcometerException {
         SerialPort serialPort = new SerialPort(PORT);
@@ -27,7 +28,14 @@ public class AlcometerHelper {
                 SdpoLog.error(e);
             }
 
-            serialPort.writeString("$STARTSENTECH\r\n", "ascii");
+            if (Sdpo.systemConfig.getBoolean("alcometer_fast")) {
+                SdpoLog.info("Alcometer send fast mode");
+                serialPort.writeString("$FASTSENTECH\r\n", "ascii");
+            } else {
+                SdpoLog.info("Alcometer send slow mode");
+                serialPort.writeString("$STARTSENTECH\r\n", "ascii");
+            }
+
             int seconds = 0;
 
             while (true) {
@@ -35,7 +43,7 @@ public class AlcometerHelper {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) { }
 
-                if (++seconds > 20) {
+                if (++seconds > 30) {
                     throw new AlcometerException("Тест алкоголя был прерван");
                 }
 
@@ -46,7 +54,7 @@ public class AlcometerHelper {
 
                 result = result.trim();
 
-                if (seconds > 5 && result.contains("END")) {
+                if (seconds > 15 && result.contains("END")) {
                     throw new AlcometerException("Тест алкоголя был прерван");
                 }
 
@@ -62,7 +70,13 @@ public class AlcometerHelper {
                     try {
                         result = String.valueOf(Double.valueOf(split[0]));
                     } catch (IllegalArgumentException e) {
-                        result = split[0];
+                        if (split[0].equals("PASS")) {
+                            result = "0";
+                        } else if (split[0].equals("FAIL")) {
+                            result = "1";
+                        } else {
+                            result = split[0];
+                        }
                     }
 
                     SdpoLog.info("Result alcometer: " + result);
@@ -74,6 +88,30 @@ public class AlcometerHelper {
             if (serialPort.isOpened()) {
                 SdpoLog.info("Close port: " + PORT);
                 serialPort.closePort();
+            }
+        }
+    }
+
+    public static void reset() {
+        SerialPort serialPort = new SerialPort(PORT);
+        try {
+            SdpoLog.info("Open port " + PORT);
+            serialPort.openPort();
+            serialPort.setParams(4800,
+                    SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+            serialPort.writeString("$RESET\r\n", "ascii");
+        } catch (SerialPortException | UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (serialPort.isOpened()) {
+                SdpoLog.info("Close port: " + PORT);
+                try {
+                    serialPort.closePort();
+                } catch (SerialPortException e) {
+                    //
+                }
             }
         }
     }

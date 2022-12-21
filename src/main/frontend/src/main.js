@@ -9,6 +9,7 @@ import { routes } from './router'
 import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
 import { loadSettings } from './helpers/settings'
+import { checkConnect } from './helpers/api'
 import 'animate.css'
 
 axios.defaults.baseURL = 'http://localhost:8080/';
@@ -72,6 +73,12 @@ function requestFullScreen() {
     );
   }
 }
+
+setInterval(async () => {
+  if (store.state.config?.main?.url) {
+    store.state.connection = await checkConnect(store.state.config.main.url);
+  }
+}, 5000);
 
 createApp(App)
     .use(store)

@@ -2,31 +2,18 @@ import store from "@/store";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 
-export async function checkPulse() {
-        await axios.post(`device/tonometer`).then(({ data }) => {            
+export async function getPressure() {
+        return await axios.post(`device/tonometer`).then(({ data }) => {            
             return data;
-        }).catch((error) => {
-            defaultError(error);
-            return;
-        });
+        }).catch(defaultError);
 }
 
 export async function checkDevices() {
     return await axios.post(`device/scan`).then(({ data }) => {
         return data;
-    }).catch(async () => {
-        await sleep(5000);
+    }).catch((error) => {
+        console.log(error);
     });
-}
-
-export async function connectDevice(address) {
-    return await axios.post(`device/tonometer/${address}`).then(({ data }) => {
-        return data;
-    }).catch(defaultError);
-}
-
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function defaultError(error) {
