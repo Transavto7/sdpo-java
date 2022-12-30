@@ -81,6 +81,17 @@ public class IndexController {
         return ResponseEntity.status(403).body("error");
     }
 
+    @PostMapping(value = "api/logo", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity apiSaveLogo(@RequestBody Map<String, String> json) {
+        if (!json.keySet().contains("logo")) {
+            return ResponseEntity.status(403).body("logo not found");
+        }
+
+        Sdpo.mainConfig.set("logo", json.get("logo")).saveFile();
+        return ResponseEntity.ok().body("ok");
+    }
+
     @GetMapping(value = "api/medics", produces = "application/json; charset=utf-8")
     @ResponseBody
     public ResponseEntity aptMedics() {

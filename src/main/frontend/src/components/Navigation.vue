@@ -40,6 +40,9 @@ export default {
         },
         medic() {
             return this.$store.state.medic;
+        },
+        logo() {
+            return this.$store.state.config?.main?.logo;
         }
     },
 }
@@ -48,7 +51,8 @@ export default {
 <template>
     <div class="nav">
         <div class="nav__logo animate__animated animate__fadeInDown">
-            <img src="@/assets/images/logo.png" alt="">
+            <img v-if="logo" :src="logo" alt="">
+            <img v-else src="@/assets/images/logo.png" alt="">
         </div>
         
         <div v-if="currentRouter.includes('/step/')" class="nav__info animate__animated animate__fadeInDown">

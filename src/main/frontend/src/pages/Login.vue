@@ -39,7 +39,8 @@ export default {
 </script>
 
 <template>
-    <div class="login-form">
+    <div class="login">
+        <div class="login-form">
         <div class="login-form__title animate__animated animate__fadeInDown d-4">
             Введите пароль администратора
         </div>
@@ -62,5 +63,6 @@ export default {
             <button class="number-buttons__item" @click="password += '0'">0</button>
             <button class="number-buttons__item" @click="password = password.slice(0, -1)"><i class="ri-delete-back-line"></i></button>
         </div>
+    </div>
     </div>
 </template>

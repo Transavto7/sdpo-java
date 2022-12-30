@@ -2,39 +2,25 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>/home/ellidey/FinalDream/launcher/build/FinalDream.jar</jar>
-  <outfile>/home/ellidey/FinalDream/launcher/build/FinalDream.exe</outfile>
-  <errTitle>Start error</errTitle>
-  <cmdLine>-Dfile.encoding=UTF8</cmdLine>
+  <jar>/home/ellidey/web/sdpo/build/libs/sdpo-0.0.1-SNAPSHOT.jar</jar>
+  <outfile>/home/ellidey/web/sdpo/build/libs/sdpo.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
   <chdir>.</chdir>
-  <priority>high</priority>
+  <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>/home/ellidey/FinalDream/launcher/launch4j/icon.ico</icon>
+  <icon></icon>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion>1.7.0</minVersion>
+    <minVersion>1.11.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
   </jre>
-  <versionInfo>
-    <fileVersion>3.0.0.0</fileVersion>
-    <txtFileVersion>version 3.0.0.0</txtFileVersion>
-    <fileDescription>Updater launcher by FinalDream</fileDescription>
-    <copyright>ellidey</copyright>
-    <productVersion>3.0.0.0</productVersion>
-    <txtProductVersion>version 3.0.0.0</txtProductVersion>
-    <productName>FinalDream - Updater</productName>
-    <companyName>FinalDream</companyName>
-    <internalName>FinalDream</internalName>
-    <originalFilename>FinalDream.exe</originalFilename>
-    <trademarks>FinalDream</trademarks>
-    <language>RUSSIAN</language>
-  </versionInfo>
 </launch4jConfig>

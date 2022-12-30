@@ -55,6 +55,16 @@ export async function close() {
     window.location.reload();
 }
 
+export async function saveLogo(logo) {
+    return await axios.post('api/logo', {
+        logo
+    }).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {

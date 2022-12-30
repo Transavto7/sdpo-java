@@ -3,9 +3,10 @@ import Testing from "./Testing.vue"
 import Tonometer from "./Tonometer.vue";
 import Password from "./Password.vue";
 import System from "./System.vue";
+import Logo from "./Logo.vue";
 
 export default {
-    components: { Testing, Tonometer, Password, System },
+    components: { Testing, Tonometer, Password, System, Logo },
     data() {
         return {
             selected: 'system',
@@ -26,6 +27,9 @@ export default {
             <button class="admin__tab animate__animated animate__fadeInDown d-3" @click="selected = 'tonometer'" :class="{active: selected === 'tonometer'}">
                 Настройки тонометра
             </button>
+            <button class="admin__tab animate__animated animate__fadeInDown d-3" @click="selected = 'logo'" :class="{active: selected === 'logo'}">
+                Смена логотипа
+            </button>
             <button class="admin__tab animate__animated animate__fadeInDown d-4" @click="selected = 'testing'" :class="{active: selected === 'testing'}">
                 Тестирование
             </button>
@@ -35,5 +39,6 @@ export default {
         <tonometer v-if="selected === 'tonometer'" />
         <password  v-if="selected === 'password'" />
         <system v-if="selected === 'system'" />
+        <logo v-if="selected === 'logo'" />
     </div>
 </template>
