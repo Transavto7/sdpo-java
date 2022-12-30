@@ -85,9 +85,9 @@ public class InspectionController {
             type = "" + json.get("type_view");
         }
 
-        BufferedImage image = PrinterHelper.getImage(name, result, type, admit, date, signature);
-
-        PrinterHelper.print(image);
+        if (admit.equals("ДОПУЩЕН")) {
+            PrinterHelper.print(name, result, type, admit, date, signature);
+        }
     }
 
 }

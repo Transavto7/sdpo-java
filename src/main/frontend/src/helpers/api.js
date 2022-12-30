@@ -65,6 +65,14 @@ export async function saveLogo(logo) {
     });
 }
 
+export async function saveMedic(medic) {
+    return await axios.post('api/medic', medic).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {

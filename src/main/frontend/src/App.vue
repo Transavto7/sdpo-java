@@ -21,7 +21,7 @@ export default {
     </transition>
     <div class="footer">
       {{ point || 'Незвестный пункт выпуска' }}
-      <span>СДПО 2.0.21</span>
+      <span>СДПО 2.2.0</span>
     </div>
 </template>
 

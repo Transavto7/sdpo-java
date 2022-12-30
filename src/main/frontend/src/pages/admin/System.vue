@@ -154,6 +154,10 @@ export default {
                     <div class="slider round"></div>
                 </label>
             </div>
+            <div class="admin__system-card__item">
+                <span>Количество</span>
+                <input min="1" class="small" type="number" v-model="system.print_count">
+            </div>
         </div>
 
 

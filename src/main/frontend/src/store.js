@@ -10,11 +10,7 @@ const store = createStore({
             admin: false,
             connection: false,
             point: '',
-            medic: {
-                selecting: false,
-                id: null,
-                name: null,
-            },
+            selectingMedic: false,
         }
     },
     getters: {

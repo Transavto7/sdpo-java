@@ -46,6 +46,7 @@ public class FileConfiguration extends FileBase {
         }
         return this;
     }
+
     public FileConfiguration setDefault(String key, boolean value) {
         if (!json.has(key)) {
             json.put(key, value);

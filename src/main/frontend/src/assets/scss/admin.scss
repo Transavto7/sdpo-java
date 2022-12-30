@@ -37,7 +37,7 @@
         text-align: center;
         justify-content: center;
         margin-top: 20px;
-        gap: 10px;
+        gap: 5px;
     }
 
     &__loading {
@@ -191,10 +191,14 @@
         input {
             border: none;
             outline: none;
-            padding: 5px 10px;
+            padding: 5px 0 5px 10px;
             font-weight: 500;
             border-radius: 5px;
             width: 100%;
+
+            &.small {
+                max-width: 35px;
+            }
         }
 
         &.block {
