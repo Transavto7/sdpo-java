@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.controller;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
@@ -74,7 +75,11 @@ public class IndexController {
         try {
             Request request = new Request( "sdpo/pv");
             String response = request.sendGet();
-            return ResponseEntity.ok().body(response);
+            if (request.success) {
+                return ResponseEntity.ok().body(response);
+            } else {
+                return ResponseEntity.status(403).body("error");
+            }
         } catch (IOException e) {
             SdpoLog.error(e);
         }
@@ -99,14 +104,25 @@ public class IndexController {
             Request request = new Request( "sdpo/medics");
             String response = request.sendGet();
             return ResponseEntity.ok().body(new JSONObject(response).toMap());
+        } catch (JSONException e) {
+            SdpoLog.error(e);
         } catch (IOException e) {
             SdpoLog.error(e);
         }
         return ResponseEntity.status(403).body("error");
     }
 
+    @PostMapping(value = "api/medic", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity apiSaveMedic(@RequestBody Map<String, String> json) {
+        Sdpo.mainConfig.getJson().put("selected_medic", json);
+        Sdpo.mainConfig.saveFile();
+        return ResponseEntity.ok().body("ok");
+    }
+
     @PostMapping(value = "/exit")
     public void exit() {
+        SdpoLog.info("Exit router");
         System.exit(0);
     }
 

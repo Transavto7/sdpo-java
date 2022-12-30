@@ -20,6 +20,7 @@ public class AlcometerHelper {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
+            SdpoLog.info("stop alcometer");
             serialPort.writeString("$STOPSENTECH\r\n", "ascii");
 
             try {
@@ -100,6 +101,7 @@ public class AlcometerHelper {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
+            SdpoLog.info("stop reset");
             serialPort.writeString("$RESET\r\n", "ascii");
         } catch (SerialPortException | UnsupportedEncodingException e) {
             SdpoLog.error(e);

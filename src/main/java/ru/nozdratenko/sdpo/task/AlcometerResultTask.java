@@ -21,12 +21,20 @@ public class AlcometerResultTask extends Thread {
 
     @Override
     public void run() {
+        SdpoLog.info("Alcometer run task: " + this.currentStatus.toString());
         while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                //
+            }
+
+            SdpoLog.info("Current status: " + this.currentStatus.toString());
+
             if (this.currentStatus != Status.WAIT) {
                 continue;
             }
 
-            SdpoLog.info(this.currentStatus.toString());
             try {
                 this.result = AlcometerHelper.getResult();
                 this.currentStatus = Status.RESULT;
@@ -38,12 +46,6 @@ public class AlcometerResultTask extends Thread {
                 this.currentStatus = Status.ERROR;
             } catch (AlcometerException e) {
                 this.error = e.getResponse();
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                //
             }
         }
     }

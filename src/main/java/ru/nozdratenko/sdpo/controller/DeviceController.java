@@ -38,7 +38,21 @@ public class DeviceController {
         try {
             int duration = 10;
             int snaps = 5;
-            String url = CameraHelper.makeVideo(duration, snaps);
+            String url = CameraHelper.makeVideo(duration, snaps, false);
+            return ResponseEntity.status(HttpStatus.OK).body(url);
+        } catch (VideoRunException e) {
+            SdpoLog.error("Video run exception: " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getResponse().toMap());
+        }
+    }
+
+    @PostMapping(value = "/device/video/test")
+    @ResponseBody
+    public ResponseEntity videoTest() {
+        try {
+            int duration = 10;
+            int snaps = 5;
+            String url = CameraHelper.makeVideo(duration, snaps, true);
             return ResponseEntity.status(HttpStatus.OK).body(url);
         } catch (VideoRunException e) {
             SdpoLog.error("Video run exception: " + e);
@@ -96,16 +110,19 @@ public class DeviceController {
 
         if (task.currentStatus == AlcometerResultTask.Status.FREE) {
             task.currentStatus = AlcometerResultTask.Status.WAIT;
+            SdpoLog.info("Set wait");
             return ResponseEntity.ok().body("next");
         }
 
         if (task.currentStatus == AlcometerResultTask.Status.ERROR) {
             task.currentStatus = AlcometerResultTask.Status.FREE;
+            SdpoLog.info("Set error");
             return ResponseEntity.status(500).body(task.error);
         }
 
         if (task.currentStatus == AlcometerResultTask.Status.RESULT) {
             task.currentStatus = AlcometerResultTask.Status.FREE;
+            SdpoLog.info("Set result");
             return ResponseEntity.ok().body(task.result);
         }
 
@@ -119,19 +136,14 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity printer() {
         try {
-            BufferedImage image = PrinterHelper.getImage("Тестовый Тест Тестович",
+            PrinterHelper.print("Тестовый Тест Тестович",
                     "ПРОШЕЛ",
                     "Предрейсовый/Предсменный",
                     "ДОПУЩЕН",
                     "23-10-2022 06:00:00",
                     "test-cat-test");
-
-            PrinterHelper.print(image);
         } catch (Exception e) {
             e.printStackTrace();
-            SdpoLog.error("Error printer: " + e);
-        } catch (PrinterException e) {
-            ResponseEntity.status(500).body(e.getResponse());
             SdpoLog.error("Error printer: " + e);
         }
         return ResponseEntity.ok().body("");

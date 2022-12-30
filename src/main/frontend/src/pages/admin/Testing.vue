@@ -1,5 +1,5 @@
 <script>
-import { makePhoto, makeVideo } from '@/helpers/camera';
+import { makePhoto, makeVideoTest } from '@/helpers/camera';
 import { getPressure } from '@/helpers/tonometer';
 import { getTemp } from '@/helpers/thermometer';
 import { getAlcometerResult } from '@/helpers/alcometer';
@@ -34,7 +34,7 @@ export default {
         async video() {
             this.show = 'loading';
             clearInterval(this.interval);
-            this.video = await makeVideo();
+            this.video = await makeVideoTest();
             this.show = '';
 
             if (this.video) {
@@ -46,7 +46,6 @@ export default {
             clearInterval(this.interval);
             this.interval = setInterval(async () => {
                 this.temp = await getTemp();
-                this.show = '';
                 
                 if (this.temp === 'next') {
                     return;
@@ -99,12 +98,12 @@ export default {
 
 <template>
     <div class="admin__testing">
-        <button :disabled="show === 'loading'" @click="photo()" class="btn blue animate__animated animate__fadeInUp">Тестовый снимок</button>
-        <button :disabled="show === 'loading'" @click="video()" class="btn blue animate__animated animate__fadeInUp d-1">Тестовое видео</button>
-        <button :disabled="show === 'loading'" @click="thermometer()" class="btn blue animate__animated animate__fadeInUp d-2">Тест пирометра</button>
-        <button :disabled="show === 'loading'" @click="alcometer()" class="btn blue animate__animated animate__fadeInUp d-3">Тест алкометра</button>
-        <button :disabled="show === 'loading'" @click="printer()" class="btn blue animate__animated animate__fadeInUp d-4">Тестовая печать</button>
-        <button :disabled="show === 'loading'" @click="tonometer()" class="btn blue animate__animated animate__fadeInUp d-5">Тест тонометра</button>
+        <button :disabled="show === 'loading'" @click="photo()" class="btn blue tab animate__animated animate__fadeInUp">Тестовый снимок</button>
+        <button :disabled="show === 'loading'" @click="video()" class="btn blue tab animate__animated animate__fadeInUp d-1">Тестовое видео</button>
+        <button :disabled="show === 'loading'" @click="thermometer()" class="btn blue tab animate__animated animate__fadeInUp d-2">Тест пирометра</button>
+        <button :disabled="show === 'loading'" @click="alcometer()" class="btn blue tab animate__animated animate__fadeInUp d-3">Тест алкометра</button>
+        <button :disabled="show === 'loading'" @click="printer()" class="btn blue tab animate__animated animate__fadeInUp d-4">Тестовая печать</button>
+        <button :disabled="show === 'loading'" @click="tonometer()" class="btn blue tab animate__animated animate__fadeInUp d-5">Тест тонометра</button>
 
         <div v-if="show === 'loading'" class="admin__loading animate__animated animate__fadeInUp">
             <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 

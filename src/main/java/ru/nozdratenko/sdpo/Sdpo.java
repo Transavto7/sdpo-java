@@ -1,10 +1,5 @@
 package ru.nozdratenko.sdpo;
 
-import com.github.sarxos.webcam.Webcam;
-import jssc.SerialPort;
-import jssc.SerialPortException;
-import jssc.SerialPortList;
-import jssc.SerialPortTimeoutException;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
@@ -12,7 +7,6 @@ import ru.nozdratenko.sdpo.helper.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
-import ru.nozdratenko.sdpo.task.BluetoothUpdateTask;
 import ru.nozdratenko.sdpo.task.ThermometerResultTask;
 import ru.nozdratenko.sdpo.task.TonometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -20,16 +14,12 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class Sdpo {
     public static FileConfiguration mainConfig;
     public static FileConfiguration systemConfig;
 
-    public static final BluetoothUpdateTask bluetoothUpdateTask = new BluetoothUpdateTask();
     public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
     public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
     public static final AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
@@ -40,7 +30,14 @@ public class Sdpo {
         initMainConfig();
         initSystemConfig();
         runTasks();
-        BrowserHelper.openUrl("http://localhost:8080");
+        new Thread(() -> {
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) { }
+
+            BrowserHelper.openUrl("http://localhost:8080");
+        }).start();
+
     }
 
     public static void initComPorts() {
@@ -56,7 +53,6 @@ public class Sdpo {
     }
 
     public static void runTasks() {
-        bluetoothUpdateTask.start();
         tonometerResultTask.start();
     }
 
@@ -90,12 +86,16 @@ public class Sdpo {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/main.json");
         fileConfiguration.setDefault("password", "7344946")
                 .setDefault("medic_password", "0000000")
+                .setDefault("run_browser_cmd",
+                        "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --kiosk " +
+                                "${url} --edge-kiosk-type=fullscreen -inprivate")
                 .setDefault("url", "https://test.ta-7.ru/api")
                 .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
                 .setDefault("tonometer_mac", null)
                 .saveFile();
         mainConfig = fileConfiguration;
     }
+
     private static void initSystemConfig() {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/system.json");
         fileConfiguration.setDefault("driver_info", false)
@@ -110,6 +110,7 @@ public class Sdpo {
                 .setDefault("camera_video", CameraHelper.getDefaultSize())
                 .setDefault("camera_photo", CameraHelper.getDefaultSize())
                 .setDefault("printer_write", true)
+                .setDefault("print_count", 1)
                 .setDefault("thermometer_skip", true)
                 .setDefault("thermometer_visible", true)
                 .saveFile();

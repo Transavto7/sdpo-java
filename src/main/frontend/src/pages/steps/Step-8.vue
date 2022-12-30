@@ -14,8 +14,11 @@ export default {
         }, 5000);
     },
     methods: {
-        getStatus(status) {
+        getSleepStatus(status) {
             return status === 'Да' ? 'Выспались' : 'Не выспались';
+        },
+        getPeopleStatus(status) {
+            return status === 'Да' ? 'Хорошее' : 'Плохое';
         },
         async save() {
             this.result = await saveInspection();
@@ -42,7 +45,7 @@ export default {
                 {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
             </div>
             <div class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Количество промилей</span>
+                <span>Количество промилле</span>
                 {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
             </div>
             <div class="step-result__card animate__animated animate__fadeInUp d-2">
@@ -51,11 +54,11 @@ export default {
             </div>
             <div class="step-result__card animate__animated animate__fadeInUp d-2">
                 <span>Сонливость</span>
-                {{ inspection.hasOwnProperty('sleep_status') ? getStatus(inspection.sleep_status) : 'Неизвестно' }}
+                {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
             </div>
             <div class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Самочувствиек</span>
-                {{ inspection.hasOwnProperty('people_status') ? getStatus(inspection.people_status) : 'Неизвестно' }}
+                <span>Самочувствие</span>
+                {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
             </div>
         </div>
         <div class="step-result__footer">

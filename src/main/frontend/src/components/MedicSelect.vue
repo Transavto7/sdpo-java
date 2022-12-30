@@ -1,5 +1,5 @@
 <script>
-import { getMedics } from '@/helpers/api';
+import { getMedics, saveMedic } from '@/helpers/api';
 
 export default {
     data() {
@@ -7,7 +7,6 @@ export default {
             medics: {},
             status: "login",
             password: '',
-            show: false,
         }
     },
     async mounted() {
@@ -22,18 +21,25 @@ export default {
             this.password = '';
             this.status = 'select';
         },
-        select(user) {
-            this.medic.name = user.name;
-            this.medic.id = user.id;
+        async select(user) {
+            this.$store.state.config.main.selected_medic = {
+                name: user.name,
+                id: user.id,
+            }
+            
             this.status = 'login';
+            await saveMedic(this.medic);
         }
     },
     computed: {
         medic() {
-            return this.$store.state.medic;
+            return this.$store.state.config?.main?.selected_medic || {};
         },
         config() {
             return this.$store.state.config?.main;
+        },
+        visible() {
+            return this.$store.state.selectingMedic;
         }
     },
     watch: {
@@ -45,8 +51,12 @@ export default {
 </script>
 
 <template>
-    <div v-if="medic.selecting" @click="medic.selecting = false" class="medics__overlay animate__animated animate__fadeIn"></div>
-    <div v-if="medic.selecting" class="medics animate__animated animate__fadeInRight">
+    <div v-if="visible" 
+        @click="$store.state.selectingMedic = false" 
+        class="medics__overlay animate__animated animate__fadeIn">
+    </div>
+
+    <div v-if="visible" class="medics animate__animated animate__fadeInRight">
         <div v-if="status === 'login'" class="medics__form">
             <div class="login-form__title">
                 Введите пароль
@@ -91,15 +101,6 @@ export default {
                     </button>
                 </div>
             </div>
-            <div class="medics__town">
-                Название города
-            </div>
-            <div class="medics__point">
-                Пункт выпуска
-            </div>
-            <button class="medics__item">
-                Фамилия имя отчетство
-            </button>
         </div>
     </div>
 </template>

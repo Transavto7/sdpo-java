@@ -1,32 +1,35 @@
 package ru.nozdratenko.sdpo.task;
 
 import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BluetoothUpdateTask extends Thread {
-    public static Map<String, String> devices = new HashMap<>();
+    public static List<String> devices = new ArrayList<>();
+    public static boolean locked = false;
 
     @Override
     public void run() {
-        while (true) {
-            String str = Bluetooth.findDevice();
-            String[] split = str.split("\\|\\|");
-            String address = split[0];
-            String name = "Неизвестное устройство";
+        if (locked) {
+            return;
+        }
 
-            if (split.length > 1) {
-                name = split[1];
-            }
+        locked = true;
+        SdpoLog.info("scan devices...");
+        String str = Bluetooth.findDevice();
+        str = str.trim();
 
-            devices.put(address, name);
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        SdpoLog.error(str);
+        if (str.startsWith("error_")) {
+            SdpoLog.error(str);
+        } else {
+            if (!devices.contains(str)) {
+                devices.add(str);
             }
         }
+
+        locked = false;
     }
 }

@@ -60,7 +60,7 @@ export default {
                 :key="device.address"
                 @click="save(device.address)"
             >
-                {{  device.name || 'Неизвестное устройство' }} - {{ device.address || 'Неизвестный адрес' }}
+                {{ device.address || 'Неизвестный адрес' }}
             </button>
         </div>
     </div>

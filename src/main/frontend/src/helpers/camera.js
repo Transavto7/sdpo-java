@@ -20,6 +20,12 @@ export async function makeVideo() {
     }).catch(defaultError);
 }
 
+export async function makeVideoTest() {
+    return await axios.post(`device/video/test`).then(({ data }) => {
+        return data;
+    }).catch(defaultError);
+}
+
 function defaultError(error) {
     // const data = error.response?.data;
     // if (data?.message) {

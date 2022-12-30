@@ -5,7 +5,6 @@ import com.github.sarxos.webcam.util.ImageUtils;
 import io.humble.video.*;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
-import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.VideoRunException;
 import ru.nozdratenko.sdpo.file.FileBase;
@@ -49,19 +48,34 @@ public class CameraHelper {
         return url;
     }
 
-    public static String makeVideo(int duration, int snaps) throws VideoRunException {
+    public static String makeVideo(int duration, int snaps, boolean sync) throws VideoRunException {
+        Long time = new Date().getTime();
+        String name = MultipartUtility.BACKEND_URL + "/get_file/video/" + time + ".mp4";
+
+        if (Webcam.getDefault().isOpen()) {
+            throw new VideoRunException("Запись видео уже идет");
+        }
+
+        Thread thread = new Thread(() -> {
             final String filename = FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4");
             try {
                 recordScreen(filename, duration, snaps);
                 SdpoLog.info("Saving video");
-                String url = saveVideo();
-                return url;
+                saveVideo("" + time);
             } catch (AWTException | InterruptedException | IOException e) {
-                throw new VideoRunException("Невозможно записать видео");
+                SdpoLog.error("Невозможно записать видео");
             } catch (IllegalStateException e) {
-                throw new VideoRunException("Запись видео уже идет");
+                SdpoLog.error("Запись видео уже идет");
             }
+        });
 
+        if (sync) {
+            thread.run();
+        } else {
+            thread.start();
+        }
+
+        return name;
     }
 
     public static String imageToBase64String(BufferedImage image) throws IOException {
@@ -239,21 +253,19 @@ public class CameraHelper {
         return name;
     }
 
-    public static String saveVideo() {
+    public static String saveVideo(String name) {
         File video = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4"));
 
         if (!video.exists() || video.isDirectory()) {
             return null;
         }
-        Long time = new Date().getTime();
-        String name = MultipartUtility.BACKEND_URL + "/get_file/video/" + time + ".mp4";
 
         new Thread(() -> {
 
             try {
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "video");
-                multipartUtility.addFormField("name",  "" + time);
+                multipartUtility.addFormField("name",  "" + name);
                 multipartUtility.addFilePart("filename", video);
                 multipartUtility.finish();
             } catch (Exception e) {

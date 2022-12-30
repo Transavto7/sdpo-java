@@ -5,8 +5,6 @@ import org.json.JSONObject;
 import ru.nozdratenko.sdpo.task.BluetoothUpdateTask;
 
 import javax.bluetooth.*;
-import javax.microedition.io.Connector;
-import java.io.IOException;
 
 public class TonometerHelper {
 
@@ -15,6 +13,7 @@ public class TonometerHelper {
         JSONObject json = new JSONObject();
         try {
             LocalDevice dev = LocalDevice.getLocalDevice();
+            new BluetoothUpdateTask().start();
 
             JSONObject mainDevice = new JSONObject();
             mainDevice.put("name", dev.getFriendlyName());
@@ -22,11 +21,8 @@ public class TonometerHelper {
             json.put("main", mainDevice);
 
             JSONArray devices = new JSONArray();
-            for (String address : BluetoothUpdateTask.devices.keySet()) {
+            for (String address : BluetoothUpdateTask.devices) {
                 JSONObject deviceData = new JSONObject();
-                String name = BluetoothUpdateTask.devices.get(address);
-
-                deviceData.put("name", name);
                 deviceData.put("address", address);
                 devices.put(deviceData);
             }
