@@ -89,6 +89,7 @@ public class Sdpo {
                 .setDefault("run_browser_cmd",
                         "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --kiosk " +
                                 "${url} --edge-kiosk-type=fullscreen -inprivate")
+                .setDefault("browser_closed", true)
                 .setDefault("url", "https://test.ta-7.ru/api")
                 .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
                 .setDefault("tonometer_mac", null)

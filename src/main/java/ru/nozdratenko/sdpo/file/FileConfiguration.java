@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.file;
 
 import org.json.JSONObject;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
@@ -14,8 +15,10 @@ public class FileConfiguration extends FileBase {
             if (!str.isEmpty()) {
                 json = new JSONObject(read());
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            json = new JSONObject();
             e.printStackTrace();
+            SdpoLog.error(e);
         }
     }
 

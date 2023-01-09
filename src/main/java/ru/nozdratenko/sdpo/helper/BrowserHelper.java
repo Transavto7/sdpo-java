@@ -17,17 +17,20 @@ public class BrowserHelper {
             try {
                 SdpoLog.info("Open browser: " + url.toString());
                 Process proccess = runtime.exec(cmd.replace("${url}", url));
-                new Thread(()->{
-                    while (true) {
-                        if (!proccess.isAlive()) {
-                            SdpoLog.info("Exit program close browser");
-                            System.exit(0);
+
+                if (Sdpo.mainConfig.getBoolean("browser_closed")) {
+                    new Thread(()->{
+                        while (true) {
+                            if (!proccess.isAlive()) {
+                                SdpoLog.info("Exit program close browser");
+                                System.exit(0);
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) { }
                         }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) { }
-                    }
-                }).start();
+                    }).start();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

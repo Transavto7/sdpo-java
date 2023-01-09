@@ -10,8 +10,8 @@ export async function getDriver(id) {
 }
 
 export async function saveInspection(inspection = store.state.inspection) {
-    if (store.state.medic?.id) {
-        inspection.user_id = store.state.medic.id;
+    if (store.state.config?.main?.selected_medic.id) {
+        inspection.user_id = store.state.config.main.selected_medic.id;
     }
     return await axios.post(`inspection/save`, inspection).then(({ data }) => {
         return data;

@@ -13,7 +13,7 @@ public class TonometerResultTask extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
 
                 String uuid = Sdpo.mainConfig.getString("tonometer_mac");
                 if (uuid == null || uuid.isEmpty()) {
