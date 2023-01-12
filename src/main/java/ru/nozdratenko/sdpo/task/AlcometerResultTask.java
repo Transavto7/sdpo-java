@@ -2,22 +2,18 @@ package ru.nozdratenko.sdpo.task;
 
 import jssc.SerialPortException;
 import org.json.JSONObject;
+import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.util.StatusType;
 
 import java.io.UnsupportedEncodingException;
 
 public class AlcometerResultTask extends Thread {
-    public double result = 0;
+    public String result = "0";
     public JSONObject error;
-    public Status currentStatus = Status.FREE;
-    public enum Status {
-            WAIT,
-            RESULT,
-            ERROR,
-            FREE
-    };
+    public StatusType currentStatus = StatusType.FREE;
 
     @Override
     public void run() {
@@ -29,24 +25,65 @@ public class AlcometerResultTask extends Thread {
                 //
             }
 
-            SdpoLog.info("Current status: " + this.currentStatus.toString());
+            if (this.currentStatus == StatusType.STOP) {
+                try {
+                    AlcometerHelper.stop();
+                } catch (UnsupportedEncodingException | SerialPortException e) {
+                    e.printStackTrace();
+                    SdpoLog.error(e);
+                }
 
-            if (this.currentStatus != Status.WAIT) {
-                continue;
+                this.currentStatus = StatusType.FREE;
             }
 
-            try {
-                this.result = AlcometerHelper.getResult();
-                this.currentStatus = Status.RESULT;
-            } catch (SerialPortException | UnsupportedEncodingException e) {
-                SdpoLog.error(e);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("message", "Неизвестная ошибка алкометра");
-                this.error = jsonObject;
-                this.currentStatus = Status.ERROR;
-            } catch (AlcometerException e) {
-                this.error = e.getResponse();
+            if (this.currentStatus == StatusType.REQUEST) {
+                try {
+                    AlcometerHelper.open();
+                    AlcometerHelper.start();
+                } catch (SerialPortException e) {
+                    setError("Ошибка открытия порта Алкометра");
+                    continue;
+                } catch (UnsupportedEncodingException e) {
+                    setError("Ошибка закрытия алкометра");
+                    continue;
+                }
+
+                this.currentStatus = StatusType.WAIT;
+            }
+
+            if (this.currentStatus == StatusType.WAIT) {
+                try {
+                    String result = AlcometerHelper.result();
+                    if (result == null) {
+                        continue;
+                    }
+                    setResult(result);
+                } catch (SerialPortException e) {
+                    setError("Ошибка открытия порта Алкометра");
+                } catch (AlcometerException e) {
+                    setError(e.getResponse());
+                }
             }
         }
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+        this.currentStatus = StatusType.RESULT;
+    }
+
+    public void setError(JSONObject message) {
+        this.error = message;
+        this.currentStatus = StatusType.ERROR;
+    }
+
+    public void setError(String message) {
+        JSONObject json = new JSONObject();
+        json.put("message", message);
+        this.setError(json);
+    }
+
+    public void close() {
+        this.currentStatus = StatusType.STOP;
     }
 }

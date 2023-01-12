@@ -9,99 +9,100 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import java.io.UnsupportedEncodingException;
 
 public class AlcometerHelper {
-    public static String PORT = "COM3";
+    public static String PORT = null;
+    private static SerialPort serialPort = null;
 
-    public static double getResult() throws SerialPortException, UnsupportedEncodingException, AlcometerException {
-        SerialPort serialPort = new SerialPort(PORT);
-        try {
-            SdpoLog.info("Open port " + PORT);
+    public static void open() throws SerialPortException {
+        if (serialPort == null) {
+            return;
+        }
+
+        SerialPort serialPort = getSerialPort();
+        if (!serialPort.isOpened()) {
             serialPort.openPort();
             serialPort.setParams(4800,
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            SdpoLog.info("stop alcometer");
-            serialPort.writeString("$STOPSENTECH\r\n", "ascii");
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                SdpoLog.error(e);
-            }
-
-            if (Sdpo.systemConfig.getBoolean("alcometer_fast")) {
-                SdpoLog.info("Alcometer send fast mode");
-                serialPort.writeString("$FASTSENTECH\r\n", "ascii");
-            } else {
-                SdpoLog.info("Alcometer send slow mode");
-                serialPort.writeString("$STARTSENTECH\r\n", "ascii");
-            }
-
-            int seconds = 0;
-
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) { }
-
-                if (++seconds > 30) {
-                    throw new AlcometerException("Тест алкоголя был прерван");
-                }
-
-                String result = serialPort.readString();
-                if (result == null) {
-                    continue;
-                }
-
-                result = result.trim();
-
-                if (seconds > 15 && result.contains("END")) {
-                    throw new AlcometerException("Тест алкоголя был прерван");
-                }
-
-                if (result.contains("ERR")) {
-                    throw new AlcometerException("Ошибка теста, попробуйте еще раз");
-                }
-
-
-                if (result.contains("$R:")) {
-                    double rs = 0;
-                    result = result.replace("$R:", "");
-                    String[] split = result.split(",");
-
-                    try {
-                        rs = Double.valueOf(split[0]);
-                    } catch (IllegalArgumentException e) {
-                        if (split[0].equals("PASS")) {
-                            rs = 0;
-                        } else if (split[0].equals("FAIL")) {
-                            rs = 1;
-                        }
-                    }
-
-                    SdpoLog.info("Result alcometer: " + rs);
-                    return rs;
-                }
-
-            }
-        } finally {
-            if (serialPort.isOpened()) {
-                SdpoLog.info("Close port: " + PORT);
-                serialPort.closePort();
-            }
         }
     }
 
+    public static void stop() throws UnsupportedEncodingException, SerialPortException {
+        if (getSerialPort() == null) {
+            return;
+        }
+
+        SdpoLog.info("Stop alcometer");
+        getSerialPort().writeString("$STOPSENTECH\r\n", "ascii");
+    }
+
+    public static void start() throws SerialPortException, UnsupportedEncodingException {
+        if (getSerialPort() == null) {
+            return;
+        }
+
+        SdpoLog.info("Start alcometer");
+        if (Sdpo.systemConfig.getBoolean("alcometer_fast")) {
+            SdpoLog.info("Alcometer send fast mode");
+            getSerialPort().writeString("$FASTSENTECH\r\n", "ascii");
+        } else {
+            SdpoLog.info("Alcometer send slow mode");
+            getSerialPort().writeString("$STARTSENTECH\r\n", "ascii");
+        }
+    }
+
+    public static String result() throws SerialPortException, AlcometerException {
+        if (getSerialPort() == null) {
+            return "0";
+        }
+
+        String result = getSerialPort().readString();
+
+        if (result == null) {
+            return null;
+        }
+
+        result = result.trim();
+
+        if (result.contains("ERR")) {
+            throw new AlcometerException("Ошибка теста, попробуйте еще раз");
+        }
+
+        if (result.contains("$R:")) {
+            double rs = 0;
+            result = result.replace("$R:", "");
+            String[] split = result.split(",");
+
+            try {
+                rs = Double.valueOf(split[0]);
+            } catch (IllegalArgumentException e) {
+                if (split[0].equals("PASS")) {
+                    rs = 0;
+                } else if (split[0].equals("FAIL")) {
+                    rs = 1;
+                }
+            }
+
+            SdpoLog.info("Result alcometer: " + rs);
+            return String.valueOf(rs);
+        }
+
+        return null;
+    }
+
     public static void reset() {
-        SerialPort serialPort = new SerialPort(PORT);
+        if (getSerialPort() == null) {
+            return;
+        }
+
+        SerialPort serialPort = getSerialPort();
         try {
-            SdpoLog.info("Open port " + PORT);
             serialPort.openPort();
             serialPort.setParams(4800,
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            SdpoLog.info("stop reset");
+            SdpoLog.info("Reset alcometer");
             serialPort.writeString("$RESET\r\n", "ascii");
         } catch (SerialPortException | UnsupportedEncodingException e) {
             SdpoLog.error(e);
@@ -115,5 +116,12 @@ public class AlcometerHelper {
                 }
             }
         }
+    }
+
+    public static SerialPort getSerialPort() {
+        if (serialPort == null) {
+            serialPort = new SerialPort(PORT);
+        }
+        return serialPort;
     }
 }

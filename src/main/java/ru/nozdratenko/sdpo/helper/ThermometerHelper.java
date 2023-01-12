@@ -4,12 +4,15 @@ import jssc.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 public class ThermometerHelper {
-    public static String PORT = "COM5";
+    public static String PORT = null;
     public static double getTemp() {
+        if (PORT == null) {
+            return 36.6;
+        }
+
         SerialPort serialPort = new SerialPort(PORT);
 
         try {
-            SdpoLog.info("Listen port: " + PORT);
             serialPort.openPort();
             serialPort.setParams(2400,
                     SerialPort.DATABITS_8,
@@ -22,15 +25,14 @@ public class ThermometerHelper {
             int[] receivedData = serialPort.readIntArray(8, 3000);
             double temp = receivedData[5] + 256;
             temp /= 10;
-            if (temp > 32 && temp < 43) {
+            if (temp > 28 && temp < 43) {
                 SdpoLog.info("Result temp: " + temp);
                 return temp;
             }
         } catch (SerialPortTimeoutException | SerialPortException e) {
-            SdpoLog.error("time out thermometer");
+            //
         } finally {
             if (serialPort.isOpened()) {
-                SdpoLog.info("Close port: " + PORT);
                 try {
                     serialPort.closePort();
                 } catch (SerialPortException e) {

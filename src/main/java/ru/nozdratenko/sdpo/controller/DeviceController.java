@@ -11,6 +11,7 @@ import ru.nozdratenko.sdpo.helper.*;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
 import ru.nozdratenko.sdpo.task.ThermometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.util.StatusType;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -104,32 +105,37 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity alcometer() {
         AlcometerResultTask task = Sdpo.alcometerResultTask;
-        if (task.currentStatus == AlcometerResultTask.Status.WAIT) {
+        if (task.currentStatus == StatusType.FREE) {
+            task.currentStatus = StatusType.REQUEST;
             return ResponseEntity.ok().body("next");
         }
 
-        if (task.currentStatus == AlcometerResultTask.Status.FREE) {
-            task.currentStatus = AlcometerResultTask.Status.WAIT;
-            SdpoLog.info("Set wait");
+        if (!task.currentStatus.skip) {
             return ResponseEntity.ok().body("next");
         }
 
-        if (task.currentStatus == AlcometerResultTask.Status.ERROR) {
-            task.currentStatus = AlcometerResultTask.Status.FREE;
-            SdpoLog.info("Set error");
-            return ResponseEntity.status(500).body(task.error);
+        if (task.currentStatus == StatusType.ERROR) {
+            task.currentStatus = StatusType.FREE;
+            SdpoLog.error(task.error.toString());
+            return ResponseEntity.status(500).body(task.error.toMap());
         }
 
-        if (task.currentStatus == AlcometerResultTask.Status.RESULT) {
-            task.currentStatus = AlcometerResultTask.Status.FREE;
-            SdpoLog.info("Set result");
+        if (task.currentStatus == StatusType.RESULT) {
+            task.currentStatus = StatusType.FREE;
             return ResponseEntity.ok().body(task.result);
         }
-
 
         JSONObject json = new JSONObject();
         json.put("message", "Не удалось получить статус");
         return ResponseEntity.status(500).body(json);
+    }
+
+    @PostMapping(value = "/device/alcometer/close")
+    @ResponseBody
+    public ResponseEntity alcometerClose() {
+        AlcometerResultTask task = Sdpo.alcometerResultTask;
+        task.close();
+        return ResponseEntity.ok().body("");
     }
 
     @PostMapping(value = "/device/printer")

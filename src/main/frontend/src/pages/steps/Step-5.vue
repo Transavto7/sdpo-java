@@ -1,5 +1,5 @@
 <script>
-import { getAlcometerResult } from '@/helpers/alcometer';
+import { getAlcometerResult, closeAlcometer } from '@/helpers/alcometer';
 import { makePhoto, makeVideo } from '@/helpers/camera';
 
 export default {
@@ -16,6 +16,16 @@ export default {
             if (JSON.parse(this.system.camera_video) && !this.inspection.video) {
                 this.inspection.video = await makeVideo();
             }
+        },
+        async nextStep() {
+            clearInterval(this.interval);
+            this.$router.push('/step/6');
+            closeAlcometer();
+        },
+        async prevStep() {
+            clearInterval(this.interval);
+            this.$router.push('/step/4');
+            closeAlcometer();
         }
     },
     async mounted() {
@@ -29,8 +39,7 @@ export default {
             }
 
             this.inspection.alcometer_result = Number(result) || 0;
-            clearInterval(this.interval);
-            this.$router.push('/step/6');
+            this.nextStep();
         }, 1000);
     },
     unmounted() {
@@ -74,8 +83,8 @@ export default {
             </p>
         </div>
         <div class="step-buttons">
-            <button @click="$router.push('/step/4')" class="btn opacity blue">Назад</button>
-            <button @click="$router.push('/step/6')" v-if="JSON.parse(system.alcometer_skip)" class="btn">Продолжить</button>
+            <button @click="prevStep()" class="btn opacity blue">Назад</button>
+            <button @click="nextStep()" v-if="JSON.parse(system.alcometer_skip)" class="btn">Продолжить</button>
         </div>
     </div>
 </template>

@@ -11,6 +11,7 @@ const store = createStore({
             connection: false,
             point: '',
             selectingMedic: false,
+            loseConnect: false,
         }
     },
     getters: {

@@ -21,11 +21,13 @@ function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {
         toast.error(data.message);
-    } else {    
+    } else if(error.response) {
         switch (error?.response?.status) {
             case 400: toast.error('Ошибка авторизации запроса')
             default: toast.error('Неизвестная ошибка запроса')
         }
+    } else {
+        store.$state.loseConnect = true;
     }
     
     console.log(error);

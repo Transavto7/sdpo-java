@@ -1,2 +1,2 @@
 "use strict";(self["webpackChunksdpo_frontend"]=self["webpackChunksdpo_frontend"]||[]).push([[246],{246:function(n,a,e){e.r(a),e.d(a,{default:function(){return u}});var t=e(3396);const s={class:"help"},d=(0,t._)("h1",{class:"animate__animated animate__fadeInDown"},"Основной номер",-1),r=(0,t._)("h3",{class:"animate__animated animate__fadeInDown d-1"},"+7 (978) 777-55-55",-1),i=[d,r];function _(n,a,e,d,r,_){return(0,t.wg)(),(0,t.iD)("div",s,i)}var c={},o=e(89);const f=(0,o.Z)(c,[["render",_]]);var u=f}}]);
-//# sourceMappingURL=246.139f2506.js.map
+//# sourceMappingURL=246.06d6406d.js.map

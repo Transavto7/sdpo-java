@@ -8,15 +8,42 @@ export default {
     },
     methods: {
         close,
+        requestVisibleMouse() {
+            if (!document.documentElement.classList.contains('disable-mouse')) {
+                document.documentElement.classList.add('disable-mouse');
+                this.system.cursor = false;
+            } else {
+                document.documentElement.classList.remove('disable-mouse');
+                this.system.cursor = true;
+            }
+        },
         requestFullScreen() {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen(
-                Element.ALLOW_KEYBOARD_INPUT
-                );
+            const isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+                (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+                (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+                (document.msFullscreenElement && document.msFullscreenElement !== null);
+
+            const docElm = document.documentElement;
+            if (!isInFullScreen) {
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                } else if (docElm.mozRequestFullScreen) {
+                    docElm.mozRequestFullScreen();
+                } else if (docElm.webkitRequestFullScreen) {
+                    docElm.webkitRequestFullScreen();
+                } else if (docElm.msRequestFullscreen) {
+                    docElm.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
         },
     },
@@ -62,7 +89,10 @@ export default {
         </div>
 
         <div class="nav__buttons" v-else-if="currentRouter.includes('/admin')">
-            <button @click="requestFullScreen()" class="btn icon animate__animated animate__fadeInDown d-1">
+            <button @click="requestVisibleMouse()" class="btn icon animate__animated animate__fadeInDown d-1" style="padding: 5px">
+                <i class="ri-cursor-fill"></i>
+            </button>
+            <button @click="requestFullScreen()" class="btn icon animate__animated animate__fadeInDown d-1" style="padding: 5px">
                 <i class="ri-fullscreen-line"></i>
             </button>
             <button @click="logout()" class="btn opacity blue animate__animated animate__fadeInDown d-2">Выйти</button>

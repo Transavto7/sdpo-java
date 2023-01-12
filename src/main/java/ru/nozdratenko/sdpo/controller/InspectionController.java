@@ -40,7 +40,7 @@ public class InspectionController {
             if (Sdpo.systemConfig.getBoolean("printer_write")) {
                 print(resultJson);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(resultJson);
+            return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
         } catch (ApiException e) {
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {

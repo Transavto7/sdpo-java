@@ -14,6 +14,7 @@ export async function saveInspection(inspection = store.state.inspection) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
     return await axios.post(`inspection/save`, inspection).then(({ data }) => {
+        console.log(data);
         return data;
     }).catch(defaultError);
 }
@@ -24,7 +25,9 @@ export async function checkConnect(address) {
     }).then(({ data }) => {
         return data;
     }).catch((error) => {
-        //
+        if (!error.response) {
+            store.$state.loseConnect = true;
+        }
     });
 }
 
@@ -77,12 +80,14 @@ function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {
         toast.error(data.message);
-    } else {    
+    } else if (error.response) {    
         switch (error?.response?.status) {
             case 400: toast.error('Ошибка авторизации запроса')
             default: toast.error('Неизвестная ошибка запроса')
     
         }
+    } else {
+        store.$state.loseConnect = true;
     }
 
     console.log(error);

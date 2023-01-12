@@ -37,7 +37,6 @@ public class Sdpo {
 
             BrowserHelper.openUrl("http://localhost:8080");
         }).start();
-
     }
 
     public static void initComPorts() {

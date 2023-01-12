@@ -8,7 +8,6 @@ import javax.bluetooth.*;
 
 public class TonometerHelper {
 
-
     public static JSONObject scan() {
         JSONObject json = new JSONObject();
         try {

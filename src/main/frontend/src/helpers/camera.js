@@ -27,15 +27,9 @@ export async function makeVideoTest() {
 }
 
 function defaultError(error) {
-    // const data = error.response?.data;
-    // if (data?.message) {
-    //     toast.error(data.message);
-    // } else {    
-    //     switch (error?.response?.status) {
-    //         case 400: toast.error('Ошибка авторизации запроса')
-    //         default: toast.error('Неизвестная ошибка запроса')
-    //     }
-    // }
+    if (error.response) {
+        store.$state.loseConnect = true;
+    }
     
     console.log(error);
 }

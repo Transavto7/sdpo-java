@@ -27,6 +27,9 @@ export default {
     computed: {
         inspection() {
             return this.$store.state.inspection;
+        },
+        system() {
+            return this.$store.state.config?.system || {};
         }
     },
 }
@@ -36,33 +39,33 @@ export default {
     <div class="step-result">
         <h3 class="animate__animated animate__fadeInDown">Результаты осмотра</h3>
         <div class="step-result__cards">
-            <div class="step-result__card animate__animated animate__fadeInUp d-1">
+            <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">
                 <span>Давление</span>
                 {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer  : 'Неизвестно' }}
             </div>
-            <div class="step-result__card animate__animated animate__fadeInUp d-2">
+            <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
                 <span>Пульс</span>
                 {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
             </div>
-            <div class="step-result__card animate__animated animate__fadeInUp d-2">
+            <div v-if="system.alcometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
                 <span>Количество промилле</span>
                 {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
             </div>
-            <div class="step-result__card animate__animated animate__fadeInUp d-2">
+            <div v-if="system.thermometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
                 <span>Температура тела</span>
                 {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
             </div>
-            <div class="step-result__card animate__animated animate__fadeInUp d-2">
+            <div v-if="system.question_sleep" class="step-result__card animate__animated animate__fadeInUp d-2">
                 <span>Сонливость</span>
                 {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
             </div>
-            <div class="step-result__card animate__animated animate__fadeInUp d-2">
+            <div v-if="system.question_helth" class="step-result__card animate__animated animate__fadeInUp d-2">
                 <span>Самочувствие</span>
                 {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
             </div>
         </div>
         <div class="step-result__footer">
-            <span v-if="result.admitted" class="step-result__text animate__animated animate__fadeInUp">
+            <span class="step-result__text animate__animated animate__fadeInUp">
                 {{ result.admitted || 'ожидание ответа' }}
             </span>
             <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
