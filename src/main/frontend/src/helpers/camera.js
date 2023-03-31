@@ -14,8 +14,9 @@ export async function getSizes() {
     }).catch(defaultError);
 }
 
-export async function makeVideo() {
-    return await axios.post(`device/video`).then(({ data }) => {
+
+export async function makeMedia() {
+    return await axios.post(`device/media`).then(({ data }) => {
         return data;
     }).catch(defaultError);
 }

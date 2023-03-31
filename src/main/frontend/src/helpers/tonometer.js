@@ -6,7 +6,12 @@ export async function getPressure() {
     return await axios.post(`device/tonometer`).then(({ data }) => {            
         return data;
     }).catch(defaultError);
+}
 
+export async function disableTonometer() {
+    return await axios.post(`device/tonometer/disable`).then(({ data }) => {            
+        return data;
+    }).catch(defaultError);
 }
 
 export async function checkDevices() {

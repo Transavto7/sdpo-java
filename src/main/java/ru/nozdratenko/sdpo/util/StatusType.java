@@ -8,6 +8,7 @@ public enum StatusType {
     ERROR(true),
     FREE(true);
 
+
     public boolean skip = false;
     private StatusType(boolean skip) {
         this.skip = skip;

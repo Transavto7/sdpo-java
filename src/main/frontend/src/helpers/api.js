@@ -5,17 +5,38 @@ const toast = useToast();
 
 export async function getDriver(id) {
     return await axios.post(`inspection/${id}`).then(({ data }) => {
-        return data?.data?.message;
-    }).catch(defaultError);
+        return data;
+    });
+}
+
+export async function setDriverPhoto(id, photo) {
+    return await axios.post(`api/photo`, {
+        driver_id: id,
+        photo
+    }).then(({ data }) => {
+        return data;
+    });
+}
+
+export async function closeDriverPhoto() {
+    return await axios.post(`api/photo/stop`).then(({ data }) => {
+        return data;
+    });
 }
 
 export async function saveInspection(inspection = store.state.inspection) {
-    if (store.state.config?.main?.selected_medic.id) {
+    if (store.state.config?.main?.selected_medic?.id) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
     return await axios.post(`inspection/save`, inspection).then(({ data }) => {
         console.log(data);
         return data;
+    }).catch(defaultError);
+}
+
+export async function replayPrint() {
+    return await axios.post(`inspection/print`).then(({ data }) => {
+        return data; 
     }).catch(defaultError);
 }
 

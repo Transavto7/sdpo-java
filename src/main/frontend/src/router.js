@@ -5,36 +5,39 @@ export const routes = [
     { path: '/admin', component: () => import('./pages/admin/Index') },
 
     { 
-        path: '/step/1', component: () => import('./pages/steps/Step-1'), name: 'step-1',
-        meta: {visible: 'driver_info', next: 'step-2', prev: 'home', number: 1 } 
-    },
-
-    { 
-        path: '/step/2', component: () => import('./pages/steps/Step-2'), name: 'step-2', 
-        meta: {visible: 'type_ride', next: 'step-3', prev: 'step-1', number: 2 } 
+        path: '/step/driver', component: () => import('./pages/steps/Step-driver'), name: 'step-driver',
+        meta: {visible: 'driver_info', next: 'step-photo', prev: 'home', number: 1 } 
     },
     { 
-        path: '/step/3', component: () => import('./pages/steps/Step-3'), name: 'step-3', 
-        meta: {visible: 'tonometer_visible', next: 'step-4', prev: 'step-2', number: 3 } 
+        path: '/step/photo', component: () => import('./pages/steps/Step-photo'), name: 'step-photo', 
+        meta: {visible: 'driver_photo', next: 'step-ride', prev: 'step-driver', number: 2 } 
     },
     { 
-        path: '/step/4', component: () => import('./pages/steps/Step-4'), name: 'step-4', 
-        meta: {visible: 'thermometer_visible', next: 'step-5', prev: 'step-3', number: 4 } 
+        path: '/step/ride', component: () => import('./pages/steps/Step-ride'), name: 'step-ride', 
+        meta: {visible: 'type_ride', next: 'step-tonometer', prev: 'step-driver', number: 3 } 
     },
     { 
-        path: '/step/5', component: () => import('./pages/steps/Step-5'), name: 'step-5', 
-        meta: {visible: 'alcometer_visible', next: 'step-6', prev: 'step-4', number: 5 } 
+        path: '/step/tonometer', component: () => import('./pages/steps/Step-tonometer'), name: 'step-tonometer', 
+        meta: {visible: 'tonometer_visible', next: 'step-thermometer', prev: 'step-ride', number: 4 } 
     },
     { 
-        path: '/step/6', component: () => import('./pages/steps/Step-6'), name: 'step-6', 
-        meta: {visible: 'question_sleep', next: 'step-7', prev: 'step-5', number: 6 } 
+        path: '/step/thermometer', component: () => import('./pages/steps/Step-thermometer'), name: 'step-thermometer', 
+        meta: {visible: 'thermometer_visible', next: 'step-sleep', prev: 'step-thermometer', number: 5 } 
     },
     { 
-        path: '/step/7', component: () => import('./pages/steps/Step-7'), name: 'step-7', 
-        meta: {visible: 'question_helth', next: 'step-8', prev: 'step-6', number: 7 } 
+        path: '/step/alcometer', component: () => import('./pages/steps/Step-alcometer'), name: 'step-alcometer', 
+        meta: {visible: 'alcometer_visible', next: 'step-sleep', prev: 'step-alcometer', number: 6 } 
     },
     { 
-        path: '/step/8', component: () => import('./pages/steps/Step-8'), name: 'step-8', 
-        meta: { next: 'home', prev: 'step-7', number: 8 } 
+        path: '/step/sleep', component: () => import('./pages/steps/Step-sleep'), name: 'step-sleep', 
+        meta: {visible: 'question_sleep', next: 'step-helth', prev: 'step-alcometer', number: 7 } 
+    },
+    { 
+        path: '/step/helth', component: () => import('./pages/steps/Step-helth'), name: 'step-helth', 
+        meta: {visible: 'question_helth', next: 'step-result', prev: 'step-sleep', number: 8 } 
+    },
+    { 
+        path: '/step/result', component: () => import('./pages/steps/Step-result'), name: 'step-result', 
+        meta: { next: 'home', prev: 'step-result', number: 9 } 
     },
 ]

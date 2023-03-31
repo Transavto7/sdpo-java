@@ -4,6 +4,12 @@ import org.json.JSONObject;
 
 public class AlcometerException extends Throwable {
     public String message;
+    public boolean restart = false;
+
+    public AlcometerException(boolean restart) {
+        this.restart = restart;
+    }
+
     public AlcometerException(String message) {
         this.message = message;
     }

@@ -17,7 +17,6 @@ public class FileConfiguration extends FileBase {
             }
         } catch (Exception e) {
             json = new JSONObject();
-            e.printStackTrace();
             SdpoLog.error(e);
         }
     }
@@ -88,7 +87,7 @@ public class FileConfiguration extends FileBase {
     public FileConfiguration saveFile() {
         try {
             create();
-            this.writeFile(json.toString(10));
+            this.writeFile(json.toString(1));
         } catch (IOException e) {
             e.printStackTrace();
         }

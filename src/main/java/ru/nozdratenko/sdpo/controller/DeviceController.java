@@ -8,13 +8,16 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.exception.VideoRunException;
 import ru.nozdratenko.sdpo.helper.*;
+import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
 import ru.nozdratenko.sdpo.task.ThermometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,40 +28,30 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity photo() {
         try {
-            String image = CameraHelper.makePhoto();
-            return ResponseEntity.status(HttpStatus.OK).body(image);
+            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s").format(new Date());
+            CameraHelper.makePhoto(name);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
         } catch (IOException e) {
             SdpoLog.error("Error photo: " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error photo");
         }
     }
 
-    @PostMapping(value = "/device/video")
+    @PostMapping(value = "/device/media")
     @ResponseBody
-    public ResponseEntity video() {
-        try {
-            int duration = 10;
-            int snaps = 5;
-            String url = CameraHelper.makeVideo(duration, snaps, false);
-            return ResponseEntity.status(HttpStatus.OK).body(url);
-        } catch (VideoRunException e) {
-            SdpoLog.error("Video run exception: " + e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getResponse().toMap());
-        }
+    public ResponseEntity media() {
+        JSONObject result = CameraHelper.makePhotoAndVideo();
+        return ResponseEntity.status(HttpStatus.OK).body(result.toMap());
     }
 
     @PostMapping(value = "/device/video/test")
     @ResponseBody
     public ResponseEntity videoTest() {
-        try {
-            int duration = 10;
-            int snaps = 5;
-            String url = CameraHelper.makeVideo(duration, snaps, true);
-            return ResponseEntity.status(HttpStatus.OK).body(url);
-        } catch (VideoRunException e) {
-            SdpoLog.error("Video run exception: " + e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getResponse().toMap());
-        }
+            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s").format(new Date());
+            CameraHelper.makeVideo(name);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
     }
 
     @GetMapping(value = "/device/video/size")
@@ -78,12 +71,23 @@ public class DeviceController {
     @PostMapping(value = "/device/tonometer")
     @ResponseBody
     public ResponseEntity tonometer() throws InterruptedException {
-        if (!Sdpo.tonometerResultTask.json.isEmpty()) {
+        if (Sdpo.tonometerResultTask.currentStatus == StatusType.RESULT) {
             Map<String, Object> result = new HashMap<>(Sdpo.tonometerResultTask.json.toMap());
-            Sdpo.tonometerResultTask.clear();
+            Sdpo.tonometerResultTask.currentStatus = StatusType.STOP;
             return ResponseEntity.ok().body(result);
         }
 
+        if (Sdpo.tonometerResultTask.currentStatus == StatusType.FREE) {
+            Sdpo.tonometerResultTask.currentStatus = StatusType.REQUEST;
+        }
+
+        return ResponseEntity.ok().body("next");
+    }
+
+    @PostMapping(value = "/device/tonometer/disable")
+    @ResponseBody
+    public ResponseEntity tonometerDisable() throws InterruptedException {
+        Sdpo.tonometerResultTask.currentStatus = StatusType.STOP;
         return ResponseEntity.ok().body("next");
     }
 
@@ -115,8 +119,8 @@ public class DeviceController {
         }
 
         if (task.currentStatus == StatusType.ERROR) {
-            task.currentStatus = StatusType.FREE;
             SdpoLog.error(task.error.toString());
+            task.currentStatus = StatusType.FREE;
             return ResponseEntity.status(500).body(task.error.toMap());
         }
 
@@ -143,11 +147,12 @@ public class DeviceController {
     public ResponseEntity printer() {
         try {
             PrinterHelper.print("Тестовый Тест Тестович",
-                    "ПРОШЕЛ",
+                    "прошел",
                     "Предрейсовый/Предсменный",
-                    "ДОПУЩЕН",
+                    "допущен",
                     "23-10-2022 06:00:00",
-                    "test-cat-test");
+                    "test-cat-test",
+                    "Котов Кот Котыч");
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error printer: " + e);

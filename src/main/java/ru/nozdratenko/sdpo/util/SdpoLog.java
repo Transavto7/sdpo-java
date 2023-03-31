@@ -2,9 +2,12 @@ package ru.nozdratenko.sdpo.util;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import ru.nozdratenko.sdpo.exception.SdpoException;
 import ru.nozdratenko.sdpo.file.FileBase;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,6 +15,21 @@ public class SdpoLog extends FileAppender {
     private static final Logger logger = Logger.getLogger("mainLog");
 
     public static void error(Object error) {
+        if (error instanceof SdpoException) {
+            SdpoException sdpoException = (SdpoException) error;
+            logger.error("[SDPO] " + sdpoException.getMessage());
+            return;
+        }
+
+        if (error instanceof Throwable) {
+            Throwable exception = (Throwable) error;
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            exception.printStackTrace(pw);
+            logger.error(sw.toString());
+            return;
+        }
+
         logger.error(error);
     }
 

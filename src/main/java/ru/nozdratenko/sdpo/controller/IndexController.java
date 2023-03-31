@@ -8,11 +8,14 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.file.FileBase;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
 
+import javax.websocket.Session;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,7 +43,7 @@ public class IndexController {
                     .header("Content-Type", "video/mp4")
                     .body(CameraHelper.readVideoByte());
         } catch (IOException e) {
-            SdpoLog.error("Error open viode: " + e);
+            SdpoLog.error("Error open video: " + e);
             return ResponseEntity.status(503).body(FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4"));
         }
     }
@@ -59,13 +62,16 @@ public class IndexController {
                 Request request = new Request(new URL(address + "sdpo/check"));
                 String response = request.sendGet();
                 if (response.equals("true")) {
+                    Sdpo.setConnection(true);
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | ApiException e) {
             SdpoLog.error(e);
         }
+
+        Sdpo.setConnection(false);
         return ResponseEntity.status(403).body("error");
     }
 
@@ -75,12 +81,12 @@ public class IndexController {
         try {
             Request request = new Request( "sdpo/pv");
             String response = request.sendGet();
-            if (request.success) {
+            if (request.success && response.length() < 500) {
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(403).body("error");
             }
-        } catch (IOException e) {
+        } catch (IOException | ApiException e) {
             SdpoLog.error(e);
         }
         return ResponseEntity.status(403).body("error");
@@ -101,12 +107,15 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity aptMedics() {
         try {
-            Request request = new Request( "sdpo/medics");
-            String response = request.sendGet();
-            return ResponseEntity.ok().body(new JSONObject(response).toMap());
-        } catch (JSONException e) {
-            SdpoLog.error(e);
-        } catch (IOException e) {
+            if (Sdpo.isConnection()) {
+                Request request = new Request( "sdpo/medics");
+                String response = request.sendGet();
+                return ResponseEntity.ok().body(new JSONObject(response).toMap());
+            } else {
+                return ResponseEntity.ok().body(Sdpo.medicStorage.getStore().toMap());
+            }
+
+        } catch (JSONException | IOException | ApiException e) {
             SdpoLog.error(e);
         }
         return ResponseEntity.status(403).body("error");
@@ -118,6 +127,35 @@ public class IndexController {
         Sdpo.mainConfig.getJson().put("selected_medic", json);
         Sdpo.mainConfig.saveFile();
         return ResponseEntity.ok().body("ok");
+    }
+
+    @PostMapping("/api/photo")
+    @ResponseBody
+    public ResponseEntity apiSavePhoto(@RequestBody Map<String, String> json) {
+        try {
+            Request request = new Request( "sdpo/driver/" + json.get("driver_id") + "/photo");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("photo", json.get("photo"));
+            request.sendPost(jsonObject.toString());
+        } catch (IOException e) {
+            SdpoLog.error(e);
+        } catch (ApiException e) {
+            SdpoLog.error(e);
+        }
+        return ResponseEntity.status(200).body("ok");
+    }
+
+    @PostMapping("/api/photo/stop")
+    @ResponseBody
+    public ResponseEntity apiSavePhoto() {
+        for (Session session : VideoEndpoint.sessionList) {
+            try {
+                session.close();
+            } catch (IOException e) {
+                SdpoLog.error(e);
+            }
+        }
+        return ResponseEntity.status(200).body("ok");
     }
 
     @PostMapping(value = "/exit")

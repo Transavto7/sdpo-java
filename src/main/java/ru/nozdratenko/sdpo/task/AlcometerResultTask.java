@@ -2,7 +2,6 @@ package ru.nozdratenko.sdpo.task;
 
 import jssc.SerialPortException;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -13,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 public class AlcometerResultTask extends Thread {
     public String result = "0";
     public JSONObject error;
+    private boolean flow = false;
     public StatusType currentStatus = StatusType.FREE;
 
     @Override
@@ -25,8 +25,13 @@ public class AlcometerResultTask extends Thread {
                 //
             }
 
+            if (AlcometerHelper.getSerialPort() == null) {
+                continue;
+            }
+
             if (this.currentStatus == StatusType.STOP) {
                 try {
+                    AlcometerHelper.open();
                     AlcometerHelper.stop();
                 } catch (UnsupportedEncodingException | SerialPortException e) {
                     e.printStackTrace();
@@ -57,10 +62,27 @@ public class AlcometerResultTask extends Thread {
                     if (result == null) {
                         continue;
                     }
+
                     setResult(result);
                 } catch (SerialPortException e) {
                     setError("Ошибка открытия порта Алкометра");
                 } catch (AlcometerException e) {
+                    if (e.restart) {
+                        if (flow)  {
+                            try {
+                                AlcometerHelper.start();
+                            } catch (SerialPortException ex) {
+                                setError("Ошибка открытия порта Алкометра");
+                                continue;
+                            } catch (UnsupportedEncodingException ex) {
+                                setError("Ошибка закрытия алкометра");
+                                continue;
+                            }
+                        }
+                        continue;
+                    }
+
+                    flow = true;
                     setError(e.getResponse());
                 }
             }

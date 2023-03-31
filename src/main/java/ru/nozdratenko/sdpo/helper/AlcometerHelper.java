@@ -13,11 +13,19 @@ public class AlcometerHelper {
     private static SerialPort serialPort = null;
 
     public static void open() throws SerialPortException {
-        if (serialPort == null) {
+        if (PORT == null) {
             return;
         }
 
-        SerialPort serialPort = getSerialPort();
+        if (serialPort != null) {
+            try {
+                serialPort.closePort();
+            } catch (SerialPortException ignore) {
+
+            }
+        }
+
+        serialPort = new SerialPort(PORT);
         if (!serialPort.isOpened()) {
             serialPort.openPort();
             serialPort.setParams(4800,
@@ -28,7 +36,7 @@ public class AlcometerHelper {
     }
 
     public static void stop() throws UnsupportedEncodingException, SerialPortException {
-        if (getSerialPort() == null) {
+        if (PORT == null) {
             return;
         }
 
@@ -37,7 +45,7 @@ public class AlcometerHelper {
     }
 
     public static void start() throws SerialPortException, UnsupportedEncodingException {
-        if (getSerialPort() == null) {
+        if (PORT == null) {
             return;
         }
 
@@ -52,8 +60,8 @@ public class AlcometerHelper {
     }
 
     public static String result() throws SerialPortException, AlcometerException {
-        if (getSerialPort() == null) {
-            return "0";
+        if (PORT == null) {
+            return null;
         }
 
         String result = getSerialPort().readString();
@@ -64,8 +72,12 @@ public class AlcometerHelper {
 
         result = result.trim();
 
-        if (result.contains("ERR")) {
+        if (result.contains("$FLOW,ERR")) {
             throw new AlcometerException("Ошибка теста, попробуйте еще раз");
+        }
+
+        if (result.contains("$END")) {
+            throw new AlcometerException(true);
         }
 
         if (result.contains("$R:")) {
@@ -118,8 +130,18 @@ public class AlcometerHelper {
         }
     }
 
+    public static void close() {
+        if (serialPort != null) {
+            try {
+                serialPort.closePort();
+            } catch (SerialPortException ignore) {
+
+            }
+        }
+    }
+
     public static SerialPort getSerialPort() {
-        if (serialPort == null) {
+        if (serialPort == null && PORT != null) {
             serialPort = new SerialPort(PORT);
         }
         return serialPort;

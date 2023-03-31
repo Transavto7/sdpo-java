@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.controller;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,9 @@ import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -24,23 +26,63 @@ public class InspectionController {
 
     @PostMapping("inspection/{id}")
     public ResponseEntity inspectionStart(@PathVariable String id) throws IOException {
-        Request response = new Request("check-prop/hash_id/Driver/" + id);
-        return ResponseEntity.status(HttpStatus.OK).body(response.sendGet());
+        if (Sdpo.isConnection()) {
+            Request response = new Request("sdpo/driver/" + id);
+            try {
+                String result = response.sendGet();
+                return ResponseEntity.status(HttpStatus.OK).body(result);
+            } catch (ApiException e) {
+                SdpoLog.error(e);
+                return ResponseEntity.status(303).body(e.getResponse().toMap());
+            }
+
+        } else {
+            String name = Sdpo.driverStorage.getStore().get(id);
+            if (name != null) {
+                JSONObject response = new JSONObject();
+                response.put("hash_id", id);
+                response.put("fio", name);
+                return ResponseEntity.status(HttpStatus.OK).body(response.toMap());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @PostMapping("inspection/print")
+    public ResponseEntity inspectionPrint() {
+        if (PrinterHelper.lastPrint == null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "Нет прошлой печати");
+            return ResponseEntity.status(500).body(jsonObject);
+        }
+
+        try {
+            PrinterHelper.print(PrinterHelper.lastPrint);
+        } catch (Exception e) {
+            e.printStackTrace();
+            SdpoLog.error("Error create inspection: " + e);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "Ошибка запроса");
+            return ResponseEntity.status(500).body(jsonObject);
+        } catch (PrinterException e) {
+            return ResponseEntity.status(500).body(e.getResponse());
+        }
+
+        return ResponseEntity.status(200).body("");
     }
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
         try {
-            Request response = new Request("sdpo/anketa");
-            JSONObject jsonObject = new JSONObject(json);
-            SdpoLog.info(jsonObject.toString(10));
-            String result = response.sendPost(jsonObject.toString());
-
-            JSONObject resultJson = new JSONObject(result);
-            if (Sdpo.systemConfig.getBoolean("printer_write")) {
-                print(resultJson);
+            if (!Sdpo.isConnection()) {
+                return this.inspectionSaveOffline(json);
+            } else {
+                if (Sdpo.systemConfig.getBoolean("manual_mode")) {
+                    return this.inspectionSavePack(json);
+                } else {
+                    return this.inspectionSaveOnline(json);
+                }
             }
-            return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
         } catch (ApiException e) {
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {
@@ -54,40 +96,139 @@ public class InspectionController {
         }
     }
 
-    public void print(JSONObject json) throws PrintException, IOException, PrinterException, java.awt.print.PrinterException {
-        String name = "Неизвестный водитель";
-        String result = "ПРОШЕЛ";
-        String type = "Предрейсовый/Предсменный";
-        String admit = "ДОПУЩЕН";
-        String date = "0000-00-00 00:00:00";
-        String signature = "неизвестная-подпись";
+    public ResponseEntity inspectionSavePack(Map<String, String> json)
+            throws IOException, PrintException, PrinterException, ApiException {
+        JSONObject inspection = new JSONObject(json);
+        inspection.put("type_anketa", "pak_queue");
 
-        if (json.has("driver_fio")) {
-            name = "" + json.get("driver_fio");
+        Request response = new Request("sdpo/anketa");
+        String result = response.sendPost(inspection.toString());
+        JSONObject resultJson = new JSONObject(result);
+        SdpoLog.info("Saved inspection: " + resultJson.toString());
+
+        if (resultJson.has("id")) {
+            int timeout = 20;
+
+            if (resultJson.has("timeout")) {
+                timeout = resultJson.getInt("timeout");
+            }
+
+            Long start = new Date().getTime();
+            boolean timing = true;
+
+            while (true) {
+                Long current = new Date().getTime();
+                long left = (current - start) / 1000;
+                if (left > timeout) {
+                    break;
+                }
+
+                response = new Request("sdpo/anketa/" + resultJson.getInt("id"));
+                result = response.sendGet();
+                resultJson = new JSONObject(result);
+
+                if (!resultJson.getString("type_anketa").equals("pak_queue")) {
+                    timing = false;
+                    break;
+                }
+            }
+
+            if (timing) {
+                 String rs = new Request("sdpo/anketa/" + resultJson.getInt("id"))
+                        .sendPost();
+            }
+
+            response = new Request("sdpo/anketa/" + resultJson.getInt("id"));
+            result = response.sendGet();
+            resultJson = new JSONObject(result);
         }
 
-        if (json.has("admitted")) {
-            if (!json.get("admitted").equals("Допущен")) {
-                result = "НЕ ПРОШЕЛ";
-                admit = "НЕ ДОПУЩЕН";
+        if (Sdpo.systemConfig.getBoolean("printer_write")) {
+            PrinterHelper.print(resultJson);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
+    }
+
+    public ResponseEntity inspectionSaveOffline(Map<String, String> json)
+            throws PrintException, IOException, PrinterException {
+        JSONObject inspection = new JSONObject(json);
+        inspection.put("admitted", "Допущен");
+
+        double temp = 36.6;
+        String tonometer = "125/80";
+        double alcometer = 0.0;
+
+        if (Sdpo.mainConfig.getJson().has("selected_medic")) {
+            try {
+                inspection.put("user_eds", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
+                inspection.put("user_name", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
+            } catch (JSONException e) {
+                SdpoLog.error("Error get medic id");
             }
         }
 
-        if (json.has("created_at")) {
-            date = "" + json.get("created_at");
+        if (inspection.has("t_people")) {
+            try {
+                temp = inspection.getDouble("t_people");
+            } catch (JSONException e) {
+                SdpoLog.error("Error valueOf double temp people");
+            }
         }
 
-        if (json.has("user_eds")) {
-            signature = "" + json.get("user_eds");
+        if (inspection.has("alcometer_result")) {
+            alcometer = inspection.getDouble("alcometer_result");
         }
 
-        if (json.has("type_view")) {
-            type = "" + json.get("type_view");
+        if (inspection.has("tonometer")) {
+            tonometer = inspection.getString("tonometer");
         }
 
-        if (admit.equals("ДОПУЩЕН")) {
-            PrinterHelper.print(name, result, type, admit, date, signature);
+        if (temp > 38.0) {
+            inspection.put("med_view", "Отстранение");
+            inspection.put("admitted", "Не допущен");
         }
+
+        if (alcometer > 0) {
+            inspection.put("med_view", "Отстранение");
+            inspection.put("admitted", "Не допущен");
+        }
+
+        try {
+            int tonRs = Integer.valueOf(tonometer.split("/")[0]);
+            if (tonRs > 150) {
+                inspection.put("med_view", "Отстранение");
+                inspection.put("admitted", "Не допущен");
+            }
+        } catch (NumberFormatException e) {
+            SdpoLog.error("Error value of tonometer result");
+        }
+
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd H:m:s");
+        String currentDate = dateFormat.format(date);
+
+        inspection.put("created_at", currentDate);
+        Sdpo.inspectionStorage.saveInspection(inspection);
+        if (Sdpo.systemConfig.getBoolean("printer_write")) {
+            PrinterHelper.print(inspection);
+        }
+        SdpoLog.info("Offline save: " + inspection.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).body(inspection.toMap());
     }
 
+    public ResponseEntity inspectionSaveOnline(Map<String, String> json)
+            throws IOException, ApiException, PrintException, PrinterException {
+        Request response = new Request("sdpo/anketa");
+        JSONObject jsonObject = new JSONObject(json);
+        SdpoLog.info(jsonObject.toString(10));
+        String result = response.sendPost(jsonObject.toString());
+
+        JSONObject resultJson = new JSONObject(result);
+        if (Sdpo.systemConfig.getBoolean("printer_write")) {
+            PrinterHelper.print(resultJson);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
+    }
 }

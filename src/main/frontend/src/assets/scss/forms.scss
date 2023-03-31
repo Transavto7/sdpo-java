@@ -97,3 +97,23 @@ h3 {
     margin-top: 40px;
     height: auto;
 }
+
+@media screen and (max-height: 760px) {
+    .driver-form, .login-form, .password-form {
+        &__input input, .number-buttons {
+            max-width: 550px;
+        }
+
+        .number-buttons {
+            &__item {
+                min-height: 65px;
+            }
+        }
+
+        &__input input {
+            margin: 15px 0;
+            padding: 5px 20px 10px 40px;
+            font-size: 36px;
+        }
+    }
+}

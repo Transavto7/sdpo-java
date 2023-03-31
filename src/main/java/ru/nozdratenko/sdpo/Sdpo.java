@@ -2,34 +2,40 @@ package ru.nozdratenko.sdpo;
 
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
-import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
-import ru.nozdratenko.sdpo.helper.ThermometerHelper;
-import ru.nozdratenko.sdpo.task.AlcometerResultTask;
-import ru.nozdratenko.sdpo.task.ThermometerResultTask;
-import ru.nozdratenko.sdpo.task.TonometerResultTask;
+import ru.nozdratenko.sdpo.storage.DriverStorage;
+import ru.nozdratenko.sdpo.storage.InspectionStorage;
+import ru.nozdratenko.sdpo.storage.MedicStorage;
+import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 @Component
 public class Sdpo {
     public static FileConfiguration mainConfig;
     public static FileConfiguration systemConfig;
+    public static DriverStorage driverStorage;
+    public static MedicStorage medicStorage;
+    public static InspectionStorage inspectionStorage;
 
     public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
     public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
     public static final AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
+    public static final UpdateComPortTask updateComPortTask = new UpdateComPortTask();
+    public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
+    public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
+
+    private static boolean connection = true;
 
     public static void init() {
         SdpoLog.info("Run project");
-        initComPorts();
         initMainConfig();
         initSystemConfig();
         runTasks();
+        loadData();
+        CameraHelper.initDimension();
         new Thread(() -> {
             try {
                 Thread.sleep(20000);
@@ -39,46 +45,37 @@ public class Sdpo {
         }).start();
     }
 
-    public static void initComPorts() {
-        new Thread(() -> {
-            ThermometerHelper.PORT = getComPort("VID_10C4");
-            thermometerResultTask.start();
-            AlcometerHelper.PORT = getComPort("VID_0483");
-            alcometerResultTask.start();
-            SdpoLog.info("Thermometer set port: " + ThermometerHelper.PORT);
-            SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
-            AlcometerHelper.reset();
-        }).start();
-    }
 
     public static void runTasks() {
+        updateComPortTask.start();
         tonometerResultTask.start();
+        thermometerResultTask.start();
+        alcometerResultTask.start();
+        saveStoreInspectionTask.start();
+        mediaMakeTask.start();
     }
 
-    public static String getComPort(String vid) {
-        String command = "powershell.exe  Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB\\\\" + vid + "' }";
-        String result = null;
+    public static void loadData() {
+        driverStorage = new DriverStorage();
+        driverStorage.save();
 
-        try {
-            Process powerShellProcess = Runtime.getRuntime().exec(command);
-            powerShellProcess.getOutputStream().close();
+        medicStorage = new MedicStorage();
+        medicStorage.save();
 
-            String line;
-            BufferedReader stdout = new BufferedReader(new InputStreamReader(
-                    powerShellProcess.getInputStream()));
-            while ((line = stdout.readLine()) != null) {
-                if (line.contains("(COM")) {
-                    result = line.split("\\(COM")[1].substring(0, 1);
-                    result = "COM" + result;
-                }
+        inspectionStorage = new InspectionStorage();
+        inspectionStorage.save();
+
+        new Thread(() -> {
+            try {
+                driverStorage.loadApi();
+                driverStorage.save();
+
+                medicStorage.loadApi();
+                medicStorage.save();
+            } catch (IOException e) {
+                SdpoLog.error(e);
             }
-            stdout.close();
-
-        } catch (IOException e) {
-            SdpoLog.error("Not found com port " + vid + ": " + e);
-        }
-
-        return result;
+        }).start();
     }
 
     private static void initMainConfig() {
@@ -88,7 +85,6 @@ public class Sdpo {
                 .setDefault("run_browser_cmd",
                         "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --kiosk " +
                                 "${url} --edge-kiosk-type=fullscreen -inprivate")
-                .setDefault("browser_closed", true)
                 .setDefault("url", "https://test.ta-7.ru/api")
                 .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
                 .setDefault("tonometer_mac", null)
@@ -107,13 +103,24 @@ public class Sdpo {
                 .setDefault("alcometer_visible", true)
                 .setDefault("tonometer_skip", true)
                 .setDefault("tonometer_visible", true)
-                .setDefault("camera_video", CameraHelper.getDefaultSize())
-                .setDefault("camera_photo", CameraHelper.getDefaultSize())
+                .setDefault("camera_video", true)
+                .setDefault("camera_photo", true)
+                .setDefault("driver_photo", false)
+                .setDefault("camera_dimension", CameraHelper.getDefaultSize())
                 .setDefault("printer_write", true)
                 .setDefault("print_count", 1)
                 .setDefault("thermometer_skip", true)
                 .setDefault("thermometer_visible", true)
+                .setDefault("manual_mode", false)
                 .saveFile();
         systemConfig = fileConfiguration;
+    }
+
+    public static boolean isConnection() {
+        return connection;
+    }
+
+    public static void setConnection(boolean connection) {
+        Sdpo.connection = connection;
     }
 }

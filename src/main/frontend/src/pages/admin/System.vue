@@ -70,19 +70,19 @@ export default {
                     <div class="slider round"></div>
                 </label>
             </div>
+            <div class="admin__system-card__item">
+                <span>Ручной режим</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.manual_mode">
+                    <div class="slider round"></div>
+                </label>
+            </div>
         </div>
 
 
         <div class="admin__system-card animate__animated animate__fadeInUp d-2">
             <div class="admin__system-card__title">
                 Алкометр
-            </div>
-            <div class="admin__system-card__item">
-                <span>Быстрый режим</span>
-                <label class="switch">
-                    <input type="checkbox" v-model="system.alcometer_fast">
-                    <div class="slider round"></div>
-                </label>
             </div>
             <div class="admin__system-card__item">
                 <span>Пропуск</span>
@@ -95,6 +95,13 @@ export default {
                 <span>включен</span>
                 <label class="switch">
                     <input type="checkbox" v-model="system.alcometer_visible">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+            <div class="admin__system-card__item">
+                <span>Быстрый режим</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.alcometer_fast">
                     <div class="slider round"></div>
                 </label>
             </div>
@@ -127,18 +134,31 @@ export default {
                 Камера
             </div>
             <div class="admin__system-card__item">
-                <span>Видео</span>
-                <select v-model="system.camera_video">
+                <span>Качество</span>
+                <select v-model="system.camera_dimension">
                     <option v-for="size in videoSizes" :key="size" :value="size">{{ size }}</option>
-                    <option value="false">Выкл</option>
                 </select>
             </div>
             <div class="admin__system-card__item">
+                <span>Видео</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.camera_video">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+            <div class="admin__system-card__item">
                 <span>Фото</span>
-                <select v-model="system.camera_photo">
-                    <option v-for="size in videoSizes" :key="size" :value="size">{{ size }}</option>
-                    <option value="false">Выкл</option>
-                </select>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.camera_photo">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+            <div class="admin__system-card__item">
+                <span>Фото водителя</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.driver_photo">
+                    <div class="slider round"></div>
+                </label>
             </div>
         </div>
 

@@ -9,6 +9,7 @@ export default {
    data() {
     return {
         driver_id: '',
+        error: '',
         toast: useToast(),
         loading: false,
     }
@@ -25,24 +26,33 @@ export default {
         this.$store.state.inspection.driver_id = driver.hash_id;
         this.$store.state.inspection.driver_fio = driver.fio;
 
-        this.$router.push('/step/1');
+        this.$router.push({ name: 'step-driver' });
     },
     async checkDriver() {
         if (this.driver_id.length < 6) {
             this.$store.state.inspection = {};
+            this.error = null;
             return;
         }
 
         this.loading = true;
-        const driver = await getDriver(this.driver_id);
-        this.loading = false;
-        if (!driver) {
+        try {
+            const driver = await getDriver(this.driver_id);
+            if (driver) {
+                this.$store.state.inspection.driver_id = driver.hash_id;
+                this.$store.state.inspection.driver_fio = driver.fio;
+                this.$store.state.driver = driver;
+            } else {
+                this.$store.state.inspection = {};
+                this.error = 'Водитель не найден';
+            }
+        } catch (error) {
+            console.log(error.response?.data?.message);
+            this.error = error.response?.data?.message || 'Неизвестная ошибка';
             this.$store.state.inspection = {};
-            return;
         }
-
-        this.$store.state.inspection.driver_id = driver.hash_id;
-        this.$store.state.inspection.driver_fio = driver.fio;
+        
+        this.loading = false;
     }
    },
    watch: {
@@ -96,8 +106,8 @@ export default {
                 <button class="number-buttons__item" @click="driver_id += '0'">0</button>
                 <button class="number-buttons__item" @click="driver_id = driver_id.slice(0, -1)"><i class="ri-delete-back-line"></i></button>
             </div>
-            <button v-if="inspection.driver_id" @click="start" class="btn animate__animated animate__fadeInUp">начать осмотр</button>
-            <div v-else-if="driver_id.length >= 6 && !loading" class="driver-form__not-found animate__animated animate__fadeInUp">Водитель не найден</div>
+            <button v-if="inspection.driver_id && !error" @click="start" class="btn animate__animated animate__fadeInUp">начать осмотр</button>
+            <div v-else-if="error" class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
         </div>
     </div>
 </template>

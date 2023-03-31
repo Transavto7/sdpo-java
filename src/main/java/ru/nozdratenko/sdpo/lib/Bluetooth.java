@@ -8,6 +8,9 @@ public class Bluetooth {
         String url = FileBase.exportLibrary("blecpp.dll");
         System.load(url.replace("\\", "/"));
     }
+
     public static native String findDevice();
+    public static native void restart();
     public static native String getTonometerResult(String uuid);
+    public static native String setIndicate(String uuid);
 }

@@ -8,10 +8,9 @@ public class ThermometerResultTask extends Thread {
     @Override
     public void run() {
         while (true) {
-            this.result = ThermometerHelper.getTemp();
-
             try {
-                Thread.sleep(1000);
+                this.result = ThermometerHelper.getTemp();
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 //
             }

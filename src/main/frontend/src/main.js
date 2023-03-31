@@ -11,6 +11,7 @@ import "vue-toastification/dist/index.css"
 import { loadSettings } from './helpers/settings'
 import { checkConnect } from './helpers/api'
 import 'animate.css'
+import { closeAlcometer } from './helpers/alcometer'
 
 axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
@@ -31,6 +32,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (from.name === 'step-alcometer') {
+    closeAlcometer();
+  }
+
   if (to.path.includes('/step/')) {
     if (!store.state.inspection?.driver_id) {
       return router.push({ name: 'home'});
@@ -64,7 +69,7 @@ setInterval(async () => {
   if (store.state.config?.main?.url) {
     store.state.connection = await checkConnect(store.state.config.main.url);
   }
-}, 5000);
+}, 2000);
 
 createApp(App)
     .use(store)

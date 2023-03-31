@@ -16,21 +16,7 @@ public class BrowserHelper {
             Runtime runtime = Runtime.getRuntime();
             try {
                 SdpoLog.info("Open browser: " + url.toString());
-                Process proccess = runtime.exec(cmd.replace("${url}", url));
-
-                if (Sdpo.mainConfig.getBoolean("browser_closed")) {
-                    new Thread(()->{
-                        while (true) {
-                            if (!proccess.isAlive()) {
-                                SdpoLog.info("Exit program close browser");
-                                System.exit(0);
-                            }
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) { }
-                        }
-                    }).start();
-                }
+                runtime.exec(cmd.replace("${url}", url));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -38,7 +24,7 @@ public class BrowserHelper {
             return;
         }
 
-        if(Desktop.isDesktopSupported()){
+        if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
             try {
                 desktop.browse(new URI(url));

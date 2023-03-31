@@ -52,8 +52,8 @@ export default {
             return this.$route.path;
         },
         pageNumber() {
-            const split = this.$route.path.split('/');
-            return split[split.length - 1];
+            console.log(this.$route.meta?.number);
+            return this.$route.meta?.number || 0;
         },
         logout() {
             this.$store.state.admin = false;
@@ -113,22 +113,25 @@ export default {
         <div class="step-progress__item" v-if="JSON.parse(system.type_ride)" :class="{active: pageNumber >= 2 }">
             <i class="ri-check-fill"></i>
         </div>
-        <div class="step-progress__item" v-if="JSON.parse(system.tonometer_visible)" :class="{active: pageNumber >= 3 }">
+        <div class="step-progress__item" v-if="JSON.parse(system.type_ride)" :class="{active: pageNumber >= 3 }">
             <i class="ri-check-fill"></i>
         </div>
-        <div class="step-progress__item" v-if="JSON.parse(system.thermometer_visible)" :class="{active: pageNumber >= 4 }">
+        <div class="step-progress__item" v-if="JSON.parse(system.tonometer_visible)" :class="{active: pageNumber >= 4 }">
             <i class="ri-check-fill"></i>
         </div>
-        <div class="step-progress__item" v-if="JSON.parse(system.alcometer_visible)" :class="{active: pageNumber >= 5 }">
+        <div class="step-progress__item" v-if="JSON.parse(system.thermometer_visible)" :class="{active: pageNumber >= 5 }">
             <i class="ri-check-fill"></i>
         </div>
-        <div class="step-progress__item" v-if="JSON.parse(system.question_sleep)" :class="{active: pageNumber >= 6 }">
+        <div class="step-progress__item" v-if="JSON.parse(system.alcometer_visible)" :class="{active: pageNumber >= 6 }">
             <i class="ri-check-fill"></i>
         </div>
-        <div class="step-progress__item" v-if="JSON.parse(system.question_helth)" :class="{active: pageNumber >= 7 }">
+        <div class="step-progress__item" v-if="JSON.parse(system.question_sleep)" :class="{active: pageNumber >= 7 }">
             <i class="ri-check-fill"></i>
         </div>
-        <div class="step-progress__item" :class="{active: pageNumber >= 8 }">
+        <div class="step-progress__item" v-if="JSON.parse(system.question_helth)" :class="{active: pageNumber >= 8 }">
+            <i class="ri-check-fill"></i>
+        </div>
+        <div class="step-progress__item" :class="{active: pageNumber >= 9 }">
             <i class="ri-check-fill"></i>
         </div>
     </div>

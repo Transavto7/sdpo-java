@@ -6,6 +6,7 @@ const store = createStore({
     state() {
         return {
             inspection: {},
+            driver: {},
             config: {},
             admin: false,
             connection: false,

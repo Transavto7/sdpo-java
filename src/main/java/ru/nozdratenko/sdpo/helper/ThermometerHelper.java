@@ -3,11 +3,13 @@ package ru.nozdratenko.sdpo.helper;
 import jssc.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
+import java.util.Arrays;
+
 public class ThermometerHelper {
     public static String PORT = null;
     public static double getTemp() {
         if (PORT == null) {
-            return 36.6;
+            return 0.0;
         }
 
         SerialPort serialPort = new SerialPort(PORT);
@@ -25,10 +27,14 @@ public class ThermometerHelper {
             int[] receivedData = serialPort.readIntArray(8, 3000);
             double temp = receivedData[5] + 256;
             temp /= 10;
-            if (temp > 28 && temp < 43) {
-                SdpoLog.info("Result temp: " + temp);
-                return temp;
+
+            if (receivedData[6] != 1 || temp < 32 || temp > 42) {
+                SdpoLog.info("Lo temp: " + temp);
+                return 0.0;
             }
+
+            SdpoLog.info("Result temp: " + temp);
+            return temp;
         } catch (SerialPortTimeoutException | SerialPortException e) {
             //
         } finally {

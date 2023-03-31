@@ -9,6 +9,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,13 +33,11 @@ public class Request {
         this.url = url;
     }
 
-    public String sendGet() throws IOException {
+    public String sendGet() throws IOException, ApiException {
         return sendGet(new HashMap<>());
     }
-    public String sendGet(Map<String, String> parameters) throws IOException {
+    public String sendGet(Map<String, String> parameters) throws IOException, ApiException {
         this.url = new URL(this.url.toString() + ParameterStringBuilder.getParamsString(parameters));
-
-        SdpoLog.info("Request get to: " + url.toString());
 
         this.connection = (HttpsURLConnection)  this.url.openConnection();
         connection.setRequestMethod("GET");
@@ -47,15 +46,10 @@ public class Request {
         connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
         connection.setDoOutput(true);
 
-        int responseCode = connection.getResponseCode();
-        SdpoLog.info("Response code: " + responseCode);
-
         InputStream inputStream;
-        if (200 <= responseCode && responseCode <= 299) {
+        try {
             inputStream = connection.getInputStream();
-        } else {
-            System.out.println(connection.getRequestMethod() + " " + responseCode);
-            this.success = false;
+        } catch(IOException exception) {
             inputStream = connection.getErrorStream();
         }
 
@@ -70,7 +64,24 @@ public class Request {
 
         in.close();
         connection.disconnect();
-        SdpoLog.info("Response: " + response.toString());
+
+        int responseCode = connection.getResponseCode();
+        if (200 > responseCode || responseCode > 299) {
+            String message = "Неизвестная ошибка запроса";
+            try {
+                JSONObject jsonObject = new JSONObject(response.toString());
+                if (jsonObject.has("message")) {
+                    message = jsonObject.getString("message");
+                } else {
+                    message = "Ошибка запроса. Неизвестный ответ";
+                }
+            } catch (Exception e) {
+                SdpoLog.warning(response.toString());
+            }
+
+            throw new ApiException(message);
+        }
+
         return response.toString();
     }
 
@@ -78,7 +89,6 @@ public class Request {
         return sendPost("");
     }
     public String sendPost(String json) throws IOException, ApiException {
-        SdpoLog.info("Request post to: " + url.toString());
         this.connection = (HttpsURLConnection)  this.url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept", "application/json");
@@ -92,13 +102,10 @@ public class Request {
             os.write(input, 0, input.length);
         }
 
-        int responseCode = connection.getResponseCode();
-        SdpoLog.info("Response code: " + responseCode);
         InputStream inputStream;
-
-        if (200 <= responseCode && responseCode <= 299) {
+        try {
             inputStream = connection.getInputStream();
-        } else {
+        } catch(IOException exception) {
             inputStream = connection.getErrorStream();
         }
 
@@ -113,8 +120,8 @@ public class Request {
 
         in.close();
         connection.disconnect();
-        SdpoLog.info("Response: " + response.toString());
 
+        int responseCode = connection.getResponseCode();
         if (200 > responseCode || responseCode > 299) {
             String message = "Неизвестная ошибка запроса.";
             try {
@@ -124,9 +131,7 @@ public class Request {
                 } else {
                     message = "Ошибка запроса. Неизвестный ответ.";
                 }
-            } catch (Exception e) {
-
-            }
+            } catch (Exception e) { }
 
             throw new ApiException(message);
         }

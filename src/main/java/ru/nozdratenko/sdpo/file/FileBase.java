@@ -4,6 +4,7 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class FileBase {
 
@@ -25,7 +26,7 @@ public class FileBase {
 
         InputStream inputStream = new FileInputStream(file);
         StringBuilder resultStringBuilder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 resultStringBuilder.append(line).append("\n");
@@ -48,9 +49,11 @@ public class FileBase {
 
     public void writeFile(String str) throws IOException {
         SdpoLog.debug("Write file:" + getFile().getAbsolutePath());
-        FileWriter fooWriter = new FileWriter(getFile(), false);
-        fooWriter.write(str);
-        fooWriter.close();
+        Writer fstream = null;
+        BufferedWriter out = null;
+        fstream = new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8);
+        fstream.write(str);
+        fstream.close();
     }
 
     public String globalPath() {

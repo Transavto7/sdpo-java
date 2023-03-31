@@ -1,0 +1,39 @@
+.step-photo {
+    text-align: center;
+
+    &__outer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        flex-direction: column;
+    }
+
+    &__video {
+        border-radius: 15px;
+        margin-bottom: 20px;
+        height: 400px;
+        padding: 0;
+        background-color: #244673;
+        overflow: hidden;
+        
+        &.preview {
+            box-shadow: 5px 10px 25px rgba(36, 70, 115, 0.7);
+        }
+
+        img {
+            height: 100%;
+            border-radius: 15px;
+        }
+    }
+
+    button {
+        min-width: 200px;
+        margin: 0 10px;
+    }
+
+    &__btns {
+        display: flex;
+        gap: 20px;
+    }
+}

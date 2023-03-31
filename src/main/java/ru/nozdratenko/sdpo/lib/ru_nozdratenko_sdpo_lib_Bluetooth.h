@@ -17,10 +17,26 @@ JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_findDevice
 
 /*
  * Class:     ru_nozdratenko_sdpo_lib_Bluetooth
+ * Method:    restart
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_restart
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     ru_nozdratenko_sdpo_lib_Bluetooth
  * Method:    getTonometerResult
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_getTonometerResult
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     ru_nozdratenko_sdpo_lib_Bluetooth
+ * Method:    setIndicate
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_setIndicate
   (JNIEnv *, jclass, jstring);
 
 #ifdef __cplusplus

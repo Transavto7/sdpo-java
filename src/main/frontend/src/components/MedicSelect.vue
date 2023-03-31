@@ -5,12 +5,14 @@ export default {
     data() {
         return {
             medics: {},
+            towns: [],
             status: "login",
             password: '',
         }
     },
     async mounted() {
         this.medics = await getMedics();
+        this.towns = Object.keys(this.medics).sort();
     },
     methods: {
         login() {
@@ -25,6 +27,7 @@ export default {
             this.$store.state.config.main.selected_medic = {
                 name: user.name,
                 id: user.id,
+                eds: user.eds
             }
             
             this.status = 'login';
@@ -87,11 +90,11 @@ export default {
         </div>
 
         <div v-else class="medics__select">
-            <div v-for="(town, name) in medics" :key="name">
+            <div v-for="(name, index) in towns" :key="index">
                 <div v-if="name" class="medics__town">
                     {{ name }}
                 </div>
-                <div v-if="name" v-for="(point, name) in town" :key="name">
+                <div v-if="name" v-for="(point, name) in medics[name]" :key="name">
                     <div class="medics__point">
                         {{ name }}
                     </div>
