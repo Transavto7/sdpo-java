@@ -30,12 +30,15 @@ public class TranslationVideoTask extends Thread {
     @Override
     public void run() {
         Webcam webcam = Webcam.getDefault();
-        webcam.open();
 
         while (true) {
             if (!isAlive) {
                 SdpoLog.info("Close translation video task");
                 return;
+            }
+
+            if (!webcam.isOpen()) {
+                webcam.open();
             }
 
             BufferedImage image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
@@ -52,11 +55,6 @@ public class TranslationVideoTask extends Thread {
                 byte[] byteArray = baos.toByteArray();
                 basicRemote.sendObject(byteArray);
             } catch (IOException | EncodeException | IllegalArgumentException | IllegalStateException e) {
-                /* ignored */
-            }
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
                 /* ignored */
             }
         }

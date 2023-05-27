@@ -4,6 +4,7 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
+import ru.nozdratenko.sdpo.lib.COMPorts;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.UnsupportedEncodingException;
@@ -145,5 +146,18 @@ public class AlcometerHelper {
             serialPort = new SerialPort(PORT);
         }
         return serialPort;
+    }
+
+    public static void setComPort() {
+        SdpoLog.info("Request com port alcometer...");
+        String alcometerPort = COMPorts.getComPort("VID_0483");
+        if (alcometerPort == null) {
+            AlcometerHelper.PORT = alcometerPort;
+            SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
+        } else if (!alcometerPort.equals(AlcometerHelper.PORT)) {
+            AlcometerHelper.PORT = alcometerPort;
+            SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
+            AlcometerHelper.reset();
+        }
     }
 }

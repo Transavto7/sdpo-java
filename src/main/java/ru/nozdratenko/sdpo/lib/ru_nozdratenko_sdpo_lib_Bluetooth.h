@@ -39,6 +39,22 @@ JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_getTonometerRes
 JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_setIndicate
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     ru_nozdratenko_sdpo_lib_Bluetooth
+ * Method:    setConnection
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_setConnection
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     ru_nozdratenko_sdpo_lib_Bluetooth
+ * Method:    scanBluetoothDevices
+ * Signature: ()Ljava/util/HashMap;
+ */
+JNIEXPORT jobject JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_scanBluetoothDevices
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

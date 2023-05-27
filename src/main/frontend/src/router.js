@@ -22,7 +22,7 @@ export const routes = [
     },
     { 
         path: '/step/thermometer', component: () => import('./pages/steps/Step-thermometer'), name: 'step-thermometer', 
-        meta: {visible: 'thermometer_visible', next: 'step-sleep', prev: 'step-thermometer', number: 5 } 
+        meta: {visible: 'thermometer_visible', next: 'step-alcometer', prev: 'step-thermometer', number: 5 } 
     },
     { 
         path: '/step/alcometer', component: () => import('./pages/steps/Step-alcometer'), name: 'step-alcometer', 

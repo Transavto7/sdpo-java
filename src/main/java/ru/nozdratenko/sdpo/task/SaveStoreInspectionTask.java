@@ -21,8 +21,6 @@ public class SaveStoreInspectionTask extends Thread {
                 Thread.sleep(10000);
             } catch (InterruptedException ignored) { }
 
-            System.out.println("Check queue inspections");
-
             if (!Sdpo.isConnection()) {
                 continue;
             }

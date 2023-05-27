@@ -45,7 +45,16 @@ public class CameraHelper {
     }
 
     public static String makePhoto(String name) throws IOException {
+        if (!Webcam.getDefault().isOpen() && !Webcam.getDefault().getLock().isLocked()) {
+            Webcam.getDefault().open();
+        }
+
         BufferedImage image = Webcam.getDefault().getImage();
+
+        if (Webcam.getDefault().isOpen()) {
+            Webcam.getDefault().close();
+        }
+
         return savePhoto(image, name);
     }
 
@@ -79,6 +88,10 @@ public class CameraHelper {
 
         long start = System.currentTimeMillis();
 
+        if (!webcam.isOpen()) {
+            webcam.open();
+        }
+
        int i = 0;
        while (System.currentTimeMillis() - start < duration * 1000L) {
             BufferedImage image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
@@ -95,6 +108,10 @@ public class CameraHelper {
            }
            i++;
         }
+
+       if (webcam.isOpen()) {
+           webcam.close();
+       }
 
         writer.close();
         SdpoLog.info("Video recorded to the file: " + filename);

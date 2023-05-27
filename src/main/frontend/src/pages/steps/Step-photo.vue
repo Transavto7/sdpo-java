@@ -11,6 +11,7 @@ export default {
         }
     },
     mounted() {
+        console.log('asdasdads ',this.driver);
         if (this.driver.photo) {
             this.$router.push({ name: 'step-ride' });
             return;

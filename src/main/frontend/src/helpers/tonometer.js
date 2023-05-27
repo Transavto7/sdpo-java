@@ -14,6 +14,14 @@ export async function disableTonometer() {
     }).catch(defaultError);
 }
 
+export async function setConnection(status = 'connect') {
+    return await axios.post('device/tonometer/connect', {
+        status, 
+    }).then(({ data }) => {            
+        return data;
+    }).catch(defaultError);
+}
+
 export async function checkDevices() {
     return await axios.post(`device/scan`).then(({ data }) => {
         return data;

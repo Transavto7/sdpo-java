@@ -57,6 +57,7 @@ public class MultipartUtility {
         httpConn.setDoInput(true);
         httpConn.setRequestProperty("Content-Type",
                 "multipart/form-data; boundary=" + boundary);
+        httpConn.setRequestProperty("Content-Length", "1");
         httpConn.setRequestProperty("User-Agent", "CodeJava Agent");
         httpConn.setRequestProperty("Authorization", "Bearer " + BACKEND_TOKEN);
         outputStream = httpConn.getOutputStream();
@@ -139,9 +140,9 @@ public class MultipartUtility {
 
         // checks server's status code first
         int status = httpConn.getResponseCode();
+        SdpoLog.info("status: " + status);
         if (status == HttpURLConnection.HTTP_OK) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    httpConn.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 result += line;
@@ -149,7 +150,20 @@ public class MultipartUtility {
             reader.close();
             httpConn.disconnect();
         } else {
-            throw new IOException("Server returned non-OK status: " + status);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConn.getErrorStream()));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                result += line;
+            }
+            reader.close();
+            httpConn.disconnect();
+
+            throw new IOException("Server returned non-OK status: \n" +
+                    "url: " + httpConn.getURL().toString() + "\n"  + "Message: " + result);
+        }
+
+        if (result.isEmpty()) {
+            return new JSONObject();
         }
 
         return new JSONObject(result);

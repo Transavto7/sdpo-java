@@ -1,9 +1,8 @@
 package ru.nozdratenko.sdpo.helper;
 
 import jssc.*;
+import ru.nozdratenko.sdpo.lib.COMPorts;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-
-import java.util.Arrays;
 
 public class ThermometerHelper {
     public static String PORT = null;
@@ -48,5 +47,15 @@ public class ThermometerHelper {
         }
 
         return 0.0;
+    }
+
+    public static void setComPort() {
+        SdpoLog.info("Request com port thermometer...");
+        String thermometerPort = COMPorts.getComPort("VID_10C4");
+
+        if (thermometerPort == null || !thermometerPort.equals(ThermometerHelper.PORT)) {
+            ThermometerHelper.PORT = thermometerPort;
+            SdpoLog.info("Thermometer set port: " + ThermometerHelper.PORT);
+        }
     }
 }

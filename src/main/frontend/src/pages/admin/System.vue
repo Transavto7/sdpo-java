@@ -77,6 +77,13 @@ export default {
                     <div class="slider round"></div>
                 </label>
             </div>
+            <div class="admin__system-card__item">
+                <span>Переход в начало</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.auto_start">
+                    <div class="slider round"></div>
+                </label>
+            </div>
         </div>
 
 
@@ -183,7 +190,7 @@ export default {
 
         <div class="admin__system-card animate__animated animate__fadeInUp d-6">
             <div class="admin__system-card__title">
-                Термометер
+                Термометр
             </div>
             <div class="admin__system-card__item">
                 <span>Пропуск</span>

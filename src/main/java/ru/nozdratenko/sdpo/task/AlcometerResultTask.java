@@ -43,6 +43,7 @@ public class AlcometerResultTask extends Thread {
 
             if (this.currentStatus == StatusType.REQUEST) {
                 try {
+                    AlcometerHelper.setComPort();
                     AlcometerHelper.open();
                     AlcometerHelper.start();
                 } catch (SerialPortException e) {

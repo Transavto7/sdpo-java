@@ -84,6 +84,29 @@ public class DeviceController {
         return ResponseEntity.ok().body("next");
     }
 
+    @PostMapping(value = "/device/tonometer/connect")
+    @ResponseBody
+    public ResponseEntity tonometerConnect(@RequestBody Map<String, String> json) throws InterruptedException {
+        if (json.containsKey("status") && json.get("status").equals("stop")) {
+            Sdpo.tonometerConnectTask.currentStatus = StatusType.STOP;
+            SdpoLog.info("Stop connecting tonometer");
+            return ResponseEntity.ok().body("stop");
+        }
+
+        if (Sdpo.tonometerConnectTask.currentStatus == StatusType.RESULT) {
+            SdpoLog.info("set connection tonometer");
+            Sdpo.tonometerConnectTask.currentStatus = StatusType.WAIT;
+            return ResponseEntity.ok().body("set");
+        }
+
+        if (Sdpo.tonometerConnectTask.currentStatus == StatusType.FREE) {
+            SdpoLog.info("Start connecting tonometer");
+            Sdpo.tonometerConnectTask.currentStatus = StatusType.WAIT;
+        }
+
+        return ResponseEntity.ok().body("next");
+    }
+
     @PostMapping(value = "/device/tonometer/disable")
     @ResponseBody
     public ResponseEntity tonometerDisable() throws InterruptedException {

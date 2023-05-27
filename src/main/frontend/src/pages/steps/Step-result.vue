@@ -10,11 +10,15 @@ export default {
     },
     async mounted() {
         await this.save();
-        // this.backTimeout = setTimeout(() => {
-        //     if (this.$route.name == 'step-8') {
-        //         this.$router.push('/');
-        //     }
-        // }, 5000);
+
+        if (this.system.auto_start) {
+           this.backTimeout = setTimeout(() => {
+                if (this.$route.name == 'step-result') {
+                    this.$router.push('/');
+                }
+            }, 5000); 
+        }
+        
     },
     unmounted() {
         clearTimeout(this.backTimeout);

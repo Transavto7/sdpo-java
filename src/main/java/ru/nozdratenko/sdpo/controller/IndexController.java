@@ -67,7 +67,7 @@ public class IndexController {
                     return ResponseEntity.ok().body(timestamp);
                 }
             }
-        } catch (IOException | ApiException e) {
+        } catch (Exception | ApiException e) {
             SdpoLog.error(e);
         }
 

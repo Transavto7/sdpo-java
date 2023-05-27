@@ -47,10 +47,16 @@ public class Request {
         connection.setDoOutput(true);
 
         InputStream inputStream;
-        try {
+        int status = connection.getResponseCode();
+
+        if (status == HttpURLConnection.HTTP_OK) {
             inputStream = connection.getInputStream();
-        } catch(IOException exception) {
+        } else {
             inputStream = connection.getErrorStream();
+        }
+
+        if (inputStream == null) {
+            throw new ApiException("Ошибка запроса. Неверный ответ");
         }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -103,10 +109,16 @@ public class Request {
         }
 
         InputStream inputStream;
-        try {
+        int status = connection.getResponseCode();
+
+        if (status == HttpURLConnection.HTTP_OK) {
             inputStream = connection.getInputStream();
-        } catch(IOException exception) {
+        } else {
             inputStream = connection.getErrorStream();
+        }
+
+        if (inputStream == null) {
+            throw new ApiException("Ошибка запроса. Неверный ответ");
         }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));

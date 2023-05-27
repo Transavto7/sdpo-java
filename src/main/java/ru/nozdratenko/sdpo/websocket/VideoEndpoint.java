@@ -21,13 +21,13 @@ public class VideoEndpoint implements MessageHandler {
     public void onOpen(Session session) throws IOException {
         sessionList.add(session);
 
-        if (Webcam.getDefault().isOpen()) {
+        if (Webcam.getDefault().isOpen() && !Webcam.getDefault().getLock().isLocked()) {
             SdpoLog.error("cant run translation video. Webcam is open");
         }
 
         if (translationTask == null || !translationTask.isAlive()) {
             translationTask = new TranslationVideoTask(session);
-            translationTask.run();
+            translationTask.start();
             SdpoLog.info("Translation video run");
         } else {
             SdpoLog.warning("Translation video is running");

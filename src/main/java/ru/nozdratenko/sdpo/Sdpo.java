@@ -2,8 +2,11 @@ package ru.nozdratenko.sdpo;
 
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
+import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.ThermometerHelper;
+import ru.nozdratenko.sdpo.lib.COMPorts;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
@@ -11,6 +14,7 @@ import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 @Component
 public class Sdpo {
@@ -21,9 +25,9 @@ public class Sdpo {
     public static InspectionStorage inspectionStorage;
 
     public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
+    public static final TonometerConnectTask tonometerConnectTask = new TonometerConnectTask();
     public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
     public static final AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
-    public static final UpdateComPortTask updateComPortTask = new UpdateComPortTask();
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
@@ -40,19 +44,22 @@ public class Sdpo {
             try {
                 Thread.sleep(20000);
             } catch (InterruptedException e) { }
-
             BrowserHelper.openUrl("http://localhost:8080");
         }).start();
+
+        AlcometerHelper.setComPort();
+        ThermometerHelper.setComPort();
     }
 
 
     public static void runTasks() {
-        updateComPortTask.start();
         tonometerResultTask.start();
         thermometerResultTask.start();
         alcometerResultTask.start();
         saveStoreInspectionTask.start();
+        tonometerConnectTask.start();
         mediaMakeTask.start();
+        runScannerTask();
     }
 
     public static void loadData() {
@@ -78,6 +85,24 @@ public class Sdpo {
         }).start();
     }
 
+    /**
+     * Временная заглшука, чтобы убрать зависание консоли
+     */
+    private static void runScannerTask() {
+        new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                if (scanner.hasNextLine()) {
+                    String input = scanner.nextLine();
+                    if (!input.isEmpty()) {
+                        // обработка ввода
+                    }
+                }
+            }
+        }).start();
+    }
+
     private static void initMainConfig() {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/main.json");
         fileConfiguration.setDefault("password", "7344946")
@@ -88,6 +113,7 @@ public class Sdpo {
                 .setDefault("url", "https://test.ta-7.ru/api")
                 .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
                 .setDefault("tonometer_mac", null)
+                .setDefault("tonometer_connect", false)
                 .saveFile();
         mainConfig = fileConfiguration;
     }
@@ -112,6 +138,7 @@ public class Sdpo {
                 .setDefault("thermometer_skip", true)
                 .setDefault("thermometer_visible", true)
                 .setDefault("manual_mode", false)
+                .setDefault("auto_start", true)
                 .saveFile();
         systemConfig = fileConfiguration;
     }

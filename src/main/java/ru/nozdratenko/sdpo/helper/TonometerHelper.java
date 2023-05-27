@@ -2,27 +2,23 @@ package ru.nozdratenko.sdpo.helper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.task.BluetoothUpdateTask;
-
-import javax.bluetooth.*;
+import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.lib.COMPorts;
+import ru.nozdratenko.sdpo.util.SdpoLog;
+import java.util.HashMap;
 
 public class TonometerHelper {
 
     public static JSONObject scan() {
         JSONObject json = new JSONObject();
         try {
-            LocalDevice dev = LocalDevice.getLocalDevice();
-            new BluetoothUpdateTask().start();
-
-            JSONObject mainDevice = new JSONObject();
-            mainDevice.put("name", dev.getFriendlyName());
-            mainDevice.put("address", dev.getBluetoothAddress());
-            json.put("main", mainDevice);
+            HashMap<String, String> devicesMap = Bluetooth.scanBluetoothDevices();
 
             JSONArray devices = new JSONArray();
-            for (String address : BluetoothUpdateTask.devices) {
+            for (String address : devicesMap.keySet()) {
                 JSONObject deviceData = new JSONObject();
                 deviceData.put("address", address);
+                deviceData.put("name", devicesMap.get(address));
                 devices.put(deviceData);
             }
 
