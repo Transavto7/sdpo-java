@@ -29,9 +29,10 @@ export default {
         this.$router.push({ name: 'step-driver' });
     },
     async checkDriver() {
+        this.$store.state.inspection = {};
+        this.error = null;
+
         if (this.driver_id.length < 6) {
-            this.$store.state.inspection = {};
-            this.error = null;
             return;
         }
 
@@ -42,6 +43,7 @@ export default {
                 this.$store.state.inspection.driver_id = driver.hash_id;
                 this.$store.state.inspection.driver_fio = driver.fio;
                 this.$store.state.driver = driver;
+                this.error = null;
             } else {
                 this.$store.state.inspection = {};
                 this.error = 'Водитель не найден';

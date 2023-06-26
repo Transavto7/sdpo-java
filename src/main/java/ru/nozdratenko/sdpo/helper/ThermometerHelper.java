@@ -53,7 +53,10 @@ public class ThermometerHelper {
         SdpoLog.info("Request com port thermometer...");
         String thermometerPort = COMPorts.getComPort("VID_10C4");
 
-        if (thermometerPort == null || !thermometerPort.equals(ThermometerHelper.PORT)) {
+        if (thermometerPort.contains("error")) {
+            ThermometerHelper.PORT = null;
+            SdpoLog.info("Thermometer set port: " + ThermometerHelper.PORT);
+        } else if (!thermometerPort.equals(ThermometerHelper.PORT)) {
             ThermometerHelper.PORT = thermometerPort;
             SdpoLog.info("Thermometer set port: " + ThermometerHelper.PORT);
         }

@@ -11,7 +11,6 @@ import com.xuggle.xuggler.video.ConverterFactory;
 import com.xuggle.xuggler.video.IConverter;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.exception.VideoRunException;
 import ru.nozdratenko.sdpo.file.FileBase;
 import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
@@ -35,25 +34,31 @@ public class CameraHelper {
 
     public static void initDimension() {
         try {
+            closeCam();
             Webcam webcam = Webcam.getDefault();
             double with = Double.valueOf(Sdpo.systemConfig.getString("camera_dimension"));
             Dimension dim = getSize(with);
             webcam.setViewSize(dim);
+            openCam();
         } catch (IllegalArgumentException e) {
             //
         }
     }
 
-    public static String makePhoto(String name) throws IOException {
-        if (!Webcam.getDefault().isOpen() && !Webcam.getDefault().getLock().isLocked()) {
+    public static void openCam() {
+        if (!Webcam.getDefault().getLock().isLocked() && !Webcam.getDefault().isOpen()) {
             Webcam.getDefault().open();
         }
+    }
 
-        BufferedImage image = Webcam.getDefault().getImage();
-
+    public static void closeCam() {
         if (Webcam.getDefault().isOpen()) {
             Webcam.getDefault().close();
         }
+    }
+
+    public static String makePhoto(String name) throws IOException {
+        BufferedImage image = Webcam.getDefault().getImage();
 
         return savePhoto(image, name);
     }
@@ -108,10 +113,6 @@ public class CameraHelper {
            }
            i++;
         }
-
-       if (webcam.isOpen()) {
-           webcam.close();
-       }
 
         writer.close();
         SdpoLog.info("Video recorded to the file: " + filename);

@@ -6,7 +6,6 @@ import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
-import ru.nozdratenko.sdpo.lib.COMPorts;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
@@ -38,15 +37,7 @@ public class Sdpo {
         initMainConfig();
         initSystemConfig();
         runTasks();
-        loadData();
         CameraHelper.initDimension();
-        new Thread(() -> {
-            try {
-                Thread.sleep(20000);
-            } catch (InterruptedException e) { }
-            BrowserHelper.openUrl("http://localhost:8080");
-        }).start();
-
         AlcometerHelper.setComPort();
         ThermometerHelper.setComPort();
     }
@@ -56,13 +47,14 @@ public class Sdpo {
         tonometerResultTask.start();
         thermometerResultTask.start();
         alcometerResultTask.start();
-        saveStoreInspectionTask.start();
         tonometerConnectTask.start();
         mediaMakeTask.start();
         runScannerTask();
     }
 
     public static void loadData() {
+        saveStoreInspectionTask.start();
+
         driverStorage = new DriverStorage();
         driverStorage.save();
 
@@ -82,6 +74,15 @@ public class Sdpo {
             } catch (IOException e) {
                 SdpoLog.error(e);
             }
+        }).start();
+    }
+
+    public static void openBrowser() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) { }
+            BrowserHelper.openUrl("http://localhost:8080");
         }).start();
     }
 

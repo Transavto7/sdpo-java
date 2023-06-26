@@ -43,14 +43,15 @@ public class AlcometerResultTask extends Thread {
 
             if (this.currentStatus == StatusType.REQUEST) {
                 try {
-                    AlcometerHelper.setComPort();
                     AlcometerHelper.open();
                     AlcometerHelper.start();
                 } catch (SerialPortException e) {
                     setError("Ошибка открытия порта Алкометра");
+                    AlcometerHelper.setComPort();
                     continue;
                 } catch (UnsupportedEncodingException e) {
                     setError("Ошибка закрытия алкометра");
+                    AlcometerHelper.setComPort();
                     continue;
                 }
 
@@ -67,6 +68,7 @@ public class AlcometerResultTask extends Thread {
                     setResult(result);
                 } catch (SerialPortException e) {
                     setError("Ошибка открытия порта Алкометра");
+                    AlcometerHelper.setComPort();
                 } catch (AlcometerException e) {
                     if (e.restart) {
                         if (flow)  {
@@ -74,9 +76,11 @@ public class AlcometerResultTask extends Thread {
                                 AlcometerHelper.start();
                             } catch (SerialPortException ex) {
                                 setError("Ошибка открытия порта Алкометра");
+                                AlcometerHelper.setComPort();
                                 continue;
                             } catch (UnsupportedEncodingException ex) {
                                 setError("Ошибка закрытия алкометра");
+                                AlcometerHelper.setComPort();
                                 continue;
                             }
                         }

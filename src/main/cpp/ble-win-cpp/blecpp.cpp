@@ -104,53 +104,7 @@ std::string jstring2string(JNIEnv* env, jstring jStr) {
 	env->DeleteLocalRef(stringClass);
 	return ret;
 }
-
-
-JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_findDevice(JNIEnv* env, jclass thisObject)
-{
-	std::string result = "";
-	
-	try
-	{
-		BluetoothAdapter btAdapter = BluetoothAdapter::GetDefaultAsync().get();
-		if (btAdapter == NULL)
-			return (*env).NewStringUTF("error_bluetooth_adapter_not_found");
-		if (!btAdapter.IsLowEnergySupported())
-			return (*env).NewStringUTF("error_bluetooth_low_energy");
-		Radio radio = btAdapter.GetRadioAsync().get();
-		if (radio.State() != RadioState::On) {
-			return (*env).NewStringUTF("error_bluetooth_radio_off");
-		}
-
-		winrt::init_apartment();
-
-		uint64_t addr = GetFirstAdvertisingBLEAddr();
-		if (addr == 0) {
-			return (*env).NewStringUTF("error_address_not_found");
-		}
-
-		std::wstring wsAddr = AddrToString(addr);
-		std::string strAddr(wsAddr.begin(), wsAddr.end());
-		result = strAddr;
-	}
-	catch (winrt::hresult_error const& ex)
-	{
-		winrt::hresult hr = ex.code();
-		std::string message = winrt::to_string(ex.message());
-		std::wcout << "error: " << hr << std::endl;
-		std::cout << "message: " << message << std::endl;
-		return (*env).NewStringUTF(message.data());
-	}
-	catch (const std::exception& ex) {
-		std::cout << ex.what() << "\n";
-	}
-	catch (...)
-	{
-		std::wcout << "unknow error" << std::endl;
-	}
-
-	return (*env).NewStringUTF(result.data());
-}
+ 
 
 JNIEXPORT void JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_restart(JNIEnv* env, jclass thisObject) {
 	try
@@ -468,38 +422,50 @@ JNIEXPORT jstring JNICALL Java_ru_nozdratenko_sdpo_lib_Bluetooth_setConnection(J
 std::vector<std::pair<std::string, std::string>> scanBluetoothDevices() {
 	std::vector<std::pair<std::string, std::string>> devices;
 
-	// Get Bluetooth LE devices
-	auto deviceInfoCollection = DeviceInformation::FindAllAsync(BluetoothLEDevice::GetDeviceSelector()).get();
+	try {
+		// Get Bluetooth LE devices
+		auto deviceInfoCollection = DeviceInformation::FindAllAsync(BluetoothLEDevice::GetDeviceSelector()).get();
 
-	// Iterate over devices and get MAC addresses
-	for (const auto& deviceInfo : deviceInfoCollection) {
-		auto bleDevice = BluetoothLEDevice::FromIdAsync(deviceInfo.Id()).get();
-		if (bleDevice) {
-			std::stringstream ss;
-			ss << std::hex << bleDevice.BluetoothAddress(); // преобразование uint_64 в шестнадцатеричное число
-			std::string addressStr = ss.str(); // получение строки из stringstream
+		// Iterate over devices and get MAC addresses
+		for (const auto& deviceInfo : deviceInfoCollection) {
+			auto bleDevice = BluetoothLEDevice::FromIdAsync(deviceInfo.Id()).get();
 
-			std::string formattedAddressStr;
-			for (int i = 0; i < addressStr.size(); i += 2) {
-				formattedAddressStr += addressStr.substr(i, 2);
-				if (i < addressStr.size() - 2) {
-					formattedAddressStr += ':';
+			if (bleDevice) {
+				std::stringstream ss;
+				ss << std::hex << bleDevice.BluetoothAddress(); // преобразование uint_64 в шестнадцатеричное число
+				std::string addressStr = ss.str(); // получение строки из stringstream
+
+				std::string formattedAddressStr;
+				for (int i = 0; i < addressStr.size(); i += 2) {
+					formattedAddressStr += addressStr.substr(i, 2);
+					if (i < addressStr.size() - 2) {
+						formattedAddressStr += ':';
+					}
 				}
-			}
 
-			auto deviceName = winrt::to_string(bleDevice.Name()); // получение имени устройства
-			devices.push_back({ formattedAddressStr, deviceName }); // добавление в вектор пары "MAC-адрес, имя устройства"
+				auto deviceName = winrt::to_string(bleDevice.Name()); // получение имени устройства
+
+				devices.push_back({ formattedAddressStr, deviceName }); // добавление в вектор пары "MAC-адрес, имя устройства"
+			}
 		}
 	}
-
-	// Convert vector of strings to array of Java strings
-	/*jobjectArray jMacAddresses = env->NewObjectArray(macAddresses.size(), env->FindClass("java/lang/String"), nullptr);
-	for (int i = 0; i < macAddresses.size(); i++) {
-		jstring jMacAddress = env->NewStringUTF(macAddresses[i].c_str());
-		env->SetObjectArrayElement(jMacAddresses, i, jMacAddress);
-	}*/
+	catch (winrt::hresult_error const& ex)
+	{
+		// ignore error bluetooth
+	}
+	catch (const std::exception& ex) {
+		std::cout << ex.what() << "\n";
+	}
+	catch (...)
+	{
+		std::wcout << "unknow error" << std::endl;
+	}
 
 	return devices;
+}
+
+int main() {
+	return 0;
 }
 
 jobject createHashMap(JNIEnv* env, const std::vector<std::pair<std::string, std::string>>& vec) {

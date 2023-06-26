@@ -36,10 +36,10 @@ public class SaveStoreInspectionTask extends Thread {
                     JSONObject json = inspections.getJSONObject(0);
                     saveInspection(json);
                     saveMedia(json);
+                    inspections.remove(0);
                 } catch (JSONException e) {
                     SdpoLog.error("Error inspection store save: " + e.getMessage());
                 } finally {
-                    inspections.remove(0);
                     Sdpo.inspectionStorage.save();
                 }
             }

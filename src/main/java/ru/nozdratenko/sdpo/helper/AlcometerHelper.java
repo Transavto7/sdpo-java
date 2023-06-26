@@ -151,8 +151,8 @@ public class AlcometerHelper {
     public static void setComPort() {
         SdpoLog.info("Request com port alcometer...");
         String alcometerPort = COMPorts.getComPort("VID_0483");
-        if (alcometerPort == null) {
-            AlcometerHelper.PORT = alcometerPort;
+        if (alcometerPort.contains("error")) {
+            AlcometerHelper.PORT = null;
             SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
         } else if (!alcometerPort.equals(AlcometerHelper.PORT)) {
             AlcometerHelper.PORT = alcometerPort;

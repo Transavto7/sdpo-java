@@ -49,7 +49,7 @@ public class Request {
         InputStream inputStream;
         int status = connection.getResponseCode();
 
-        if (status == HttpURLConnection.HTTP_OK) {
+        if (status < 400) {
             inputStream = connection.getInputStream();
         } else {
             inputStream = connection.getErrorStream();
@@ -82,7 +82,7 @@ public class Request {
                     message = "Ошибка запроса. Неизвестный ответ";
                 }
             } catch (Exception e) {
-                SdpoLog.warning(response.toString());
+                SdpoLog.error(response.toString());
             }
 
             throw new ApiException(message);
@@ -111,7 +111,7 @@ public class Request {
         InputStream inputStream;
         int status = connection.getResponseCode();
 
-        if (status == HttpURLConnection.HTTP_OK) {
+        if (status < 400) {
             inputStream = connection.getInputStream();
         } else {
             inputStream = connection.getErrorStream();

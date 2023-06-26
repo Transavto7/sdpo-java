@@ -30,14 +30,12 @@ public class MediaMakeTask extends Thread {
                 continue;
             }
 
-            try {
-                Webcam.getDefault().open();
-            } catch (Exception e) {
-                /* ignored */
-            }
+            CameraHelper.openCam();
 
+            SdpoLog.info("count: " + MediaMakeTask.medias.size());
             while (MediaMakeTask.medias.size() > 0) {
                 String name = MediaMakeTask.medias.poll();
+                SdpoLog.info("name: " + name);
                 try {
                     if (Sdpo.systemConfig.getBoolean("camera_photo")) {
                         CameraHelper.makePhoto(name);
@@ -51,12 +49,10 @@ public class MediaMakeTask extends Thread {
                     SdpoLog.error(e);
                 }
             }
-
-            try {
-                Webcam.getDefault().close();
-            } catch (Exception e) {
-                /* ignored */
-            }
         }
+    }
+
+    public static int size() {
+        return medias.size();
     }
 }

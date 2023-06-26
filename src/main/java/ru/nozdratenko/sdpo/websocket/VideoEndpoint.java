@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.websocket;
 
 import com.github.sarxos.webcam.Webcam;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.task.TranslationVideoTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -21,9 +22,7 @@ public class VideoEndpoint implements MessageHandler {
     public void onOpen(Session session) throws IOException {
         sessionList.add(session);
 
-        if (Webcam.getDefault().isOpen() && !Webcam.getDefault().getLock().isLocked()) {
-            SdpoLog.error("cant run translation video. Webcam is open");
-        }
+        CameraHelper.openCam();
 
         if (translationTask == null || !translationTask.isAlive()) {
             translationTask = new TranslationVideoTask(session);
