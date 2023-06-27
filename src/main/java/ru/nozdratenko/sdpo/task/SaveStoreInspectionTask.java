@@ -11,6 +11,7 @@ import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.File;
+import java.io.IOException;
 
 public class SaveStoreInspectionTask extends Thread {
 
@@ -37,7 +38,7 @@ public class SaveStoreInspectionTask extends Thread {
                     saveInspection(json);
                     saveMedia(json);
                     inspections.remove(0);
-                } catch (JSONException e) {
+                } catch (Exception | ApiException e) {
                     SdpoLog.error("Error inspection store save: " + e.getMessage());
                 } finally {
                     Sdpo.inspectionStorage.save();
@@ -75,17 +76,11 @@ public class SaveStoreInspectionTask extends Thread {
         }
     }
 
-    private void saveInspection(JSONObject json) {
-        try {
-            Request response = new Request("sdpo/anketa");
-            String result = response.sendPost(json.toString());
+    private void saveInspection(JSONObject json) throws IOException, ApiException {
+        Request response = new Request("sdpo/anketa");
+        String result = response.sendPost(json.toString());
 
-            JSONObject resultJson = new JSONObject(result);
-            SdpoLog.info("Saved inspection: " + resultJson.toString());
-        } catch (ApiException | Exception e) {
-            e.printStackTrace();
-            SdpoLog.error("Error create inspection: " + e.getMessage());
-            SdpoLog.error("inspection: " + json.toString());
-        }
+        JSONObject resultJson = new JSONObject(result);
+        SdpoLog.info("Saved inspection: " + resultJson.toString());
     }
 }
