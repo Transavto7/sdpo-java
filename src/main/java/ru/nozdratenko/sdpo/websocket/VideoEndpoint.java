@@ -21,9 +21,6 @@ public class VideoEndpoint implements MessageHandler {
     @OnOpen
     public void onOpen(Session session) throws IOException {
         sessionList.add(session);
-
-        CameraHelper.openCam();
-
         if (translationTask == null || !translationTask.isAlive()) {
             translationTask = new TranslationVideoTask(session);
             translationTask.start();

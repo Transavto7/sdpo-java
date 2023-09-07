@@ -110,13 +110,14 @@ public class IndexController {
             if (Sdpo.isConnection()) {
                 Request request = new Request( "sdpo/medics");
                 String response = request.sendGet();
-                return ResponseEntity.ok().body(new JSONObject(response).toMap());
+                JSONObject jsonObject = new JSONObject(response);
+                return ResponseEntity.ok().body(jsonObject.toMap());
             } else {
                 return ResponseEntity.ok().body(Sdpo.medicStorage.getStore().toMap());
             }
 
         } catch (JSONException | IOException | ApiException e) {
-            SdpoLog.error(e);
+           SdpoLog.error("Error get medic list");
         }
         return ResponseEntity.status(403).body("error");
     }

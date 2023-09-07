@@ -21,12 +21,15 @@ public class AlcometerResultTask extends Thread {
         while (true) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                //
+            } catch (InterruptedException ignored) {}
+
+            if (this.currentStatus == StatusType.FREE) {
+                continue;
             }
 
-            if (AlcometerHelper.getSerialPort() == null) {
-                continue;
+            if (AlcometerHelper.PORT == null) {
+                AlcometerHelper.setComPort();
+                this.currentStatus = StatusType.FREE;
             }
 
             if (this.currentStatus == StatusType.STOP) {
@@ -34,31 +37,29 @@ public class AlcometerResultTask extends Thread {
                     AlcometerHelper.open();
                     AlcometerHelper.stop();
                 } catch (UnsupportedEncodingException | SerialPortException e) {
-                    e.printStackTrace();
                     SdpoLog.error(e);
-                }
+                } catch (AlcometerException ignored) { }
 
                 this.currentStatus = StatusType.FREE;
-            }
 
-            if (this.currentStatus == StatusType.REQUEST) {
+            } else if (this.currentStatus == StatusType.REQUEST) {
                 try {
                     AlcometerHelper.open();
                     AlcometerHelper.start();
                 } catch (SerialPortException e) {
                     setError("Ошибка открытия порта Алкометра");
-                    AlcometerHelper.setComPort();
                     continue;
                 } catch (UnsupportedEncodingException e) {
                     setError("Ошибка закрытия алкометра");
-                    AlcometerHelper.setComPort();
+                    continue;
+                } catch (AlcometerException e) {
+                    setError(e.message);
                     continue;
                 }
 
                 this.currentStatus = StatusType.WAIT;
-            }
 
-            if (this.currentStatus == StatusType.WAIT) {
+            } else if (this.currentStatus == StatusType.WAIT) {
                 try {
                     String result = AlcometerHelper.result();
                     if (result == null) {
@@ -68,7 +69,6 @@ public class AlcometerResultTask extends Thread {
                     setResult(result);
                 } catch (SerialPortException e) {
                     setError("Ошибка открытия порта Алкометра");
-                    AlcometerHelper.setComPort();
                 } catch (AlcometerException e) {
                     if (e.restart) {
                         if (flow)  {
@@ -76,11 +76,12 @@ public class AlcometerResultTask extends Thread {
                                 AlcometerHelper.start();
                             } catch (SerialPortException ex) {
                                 setError("Ошибка открытия порта Алкометра");
-                                AlcometerHelper.setComPort();
                                 continue;
                             } catch (UnsupportedEncodingException ex) {
                                 setError("Ошибка закрытия алкометра");
-                                AlcometerHelper.setComPort();
+                                continue;
+                            } catch (AlcometerException ex) {
+                                setError(ex.message);
                                 continue;
                             }
                         }
@@ -90,6 +91,9 @@ public class AlcometerResultTask extends Thread {
                     flow = true;
                     setError(e.getResponse());
                 }
+            } else if (this.currentStatus == StatusType.ERROR) {
+                AlcometerHelper.setComPort();
+                this.currentStatus = StatusType.FREE;
             }
         }
     }

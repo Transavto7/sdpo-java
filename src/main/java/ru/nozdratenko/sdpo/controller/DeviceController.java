@@ -28,7 +28,7 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity photo() {
         try {
-            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s").format(new Date());
+            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
             CameraHelper.makePhoto(name);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
@@ -40,15 +40,15 @@ public class DeviceController {
 
     @PostMapping(value = "/device/media")
     @ResponseBody
-    public ResponseEntity media() {
-        JSONObject result = CameraHelper.makePhotoAndVideo();
+    public ResponseEntity media(@RequestBody Map<String, String> json) {
+        JSONObject result = CameraHelper.makePhotoAndVideo(json.get("driver_id"));
         return ResponseEntity.status(HttpStatus.OK).body(result.toMap());
     }
 
     @PostMapping(value = "/device/video/test")
     @ResponseBody
     public ResponseEntity videoTest() {
-            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s").format(new Date());
+            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
             CameraHelper.makeVideo(name);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
@@ -95,7 +95,7 @@ public class DeviceController {
 
         if (Sdpo.tonometerConnectTask.currentStatus == StatusType.RESULT) {
             SdpoLog.info("set connection tonometer");
-            Sdpo.tonometerConnectTask.currentStatus = StatusType.WAIT;
+            Sdpo.tonometerConnectTask.currentStatus = StatusType.FREE;
             return ResponseEntity.ok().body("set");
         }
 
@@ -142,8 +142,6 @@ public class DeviceController {
         }
 
         if (task.currentStatus == StatusType.ERROR) {
-            SdpoLog.error(task.error.toString());
-            task.currentStatus = StatusType.FREE;
             return ResponseEntity.status(500).body(task.error.toMap());
         }
 

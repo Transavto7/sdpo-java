@@ -46,8 +46,8 @@ public class VideoCommand extends Command {
     private void testVideo(int number) throws InterruptedException {
         SdpoLog.info("Make video...");
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s");
-        String name = "test_" + number + simpleDateFormat.format(new Date());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S");
+        String name = "test_" + number + "_" + simpleDateFormat.format(new Date());
         SdpoLog.info("name: " + name);
         try {
             CameraHelper.makeVideo(name);

@@ -15,8 +15,10 @@ export async function getSizes() {
 }
 
 
-export async function makeMedia() {
-    return await axios.post(`device/media`).then(({ data }) => {
+export async function makeMedia(driver_id) {
+    return await axios.post(`device/media`, {
+        driver_id,
+    }).then(({ data }) => {
         return data;
     }).catch(defaultError);
 }

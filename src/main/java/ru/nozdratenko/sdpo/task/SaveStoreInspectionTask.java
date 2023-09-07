@@ -39,9 +39,7 @@ public class SaveStoreInspectionTask extends Thread {
                     saveMedia(json);
                     inspections.remove(0);
                 } catch (Exception | ApiException e) {
-                    SdpoLog.error("Error inspection: " + e.getStackTrace());
-                    SdpoLog.error("Error inspection store save: " + e.getMessage());
-                    e.printStackTrace();
+                    break;
                 } finally {
                     Sdpo.inspectionStorage.save();
                 }

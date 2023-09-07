@@ -42,7 +42,7 @@ public class Storage extends FileBase {
             formatDataLoad(array);
             this.lastUpdate = new Date().getTime();
         } catch (Exception | ApiException e) {
-            SdpoLog.error(e);
+            SdpoLog.error("Error load storage data");
         }
     }
 

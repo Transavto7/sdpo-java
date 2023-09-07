@@ -1,10 +1,8 @@
 package ru.nozdratenko.sdpo.task;
 
 import com.github.sarxos.webcam.Webcam;
-import com.xuggle.xuggler.IPixelFormat;
-import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.video.ConverterFactory;
-import com.xuggle.xuggler.video.IConverter;
+import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.imageio.ImageIO;
@@ -14,13 +12,10 @@ import javax.websocket.Session;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Base64;
 
 public class TranslationVideoTask extends Thread {
     private final RemoteEndpoint.Basic basicRemote;
     private final Session session;
-    private boolean isAlive = true;
 
     public TranslationVideoTask(Session session) {
         this.basicRemote = session.getBasicRemote();
@@ -32,19 +27,8 @@ public class TranslationVideoTask extends Thread {
         Webcam webcam = Webcam.getDefault();
 
         while (true) {
-            if (!isAlive) {
-                SdpoLog.info("Close translation video task");
-                return;
-            }
-
-            if (!webcam.isOpen()) {
-                webcam.open();
-            }
-
             BufferedImage image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
-
             if (!session.isOpen()) {
-                webcam.close();
                 SdpoLog.info("Close translation video");
                 return;
             }

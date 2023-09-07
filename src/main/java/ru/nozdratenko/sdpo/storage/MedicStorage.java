@@ -40,12 +40,11 @@ public class MedicStorage extends FileBase {
         try {
             Request request = new Request(url);
             String response = request.sendGet();
-            SdpoLog.info(response);
             JSONObject store = new JSONObject(response);
             this.store = store;
             this.lastUpdate = new Date().getTime();
         } catch (ApiException | Exception e) {
-            SdpoLog.error(e);
+            SdpoLog.error("Error load medic list");
         }
     }
 

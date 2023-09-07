@@ -32,58 +32,97 @@ public class CameraHelper {
     public static File lastResultVideo = null;
     public static File getLastResultPhoto = null;
 
+    public static boolean isCameraAvailable() {
+        try {
+            return Webcam.getDefault() != null;
+        } catch (WebcamException e) {
+            SdpoLog.warning("No webcam has been detected!");
+            return false;
+        }
+    }
     public static void initDimension() {
         try {
-            closeCam();
+            CameraHelper.closeCam();
             Webcam webcam = Webcam.getDefault();
-            double with = Double.valueOf(Sdpo.systemConfig.getString("camera_dimension"));
+            double with = Double.parseDouble(Sdpo.systemConfig.getString("camera_dimension"));
             Dimension dim = getSize(with);
             webcam.setViewSize(dim);
-            openCam();
         } catch (IllegalArgumentException e) {
-            //
+            SdpoLog.warning(e);
+        } finally {
+            CameraHelper.openCam();
         }
     }
 
     public static void openCam() {
-        if (!Webcam.getDefault().getLock().isLocked() && !Webcam.getDefault().isOpen()) {
-            Webcam.getDefault().open();
+        if (isCameraAvailable()) {
+            try {
+                Webcam webcam = Webcam.getDefault();
+                if (!webcam.getLock().isLocked() && !webcam.isOpen()) {
+                    webcam.open();
+                    SdpoLog.info("Camera opened successfully.");
+                } else {
+                    SdpoLog.info("Camera is already open or locked.");
+                }
+            } catch (WebcamException e) {
+                SdpoLog.error("Failed to open camera: " + e.getMessage());
+            }
+        } else {
+            SdpoLog.info("No camera available. Skipping camera open.");
         }
     }
 
     public static void closeCam() {
-        if (Webcam.getDefault().isOpen()) {
+        if (isCameraAvailable() && Webcam.getDefault().isOpen()) {
             Webcam.getDefault().close();
         }
     }
 
     public static String makePhoto(String name) throws IOException {
-        BufferedImage image = Webcam.getDefault().getImage();
-
-        return savePhoto(image, name);
+        if (isCameraAvailable()) {
+            BufferedImage image = Webcam.getDefault().getImage();
+            return savePhoto(image, name);
+        } else {
+            SdpoLog.info("No camera available. Skipping photo capture.");
+            return null;
+        }
     }
 
     public static JSONObject makePhotoAndVideo() {
-        JSONObject json = new JSONObject();
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s");
-        String name = simpleDateFormat.format(date);
-        json.put("photo", MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
-        json.put("video", MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
-        MediaMakeTask.record(name);
+        return makePhotoAndVideo("");
+    }
 
+    public static JSONObject makePhotoAndVideo(String driver_id) {
+        JSONObject json = new JSONObject();
+        if (isCameraAvailable()) {
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S");
+            String name = simpleDateFormat.format(date);
+
+            if (!driver_id.isEmpty()) {
+                name += '_' + driver_id;
+            }
+
+            json.put("photo", MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
+            json.put("video", MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
+            MediaMakeTask.record(name);
+        } else {
+            SdpoLog.info("No camera available. Skipping photo and video capture.");
+        }
         return json;
     }
 
     public static void makeVideo(String name) {
-        String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
-        new File(path).getParentFile().mkdirs();
-
-        recordScreen(path, 10);
-        SdpoLog.info("Saving video");
-        saveVideo(name);
+        if (isCameraAvailable()) {
+            String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
+            new File(path).getParentFile().mkdirs();
+            recordScreen(path, 10);
+            SdpoLog.info("Saving video");
+            saveVideo(name);
+        } else {
+            SdpoLog.info("No camera available. Skipping video capture.");
+        }
     }
-
     private static void recordScreen(String filename, int duration) {
         Webcam webcam = Webcam.getDefault();
         IMediaWriter writer = ToolFactory.makeWriter(filename);
@@ -92,10 +131,6 @@ public class CameraHelper {
         writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, size.width, size.height);
 
         long start = System.currentTimeMillis();
-
-        if (!webcam.isOpen()) {
-            webcam.open();
-        }
 
        int i = 0;
        while (System.currentTimeMillis() - start < duration * 1000L) {
@@ -119,7 +154,7 @@ public class CameraHelper {
     }
 
     public static Map<Integer, Dimension> getSizes() {
-        Map<Integer, Dimension> result = new HashMap<Integer, Dimension>();
+        Map<Integer, Dimension> result = new HashMap<>();
         try {
             for (Dimension dim : Webcam.getDefault().getViewSizes()) {
                 result.put((int) dim.getWidth(), dim);
@@ -153,21 +188,23 @@ public class CameraHelper {
         double result = 0;
 
         try {
-            for (Dimension dim : Webcam.getDefault().getViewSizes()) {
-                    if (result < dim.getWidth()) {
-                        result = dim.getWidth();
-                    }
+            Dimension[] viewSizes = Webcam.getWebcams().isEmpty() ? new Dimension[0] : Webcam.getDefault().getViewSizes();
+            for (Dimension dim : viewSizes) {
+                if (result < dim.getWidth()) {
+                    result = dim.getWidth();
+                }
             }
         } catch (WebcamException e) {
-            SdpoLog.error("Error get webcam size: " + e);
+            SdpoLog.warning("Error while getting webcam size: " + e.getMessage());
         }
 
         if (result == 0) {
             return null;
         }
 
-        return "" + (int) result;
+        return String.valueOf((int) result);
     }
+
 
 
     public static byte[] readVideoByte() throws IOException {
@@ -247,7 +284,7 @@ public class CameraHelper {
             try {
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "video");
-                multipartUtility.addFormField("name",  "" + name);
+                multipartUtility.addFormField("name", name);
                 multipartUtility.addFilePart("filename", file);
                 multipartUtility.finish();
             } catch (Exception e) {

@@ -51,8 +51,8 @@ public class PhotoCommand extends Command {
     private void testPhoto(int number) throws InterruptedException {
         SdpoLog.info("Make photo...");
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s");
-        String name = "test_" + number + simpleDateFormat.format(new Date()) + ".png";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S");
+        String name = "test_" + number + "_" + simpleDateFormat.format(new Date()) + ".png";
         SdpoLog.info("name: " + name);
         try {
             CameraHelper.makePhoto(name);

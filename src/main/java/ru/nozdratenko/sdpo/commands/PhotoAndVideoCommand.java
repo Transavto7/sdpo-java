@@ -40,13 +40,13 @@ public class PhotoAndVideoCommand extends Command {
         }
 
         while (true) {
-            if (MediaMakeTask.size() <= 0) {
+            if (MediaMakeTask.size() == 0) {
                 SdpoLog.info("All media saved!");
                 break;
             }
 
             try {
-                Thread.sleep(20);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

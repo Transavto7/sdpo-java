@@ -13,9 +13,9 @@ public class AlcometerHelper {
     public static String PORT = null;
     private static SerialPort serialPort = null;
 
-    public static void open() throws SerialPortException {
+    public static void open() throws SerialPortException, AlcometerException {
         if (PORT == null) {
-            return;
+            throw new AlcometerException("Порт не найден");
         }
 
         if (serialPort != null) {
@@ -36,18 +36,18 @@ public class AlcometerHelper {
         }
     }
 
-    public static void stop() throws UnsupportedEncodingException, SerialPortException {
+    public static void stop() throws UnsupportedEncodingException, SerialPortException, AlcometerException {
         if (PORT == null) {
-            return;
+            throw new AlcometerException("Порт не найден");
         }
 
         SdpoLog.info("Stop alcometer");
         getSerialPort().writeString("$STOPSENTECH\r\n", "ascii");
     }
 
-    public static void start() throws SerialPortException, UnsupportedEncodingException {
-        if (PORT == null) {
-            return;
+    public static void start() throws SerialPortException, UnsupportedEncodingException, AlcometerException {
+        if (getSerialPort() == null) {
+            throw new AlcometerException("Порт не найден");
         }
 
         SdpoLog.info("Start alcometer");
@@ -61,13 +61,14 @@ public class AlcometerHelper {
     }
 
     public static String result() throws SerialPortException, AlcometerException {
-        if (PORT == null) {
-            return null;
+        if (getSerialPort() == null) {
+            throw new AlcometerException("Порт не найден");
         }
 
         String result = getSerialPort().readString();
 
         if (result == null) {
+            AlcometerHelper.setComPort();
             return null;
         }
 
@@ -103,12 +104,12 @@ public class AlcometerHelper {
         return null;
     }
 
-    public static void reset() {
-        if (getSerialPort() == null) {
-            return;
+    public static void reset() throws AlcometerException {
+        SerialPort serialPort = getSerialPort();
+        if (serialPort == null) {
+            throw new AlcometerException("Порт не найден");
         }
 
-        SerialPort serialPort = getSerialPort();
         try {
             serialPort.openPort();
             serialPort.setParams(4800,
@@ -131,33 +132,41 @@ public class AlcometerHelper {
         }
     }
 
-    public static void close() {
-        if (serialPort != null) {
-            try {
-                serialPort.closePort();
-            } catch (SerialPortException ignore) {
+    public static void close() throws AlcometerException {
+        if (serialPort == null) {
+            throw new AlcometerException("Порт не найден");
+        }
 
-            }
+        try {
+            serialPort.closePort();
+        } catch (SerialPortException ignore) {
+
         }
     }
 
     public static SerialPort getSerialPort() {
         if (serialPort == null && PORT != null) {
             serialPort = new SerialPort(PORT);
+        } if (PORT == null) {
+            serialPort = null;
         }
+
         return serialPort;
     }
 
-    public static void setComPort() {
+    public static synchronized void setComPort() {
         SdpoLog.info("Request com port alcometer...");
         String alcometerPort = COMPorts.getComPort("VID_0483");
         if (alcometerPort.contains("error")) {
             AlcometerHelper.PORT = null;
-            SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
+            SdpoLog.error("Alcometer return error: " + alcometerPort);
         } else if (!alcometerPort.equals(AlcometerHelper.PORT)) {
             AlcometerHelper.PORT = alcometerPort;
-            SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
-            AlcometerHelper.reset();
+            try {
+                AlcometerHelper.reset();
+            } catch (AlcometerException ignored) {}
         }
+
+        SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
     }
 }

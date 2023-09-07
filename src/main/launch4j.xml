@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>C:\Users\ellid\IdeaProjects\sdpo\build\libs\sdpo-0.0.1-SNAPSHOT.jar</jar>
+  <outfile>C:\Users\ellid\IdeaProjects\sdpo\build\libs\sdpo.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>%appdata%/sdpo</chdir>
+  <priority>high</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\ellid\IdeaProjects\sdpo-launcher\src\main\resources\favicon.ico</icon>
+  <jre>
+    <path>%JAVA_HOME%;%PATH%</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+  <versionInfo>
+    <fileVersion>2.5.3.0</fileVersion>
+    <txtFileVersion>version 2.5.3.0</txtFileVersion>
+    <fileDescription>ПК автоматизированной системы передачи информации о состоянии здоровья работников и дистанционного контроля состояния их здоровья Трансавто-7</fileDescription>
+    <copyright>Трансавто-7</copyright>
+    <productVersion>2.5.3.0</productVersion>
+    <txtProductVersion>Система допуска предрейсовых осмотров</txtProductVersion>
+    <productName>ПК автоматизированной системы передачи информации о состоянии здоровья работников и дистанционного контроля состояния их здоровья Трансавто-7</productName>
+    <companyName>Трансавто-7</companyName>
+    <internalName>Трансавто-7</internalName>
+    <originalFilename>sdpo.exe</originalFilename>
+    <trademarks>Трансавто-7</trademarks>
+    <language>RUSSIAN</language>
+  </versionInfo>
+</launch4jConfig>
