@@ -60,6 +60,7 @@ router.beforeEach((to, from, next) => {
 
   if (to.name === 'home') {
     store.state.inspection = {};
+    store.state.logs = [];
   }
 
   return next();

@@ -28,6 +28,7 @@ export async function saveInspection(inspection = store.state.inspection) {
     if (store.state.config?.main?.selected_medic?.id) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
+    inspection.logs = store.state.logs ?? [];
     return await axios.post(`inspection/save`, inspection).then(({ data }) => {
         console.log(data);
         return data;

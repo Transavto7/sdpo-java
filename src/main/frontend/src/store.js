@@ -5,6 +5,7 @@ const toast = useToast();
 const store = createStore({
     state() {
         return {
+            logs: [],
             inspection: {},
             driver: {},
             config: {},
@@ -14,6 +15,17 @@ const store = createStore({
             selectingMedic: false,
             loseConnect: false,
         }
+    },
+    mutations: {
+        PUSH_LOG (state, log) {
+            state.logs.push(log)
+        },
+    },
+    actions: {
+        pushLog ({ commit }, log) {
+            const logStr = `[${new Date().toISOString()}] ${log}`
+            commit('PUSH_LOG', logStr)
+        },
     },
     getters: {
         url: state => {

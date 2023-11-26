@@ -1,6 +1,7 @@
 <script>
 import { getPressure } from '@/helpers/tonometer';
 import { disableTonometer } from '@/helpers/tonometer';
+import { mapActions } from 'vuex';
 
 export default {
     data() {
@@ -21,11 +22,14 @@ export default {
             }
 
             if (result?.pulse) {
-            this.inspection.pulse = result.pulse;
+                this.inspection.pulse = result.pulse;
+                this.pushLog(`Pulse:` + result.pulse)
             }
             
             if (result?.systolic || result?.diastolic) {
-                this.inspection.tonometer = result.systolic + '/' + result.diastolic;
+                const tonometer = result.systolic + '/' + result.diastolic;
+                this.inspection.tonometer = tonometer;
+                this.pushLog(`Tonometer:` + tonometer)
             }
 
             clearInterval(this.interval);
@@ -43,6 +47,11 @@ export default {
         system() {
             return this.$store.state.config?.system || {};
         }
+    },
+    methods: {
+        ...mapActions([
+            'pushLog'
+        ])
     }
 }
 </script>
