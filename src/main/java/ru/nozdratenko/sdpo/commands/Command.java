@@ -9,12 +9,11 @@ public abstract class Command {
     private static final Map<String, Command> commands = new HashMap<>();
 
     static {
+        new AlcometrScreenCommand().register(commands);
+        new AlcometrCommand().register(commands);
         new PhotoCommand().register(commands);
         new VideoCommand().register(commands);
         new PhotoAndVideoCommand().register(commands);
-        new AlcometrScreenCommand().register(commands);
-        new AlcometrCommand().register(commands);
-
     }
 
     protected void register(Map<String, Command> commands) {
