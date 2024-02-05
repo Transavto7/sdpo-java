@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
-  <jar>C:\sdpo_jar\sdpo.jar</jar>
-  <outfile>C:\sdpo\sdpo.exe</outfile>
+  <jar>C:\sdpo\sdpo-java-main\sdpo-java-main\build\libs\sdpo-2.5.5-SNAPSHOT.jar</jar>
+  <outfile>C:\sdpo\sdpo-2.5.5.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>%appdata%/sdpo</chdir>
