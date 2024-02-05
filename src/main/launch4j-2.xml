@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
-  <jar>C:\sdpo_jar\sdpo.jar</jar>
+  <jar>C:\sdpo_jar\sdpo-0.0.1-SNAPSHOT.jar</jar>
   <outfile>C:\sdpo\sdpo.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
