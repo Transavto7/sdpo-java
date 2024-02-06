@@ -2,16 +2,19 @@
 import { getDriver } from '../helpers/api';
 import { useToast } from "vue-toastification";
 import MedicSelect from '@/components/MedicSelect.vue';
+import ApprovalModal from '@/components/ApprovalModal.vue';
 
 export default {
    name: 'Home',
-   components: { MedicSelect },
+   components: { MedicSelect, ApprovalModal },
    data() {
     return {
         driver_id: '',
         error: '',
         toast: useToast(),
         loading: false,
+        processingApproval : false,
+        visibleApprovalDoc : false
     }
    },
    methods: {
@@ -60,6 +63,7 @@ export default {
    watch: {
         driver_id: function (val) {
             this.checkDriver();
+            if (!this.hasDriver) this.processingApproval = false;
         }
    },
    computed: {
@@ -68,6 +72,9 @@ export default {
     },
     inspection() {
         return this.$store.state.inspection;
+    },
+    hasDriver() {
+      return this.inspection.driver_id && !this.error
     }
    },
    mounted() {
@@ -82,6 +89,7 @@ export default {
 
 <template>
     <medic-select />
+    <approval-modal v-model:visible="visibleApprovalDoc" @close-modal="visibleApprovalDoc = false" />
     <div class="home">
         <div class="driver-form">
             <div v-if="inspection.driver_fio" class="driver-form__title animate__animated animate__fadeInDown d-2">
@@ -108,7 +116,10 @@ export default {
                 <button class="number-buttons__item" @click="driver_id += '0'">0</button>
                 <button class="number-buttons__item" @click="driver_id = driver_id.slice(0, -1)"><i class="ri-delete-back-line"></i></button>
             </div>
-            <button v-if="inspection.driver_id && !error" @click="start" class="btn animate__animated animate__fadeInUp">начать осмотр</button>
+          <div v-if="hasDriver" class="login__approval-card animate__animated animate__fadeInUp">
+            <input type="checkbox" v-model="processingApproval"> <p>Даю согласие на <ins @click="visibleApprovalDoc = true"> обработку персональных данных </ins></p>
+          </div>
+            <button v-if="hasDriver && processingApproval" @click="start" class="btn animate__animated animate__fadeInUp">начать осмотр</button>
             <div v-else-if="error" class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
         </div>
     </div>
