@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunksdpo_frontend"]=self["webpackChunksdpo_frontend"]||[]).push([[988],{6988:function(n,a,e){e.r(a),e.d(a,{default:function(){return u}});var t=e(3396);const s={class:"help"},d=(0,t._)("h1",{class:"animate__animated animate__fadeInDown"},"Техническая поддержка",-1),r=(0,t._)("h3",{class:"animate__animated animate__fadeInDown d-1"},"+7 (916) 363-59-07",-1),i=[d,r];function _(n,a,e,d,r,_){return(0,t.wg)(),(0,t.iD)("div",s,i)}var c={},o=e(89);const f=(0,o.Z)(c,[["render",_]]);var u=f}}]);
+//# sourceMappingURL=988.4bc92566.js.map
