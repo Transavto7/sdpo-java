@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
-  <jar>C:\sdpo\sdpo-java-main\sdpo-java-main\build\libs\sdpo-2.5.6-SNAPSHOT.jar</jar>
-  <outfile>X:\sdpo-2.5.6.exe</outfile>
+  <jar>C:\sdpo\sdpo-java-main\sdpo-java-main\build\libs\sdpo-2.5.7-SNAPSHOT.jar</jar>
+  <outfile>X:\sdpo-2.5.7.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>%appdata%/sdpo</chdir>
@@ -22,16 +22,16 @@
     <maxVersion></maxVersion>
   </jre>
   <versionInfo>
-    <fileVersion>2.5.6.0</fileVersion>
-    <txtFileVersion>version 2.5.6.0</txtFileVersion>
+    <fileVersion>2.5.7.0</fileVersion>
+    <txtFileVersion>version 2.5.7.0</txtFileVersion>
     <fileDescription>T7</fileDescription>
     <copyright>Трансавто-7</copyright>
-    <productVersion>2.5.5.0</productVersion>
+    <productVersion>2.5.7.0</productVersion>
     <txtProductVersion>Система допуска предрейсовых осмотров</txtProductVersion>
     <productName>ПК автоматизированной системы передачи информации о состоянии здоровья работников и дистанционного контроля состояния их здоровья Трансавто-7</productName>
     <companyName>Трансавто-7</companyName>
     <internalName>Трансавто-7</internalName>
-    <originalFilename>sdpo.exe</originalFilename>
+    <originalFilename>sdpo-2.5.7.exe</originalFilename>
     <trademarks>Трансавто-7</trademarks>
     <language>RUSSIAN</language>
   </versionInfo>
