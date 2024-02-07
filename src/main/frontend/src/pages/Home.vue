@@ -14,7 +14,7 @@ export default {
         toast: useToast(),
         loading: false,
         processingApproval : false,
-        visibleApprovalDoc : false
+        visibleApprovalDoc : false,
     }
    },
    methods: {
@@ -89,7 +89,10 @@ export default {
 
 <template>
     <medic-select />
-    <approval-modal v-model:visible="visibleApprovalDoc" @close-modal="visibleApprovalDoc = false" />
+    <approval-modal v-model:visible="visibleApprovalDoc"
+                    @close-modal="visibleApprovalDoc = false"
+                    @accept="processingApproval = true"
+    />
     <div class="home">
         <div class="driver-form">
             <div v-if="inspection.driver_fio" class="driver-form__title animate__animated animate__fadeInDown d-2">

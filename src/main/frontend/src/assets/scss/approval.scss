@@ -36,6 +36,9 @@
     font-size: 1em;
     font-weight: 200;
     margin: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     ::-webkit-scrollbar {
       -webkit-appearance: none;
