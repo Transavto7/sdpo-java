@@ -92,6 +92,24 @@ public class IndexController {
         return ResponseEntity.status(403).body("error");
     }
 
+    @GetMapping(value = "api/verification", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity apiGetVerification() {
+        try {
+            Request request = new Request( "sdpo/terminal/verification");
+            String response = request.sendGet();
+            if (request.success && response.length() < 500) {
+                JSONObject jsonObject = new JSONObject(response);
+                return ResponseEntity.ok().body(jsonObject.toMap());
+            } else {
+                return ResponseEntity.status(403).body("error");
+            }
+        } catch (IOException | ApiException e) {
+            SdpoLog.error(e);
+        }
+        return ResponseEntity.status(403).body("error");
+    }
+
     @PostMapping(value = "api/logo", produces = "application/json; charset=utf-8")
     @ResponseBody
     public ResponseEntity apiSaveLogo(@RequestBody Map<String, String> json) {
@@ -111,6 +129,7 @@ public class IndexController {
                 Request request = new Request( "sdpo/medics");
                 String response = request.sendGet();
                 JSONObject jsonObject = new JSONObject(response);
+
                 return ResponseEntity.ok().body(jsonObject.toMap());
             } else {
                 return ResponseEntity.ok().body(Sdpo.medicStorage.getStore().toMap());

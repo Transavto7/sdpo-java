@@ -11,6 +11,10 @@ const store = createStore({
             admin: false,
             connection: false,
             point: '',
+            verification: {
+                serialNumberTerminal : '',
+                dateInspection: '',
+            },
             selectingMedic: false,
             loseConnect: false,
         }
