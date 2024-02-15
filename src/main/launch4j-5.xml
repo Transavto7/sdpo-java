@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
   <jar>C:\sdpo\sdpo-java-main\sdpo-java-main\build\libs\sdpo-2.5.7-SNAPSHOT.jar</jar>
-  <outfile>X:\sdpo-2.5.7.exe</outfile>
+  <outfile>X:\sdpo-2.5.7.1.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>%appdata%/sdpo</chdir>
