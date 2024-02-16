@@ -127,6 +127,7 @@ public class Sdpo {
                 .setDefault("question_helth", true)
                 .setDefault("alcometer_fast", false)
                 .setDefault("alcometer_skip", true)
+                .setDefault("alcometer_retry", true)
                 .setDefault("alcometer_visible", true)
                 .setDefault("tonometer_skip", true)
                 .setDefault("tonometer_visible", true)

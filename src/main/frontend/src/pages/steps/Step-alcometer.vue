@@ -45,6 +45,11 @@ export default {
                 return;
             }
 
+          if (+result > 0) {
+            return;
+            //добавить перезапуск акометра
+          }
+
             this.inspection.alcometer_result = Number(result) || 0;
             this.nextStep();
         }, 1000);
