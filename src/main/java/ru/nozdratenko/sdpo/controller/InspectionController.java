@@ -184,7 +184,7 @@ public class InspectionController {
             tonometer = inspection.getString("tonometer");
         }
 
-        if (temp > 38.0) {
+        if (temp > 37.0) {
             inspection.put("med_view", "Отстранение");
             inspection.put("admitted", "Не допущен");
         }
