@@ -1,6 +1,6 @@
 import store from '@/store';
 import axios from 'axios';
-import { getPoint } from './api';
+import {getPoint, getVerification} from './api';
 
 export async function loadSettings() {
     await axios.post('/setting/load').then(({ data }) => {
@@ -14,6 +14,7 @@ export async function loadSettings() {
     })
 
     store.state.point = await getPoint();
+    store.state.verification = await getVerification();
 }
 
 export async function savePassword(password) {

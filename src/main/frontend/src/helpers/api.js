@@ -60,6 +60,18 @@ export async function getPoint() {
     });
 }
 
+
+export async function getVerification() {
+    let response = await axios.get('api/verification').then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+    let date = response.date_check ?? '';
+    let serialNumberTerminal = response.serial_number ?? '';
+    return {dateInspection: date, serialNumberTerminal: serialNumberTerminal};
+}
+
 export async function getMedics() {
     return await axios.get('api/medics').then(({ data }) => {
         return data;
