@@ -3,6 +3,12 @@ import { ErrorCodes } from "vue";
 import { useToast } from "vue-toastification";
 const toast = useToast();
 
+export async function readyAlcometer() {
+    return await axios.post(`device/alcometer/ready`).then(({ data }) => {
+        return data;
+    }).catch(defaultError);
+}
+
 export async function getAlcometerResult() {
     return await axios.post(`device/alcometer`).then(({ data }) => {            
         return data;

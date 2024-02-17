@@ -1,12 +1,15 @@
 <script>
-import {getAlcometerResult} from '@/helpers/alcometer';
+import {getAlcometerReady, getAlcometerResult, readyAlcometer} from '@/helpers/alcometer';
 import {makeMedia} from '@/helpers/camera';
 
 export default {
   data() {
     return {
       interval: null,
-      seconds: 5
+      seconds: 5,
+      readyRetry : false,
+      needRetry : false,
+      visibleRetryModal : false,
     }
   },
   methods: {
@@ -23,10 +26,16 @@ export default {
     },
     async prevStep() {
       this.$router.push({name: 'step-thermometer'});
+    },
+    async retry() {
+      await readyAlcometer();
+      this.visibleRetryModal = true;
+      this.needRetry = true;
     }
   },
   async mounted() {
     this.saveWebCam();
+    await readyAlcometer();
     this.timerInterval = setInterval(() => {
       this.seconds--;
       if (this.seconds < 1) {
@@ -35,6 +44,7 @@ export default {
     }, 1000);
 
     this.requestInterval = setInterval(async () => {
+      if (this.needRetry && this.visibleRetryModal && !this.readyRetry) return;
       const result = await getAlcometerResult();
 
       if (result === undefined || result === null) {
@@ -45,57 +55,61 @@ export default {
         return;
       }
 
-          if (+result > 0) {
-            return;
-            //добавить перезапуск акометра
-          }
+      if (Number(result) > 0 && !this.needRetry && !this.readyRetry) {
+        await this.retry();
+        return;
+      }
 
-            this.inspection.alcometer_result = Number(result) || 0;
-            this.nextStep();
-        }, 1000);
+      this.inspection.alcometer_result = Number(result) || 0;
+      this.nextStep();
+    }, 1000);
+  },
+  unmounted() {
+    clearInterval(this.requestInterval);
+    clearInterval(this.timerInterval);
+  },
+  computed: {
+    inspection() {
+      return this.$store.state.inspection;
     },
-    unmounted() {
-        clearInterval(this.requestInterval);
-        clearInterval(this.timerInterval);
+    system() {
+      return this.$store.state.config?.system || {};
     },
-    computed: {
-        inspection() {
-            return this.$store.state.inspection;
-        },
-        system() {
-            return this.$store.state.config?.system || {};
-        },
-        status() {
-            if (this.seconds == 5) {
-                return 'через ' + this.seconds + ' секунд';
-            } else if (this.seconds == 1) {
-                return 'через ' + this.seconds + ' секунду';
-            } else if (this.seconds < 1) {
-                return ' прямо сейчас!';
-            } else {
-                return 'через ' + this.seconds + ' секунды';
-            }
-        }
+    status() {
+      if (this.seconds == 5) {
+        return 'через ' + this.seconds + ' секунд';
+      } else if (this.seconds == 1) {
+        return 'через ' + this.seconds + ' секунду';
+      } else if (this.seconds < 1) {
+        return ' прямо сейчас!';
+      } else {
+        return 'через ' + this.seconds + ' секунды';
+      }
     }
+  }
 }
 </script>
 <template>
-  <div class="step-5__outer">
-    <div class="step-5">
+  <modal-retry v-model:visible="visibleRetryModal"
+               @close-modal="visibleRetryModal = false"
+               @accept="readyRetry = true"
+  />
+  <div class="step-alcometer__outer">
+    <div class="step-alcometer">
       <h3 class="animate__animated animate__fadeInDown">Проверка на алкоголь</h3>
 
-      <div class="step-5__items">
-        <div class="step-5__item animate__animated animate__fadeInUp d-1">
+      <div class="step-alcometer__items">
+        <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span>1</span>
           <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
           Проверьте, что вставлена воронка
         </div>
-        <div class="step-5__item animate__animated animate__fadeInUp d-2">
+        <div class="step-alcometer__item animate__animated animate__fadeInUp d-2">
           <span>2</span>
           <img width="100" src="@/assets/images/alco_guide_2.png">
           Держите алкотестер на расстоянии 2-3 см от рта
         </div>
-        <div class="step-5__text  animate__animated animate__fadeInUp d-2">
+        <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
           Дождитесь ГОТОВ на экране алкометра<br><br>
           Начните дуть с умеренной силой до окончания<br>
           звукового сигнала.<br><br>
