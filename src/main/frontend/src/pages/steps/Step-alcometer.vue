@@ -1,5 +1,5 @@
 <script>
-import {getAlcometerResult, readyAlcometer} from '@/helpers/alcometer';
+import {closeAlcometer, getAlcometerResult} from '@/helpers/alcometer';
 import {makeMedia} from '@/helpers/camera';
 
 export default {
@@ -27,10 +27,15 @@ export default {
     },
     async retry() {
       this.needRetry = true;
+      await closeAlcometer();
+      this.runCountdown();
     },
     hasResult(result) {
       return !(result === undefined || result === null || result === 'next');
 
+    },
+    checkRetry(result) {
+      return this.system.alcometer_retry && Number(result) > 0 && !this.needRetry;
     },
     runCountdown() {
       this.seconds = 5;
@@ -41,34 +46,20 @@ export default {
         }
       }, 1000);
     },
-    async checkReadyAlcometerRetry() {
-      if (this.system.alcometer_retry) {
-        if (this.needRetry) {
-          return false;
-        }
-        if (this.needRetry) {
-          await readyAlcometer();
-          this.runCountdown();
-        }
-        return true;
-      }
-    }
   },
   async mounted() {
     await this.saveWebCam();
-    await readyAlcometer();
     this.runCountdown()
 
     this.requestInterval = setInterval(async () => {
-      if (!await this.checkReadyAlcometerRetry()) return;
       const result = await getAlcometerResult();
-      if (!this.hasResult(result)) return;
-
-      if (this.system.alcometer_retry && Number(result) > 0 && !this.needRetry) {
+      if (!this.hasResult(result)) {
+        return;
+      }
+      if (this.checkRetry(result)) {
         await this.retry();
         return;
       }
-
       this.inspection.alcometer_result = Number(result) || 0;
       this.nextStep();
     }, 1000);
@@ -106,7 +97,7 @@ export default {
       <div class="step-alcometer__items">
         <div v-if="!needRetry" class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span>1</span>
-          <img  style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
+          <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
           <label>Проверьте, что вставлена воронка</label>
         </div>
         <div v-if="!needRetry" class="step-alcometer__item animate__animated animate__fadeInUp d-2">

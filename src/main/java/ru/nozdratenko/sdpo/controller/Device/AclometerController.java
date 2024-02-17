@@ -12,28 +12,6 @@ import ru.nozdratenko.sdpo.util.StatusType;
 @RestController
 public class AclometerController {
 
-    @PostMapping(value = "/device/alcometer/ready")
-    @ResponseBody
-    public ResponseEntity alcometerReady() {
-        AlcometerResultTask task = Sdpo.alcometerResultTask;
-        if (task.currentStatus == StatusType.FREE) {
-            task.currentStatus = StatusType.REQUEST;
-            return ResponseEntity.ok().body("next");
-        }
-
-        if (!task.currentStatus.skip) {
-            return ResponseEntity.ok().body("next");
-        }
-
-        if (task.currentStatus == StatusType.ERROR) {
-            return ResponseEntity.status(500).body(task.error.toMap());
-        }
-
-        JSONObject json = new JSONObject();
-        json.put("message", "Не удалось получить статус");
-        return ResponseEntity.status(500).body(json);
-    }
-
     @PostMapping(value = "/device/alcometer")
     @ResponseBody
     public ResponseEntity alcometer() {
