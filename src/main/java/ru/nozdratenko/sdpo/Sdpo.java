@@ -81,7 +81,9 @@ public class Sdpo {
         new Thread(() -> {
             try {
                 Thread.sleep(20000);
-            } catch (InterruptedException e) { }
+            } catch (InterruptedException e) {
+                SdpoLog.error(e);
+            }
             BrowserHelper.openUrl("http://localhost:8080");
         }).start();
     }
@@ -96,9 +98,6 @@ public class Sdpo {
             while (true) {
                 if (scanner.hasNextLine()) {
                     String input = scanner.nextLine();
-                    if (!input.isEmpty()) {
-                        // обработка ввода
-                    }
                 }
             }
         }).start();
@@ -112,8 +111,8 @@ public class Sdpo {
                         "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --kiosk " +
                                 "${url} --edge-kiosk-type=fullscreen -inprivate")
                 .setDefault("url", "https://test.ta-7.ru/api")
-                .setDefault("token", "$2y$10$4tO4QmPV7eU2VHKdDbUWVusMa7Dwui3IGYi69UPoGrYsWrM3KMda.")
-//                .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
+//                .setDefault("token", "$2y$10$4tO4QmPV7eU2VHKdDbUWVusMa7Dwui3IGYi69UPoGrYsWrM3KMda.")
+                .setDefault("token", "$2y$10$2We7xBpaq1AxOhct.eTO4eq2G/winHxyNbfn.WsD7WbZw6rlMcLrS")
                 .setDefault("tonometer_mac", null)
                 .setDefault("tonometer_connect", false)
                 .saveFile();

@@ -113,7 +113,7 @@ export default {
                 </label>
             </div>
           <div class="admin__system-card__item">
-            <span>Перезамер при положительном тесте</span>
+            <span>Количественный замер при положительном тесте</span>
             <label class="switch">
               <input type="checkbox" v-model="system.alcometer_retry">
               <div class="slider round"></div>
