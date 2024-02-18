@@ -5,10 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.exception.PrinterException;
-import ru.nozdratenko.sdpo.exception.VideoRunException;
-import ru.nozdratenko.sdpo.helper.*;
-import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.PrinterHelper;
+import ru.nozdratenko.sdpo.helper.TonometerHelper;
 import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
 import ru.nozdratenko.sdpo.task.ThermometerResultTask;
@@ -29,6 +28,7 @@ public class DeviceController {
     public ResponseEntity photo() {
         try {
             String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
+            SdpoLog.info("Make photo with name: " + name);
             CameraHelper.makePhoto(name);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
@@ -49,6 +49,7 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity videoTest() {
             String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
+            SdpoLog.info("Make photo test with name: " + name);
             CameraHelper.makeVideo(name);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");

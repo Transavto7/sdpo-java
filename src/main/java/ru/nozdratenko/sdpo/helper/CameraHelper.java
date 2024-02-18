@@ -2,13 +2,12 @@ package ru.nozdratenko.sdpo.helper;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IPixelFormat;
-import com.xuggle.xuggler.IVideoPicture;
-import com.xuggle.xuggler.video.ConverterFactory;
-import com.xuggle.xuggler.video.IConverter;
+import org.bytedeco.ffmpeg.global.avcodec;
+import org.bytedeco.ffmpeg.global.avutil;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.IplImage;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.file.FileBase;
@@ -16,9 +15,7 @@ import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,23 +23,55 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CameraHelper {
     public static File lastResultVideo = null;
     public static File getLastResultPhoto = null;
+    private static FrameGrabber workWebcam = null;
 
     public static boolean isCameraAvailable() {
         try {
-            return Webcam.getDefault() != null;
+
+            return !Webcam.getWebcams().isEmpty();
         } catch (WebcamException e) {
-            SdpoLog.warning("No webcam has been detected!");
+            SdpoLog.warning("No webcam has been detected!" + e);
             return false;
         }
     }
+
+    private static FrameGrabber findWebcam(){
+        if(workWebcam == null){
+            findWebcam(false);
+        }
+        return workWebcam;
+    }
+
+    private static FrameGrabber findWebcam(boolean isDefaultWebcam){
+
+        if(workWebcam == null && isCameraAvailable()) {
+
+            List<Webcam> webcams = Webcam.getWebcams();
+            SdpoLog.info( String.format("Find %s camers: [ %s ]", webcams.size(), webcams.stream().map(entry -> entry.getName())
+                    .collect(Collectors.joining(", "))));
+            if(webcams.size() > 1 && !isDefaultWebcam){
+                workWebcam = new OpenCVFrameGrabber(1);
+            }else {
+                SdpoLog.info("This is the default camera.");
+                workWebcam = new OpenCVFrameGrabber(0);
+            }
+
+            SdpoLog.info( String.format("Camera options: %s", workWebcam.getOptions().entrySet().stream()
+                    .map(entry -> entry.getKey().toString() + entry.getValue().toString()).collect(Collectors.joining(";\n"))));
+        }
+
+        return workWebcam;
+    }
+
     public static void initDimension() {
         try {
-            CameraHelper.closeCam();
             Webcam webcam = Webcam.getDefault();
             double with = Double.parseDouble(Sdpo.systemConfig.getString("camera_dimension"));
             Dimension dim = getSize(with);
@@ -50,22 +79,19 @@ public class CameraHelper {
         } catch (IllegalArgumentException e) {
             SdpoLog.warning(e);
         } finally {
-            CameraHelper.openCam();
+            SdpoLog.info("Camera dimensions initialized");
         }
     }
 
     public static void openCam() {
         if (isCameraAvailable()) {
             try {
-                Webcam webcam = Webcam.getDefault();
-                if (!webcam.getLock().isLocked() && !webcam.isOpen()) {
-                    webcam.open();
-                    SdpoLog.info("Camera opened successfully.");
-                } else {
-                    SdpoLog.info("Camera is already open or locked.");
-                }
-            } catch (WebcamException e) {
-                SdpoLog.error("Failed to open camera: " + e.getMessage());
+                workWebcam = findWebcam();
+                workWebcam.start();
+                SdpoLog.info("Camera opened successfully.");
+
+            } catch (FrameGrabber.Exception e) {
+                SdpoLog.error("Failed to open camera: " + e);
             }
         } else {
             SdpoLog.info("No camera available. Skipping camera open.");
@@ -73,22 +99,94 @@ public class CameraHelper {
     }
 
     public static void closeCam() {
-        if (isCameraAvailable() && Webcam.getDefault().isOpen()) {
-            Webcam.getDefault().close();
+        if (isCameraAvailable()) {
+            try {
+                findWebcam().close();
+            } catch (FrameGrabber.Exception e) {
+                SdpoLog.error("Failed to close camera: " + e);
+            }
+            SdpoLog.info("Camera closed.");
         }
+    }
+
+    public static Dimension getSize(Double width) {
+        try {
+            Webcam webcam = Webcam.getDefault();
+            for (Dimension dim : webcam.getViewSizes()) {
+                if (dim.getWidth() == width) {
+                    return dim;
+                }
+            }
+
+            if (webcam.getViewSizes().length > 0) {
+                return webcam.getViewSizes()[0];
+            }
+        } catch (WebcamException e) {
+            SdpoLog.error("Error get webcam size: " + e);
+        }
+
+        return null;
+    }
+
+    public static Map<Integer, Dimension> getSizes() {
+        Map<Integer, Dimension> result = new HashMap<>();
+        try {
+            for (Dimension dim : Webcam.getDefault().getViewSizes()) {
+                result.put((int) dim.getWidth(), dim);
+            }
+        } catch (WebcamException e) {
+            SdpoLog.error("Error get webcam size: " + e);
+        }
+
+        return result;
+    }
+
+    public static String getDefaultSize() {
+        double result = 0;
+
+        try {
+            Dimension[] viewSizes = Webcam.getWebcams().isEmpty() ? new Dimension[0] : Webcam.getDefault().getViewSizes();
+            for (Dimension dim : viewSizes) {
+                if (result < dim.getWidth()) {
+                    result = dim.getWidth();
+                }
+            }
+        } catch (WebcamException e) {
+            SdpoLog.warning("Error while getting webcam size: " + e);
+        }
+
+        if (result == 0) {
+            return null;
+        }
+
+        return String.valueOf((int) result);
     }
 
     public static String makePhoto(String name) throws IOException {
         if (isCameraAvailable()) {
-            BufferedImage image = Webcam.getDefault().getImage();
-            return savePhoto(image, name);
+            SdpoLog.info("Make a foto, width name camera: " + Webcam.getDefault().getName());
+
+            org.bytedeco.javacv.Frame frame = null;
+            workWebcam = findWebcam();
+            openCam();
+            frame = workWebcam.grab();
+            SdpoLog.info("Make a foto, is not null: " + (frame != null));
+            if (frame != null) {
+                String photo = savePhoto(frame, name);
+                SdpoLog.info("Make a foto, width name: " + photo);
+                closeCam();
+                frame.close();
+                return photo;
+            } else {
+                SdpoLog.info("Failed to capture image.");
+                return null;
+            }
         } else {
             SdpoLog.info("No camera available. Skipping photo capture.");
             return null;
         }
     }
-
-    public static JSONObject makePhotoAndVideo() {
+    public static JSONObject makePhotoAndVideo(){
         return makePhotoAndVideo("");
     }
 
@@ -115,6 +213,7 @@ public class CameraHelper {
     public static void makeVideo(String name) {
         if (isCameraAvailable()) {
             String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
+            SdpoLog.info("Make video with path: " + path);
             new File(path).getParentFile().mkdirs();
             recordScreen(path, 10);
             SdpoLog.info("Saving video");
@@ -124,88 +223,34 @@ public class CameraHelper {
         }
     }
     private static void recordScreen(String filename, int duration) {
-        Webcam webcam = Webcam.getDefault();
-        IMediaWriter writer = ToolFactory.makeWriter(filename);
-        Dimension size = webcam.getViewSize();
-
-        writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, size.width, size.height);
-
-        long start = System.currentTimeMillis();
-
-       int i = 0;
-       while (System.currentTimeMillis() - start < duration * 1000L) {
-            BufferedImage image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
-            IConverter converter = ConverterFactory.createConverter(image, IPixelFormat.Type.YUV420P);
-
-            IVideoPicture frame = converter.toPicture(image, (System.currentTimeMillis() - start) * 1000);
-            frame.setKeyFrame(i == 0);
-            frame.setQuality(100);
-            writer.encodeVideo(0, frame);
-           try {
-               Thread.sleep(20);
-           } catch (InterruptedException e) {
-               /* ignored */
-           }
-           i++;
-        }
-
-        writer.close();
-        SdpoLog.info("Video recorded to the file: " + filename);
-    }
-
-    public static Map<Integer, Dimension> getSizes() {
-        Map<Integer, Dimension> result = new HashMap<>();
         try {
-            for (Dimension dim : Webcam.getDefault().getViewSizes()) {
-                result.put((int) dim.getWidth(), dim);
+            workWebcam = findWebcam();
+            openCam();
+
+            FrameRecorder recorder = new FFmpegFrameRecorder(filename,
+                    workWebcam.getImageWidth(), workWebcam.getImageHeight());
+            recorder.setFrameRate(workWebcam.getFrameRate());
+            recorder.setVideoCodec( avcodec.AV_CODEC_ID_H264 );
+            recorder.setPixelFormat( avutil.AV_PIX_FMT_YUV420P );
+            recorder.setFormat("mp4");
+            recorder.start();
+
+            long start = System.currentTimeMillis();
+
+            org.bytedeco.javacv.Frame layer;
+            while ((layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L) {
+                recorder.record(layer);
             }
-        } catch (WebcamException e) {
-            SdpoLog.error("Error get webcam size: " + e);
+
+            recorder.stop();
+            closeCam();
+            recorder.release();
+        } catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
+            SdpoLog.error("Error capturing video:");
+            SdpoLog.error(e);
         }
 
-        return result;
     }
-
-    public static Dimension getSize(Double width) {
-        try {
-            for (Dimension dim : Webcam.getDefault().getViewSizes()) {
-                if (dim.getWidth() == width) {
-                    return dim;
-                }
-            }
-
-            if (Webcam.getDefault().getViewSizes().length > 0) {
-                return Webcam.getDefault().getViewSizes()[0];
-            }
-        } catch (WebcamException e) {
-            SdpoLog.error("Error get webcam size: " + e);
-        }
-
-        return null;
-    }
-
-    public static String getDefaultSize() {
-        double result = 0;
-
-        try {
-            Dimension[] viewSizes = Webcam.getWebcams().isEmpty() ? new Dimension[0] : Webcam.getDefault().getViewSizes();
-            for (Dimension dim : viewSizes) {
-                if (result < dim.getWidth()) {
-                    result = dim.getWidth();
-                }
-            }
-        } catch (WebcamException e) {
-            SdpoLog.warning("Error while getting webcam size: " + e.getMessage());
-        }
-
-        if (result == 0) {
-            return null;
-        }
-
-        return String.valueOf((int) result);
-    }
-
-
 
     public static byte[] readVideoByte() throws IOException {
         if (lastResultVideo == null) {
@@ -223,13 +268,16 @@ public class CameraHelper {
         return bufferedOutputStream.toByteArray();
     }
 
-    public static String savePhoto(BufferedImage image, String name) throws IOException {
+    public static String savePhoto(Frame image, String name) throws IOException {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
-
+        SdpoLog.info("Save photo with path: " + path);
         File photo = new File(path);
 
         photo.getParentFile().mkdirs();
-        ImageIO.write(image, "png", photo);
+
+        OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+        IplImage img = converter.convert(image);
+        opencv_imgcodecs.cvSaveImage(path, img);
 
         if (!photo.exists() || photo.isDirectory()) {
             return null;
@@ -250,6 +298,7 @@ public class CameraHelper {
 
         new Thread(() -> {
             try {
+                SdpoLog.info("Send photo to server with name: " + name);
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "photo");
                 multipartUtility.addFormField("name",  name);
@@ -263,14 +312,19 @@ public class CameraHelper {
 
     public static void saveVideo(String name) {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
+
+        SdpoLog.info( "Save video with path: " + path);
         File video = new File(path);
 
         if (!video.exists() || video.isDirectory()) {
+            SdpoLog.error("File is not exists or directory");
             return;
         }
 
         if (Sdpo.isConnection()) {
             sendVideo(video);
+        }else{
+            SdpoLog.error("Video driver is not connection!");
         }
 
         lastResultVideo = video;
@@ -282,6 +336,7 @@ public class CameraHelper {
 
         new Thread(() -> {
             try {
+                SdpoLog.info("Send video to server with name: " + name);
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "video");
                 multipartUtility.addFormField("name", name);

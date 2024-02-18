@@ -1,7 +1,6 @@
 package ru.nozdratenko.sdpo.commands;
 
 
-import com.github.sarxos.webcam.Webcam;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 

@@ -2,7 +2,6 @@ package ru.nozdratenko.sdpo.commands;
 
 
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;

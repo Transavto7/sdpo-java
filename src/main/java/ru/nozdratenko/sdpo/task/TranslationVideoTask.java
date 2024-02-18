@@ -2,7 +2,6 @@ package ru.nozdratenko.sdpo.task;
 
 import com.github.sarxos.webcam.Webcam;
 import com.xuggle.xuggler.video.ConverterFactory;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.imageio.ImageIO;
@@ -25,7 +24,6 @@ public class TranslationVideoTask extends Thread {
     @Override
     public void run() {
         Webcam webcam = Webcam.getDefault();
-
         while (true) {
             BufferedImage image = ConverterFactory.convertToType(webcam.getImage(), BufferedImage.TYPE_3BYTE_BGR);
             if (!session.isOpen()) {
@@ -39,7 +37,7 @@ public class TranslationVideoTask extends Thread {
                 byte[] byteArray = baos.toByteArray();
                 basicRemote.sendObject(byteArray);
             } catch (IOException | EncodeException | IllegalArgumentException | IllegalStateException e) {
-                /* ignored */
+                SdpoLog.error("Failed serializable foto!");
             }
         }
 

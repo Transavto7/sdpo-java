@@ -2,10 +2,7 @@ package ru.nozdratenko.sdpo;
 
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
-import ru.nozdratenko.sdpo.helper.AlcometerHelper;
-import ru.nozdratenko.sdpo.helper.BrowserHelper;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
-import ru.nozdratenko.sdpo.helper.ThermometerHelper;
+import ru.nozdratenko.sdpo.helper.*;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
@@ -44,6 +41,7 @@ public class Sdpo {
 
 
     public static void runTasks() {
+
         tonometerResultTask.start();
         thermometerResultTask.start();
         alcometerResultTask.start();

@@ -6,8 +6,6 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
