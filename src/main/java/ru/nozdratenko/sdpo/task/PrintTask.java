@@ -19,8 +19,10 @@ public class PrintTask  implements Printable {
     private final String head;
     private final String licence;
 
+    private final String validity;
+
     public PrintTask(String name, String result, String type, String admit, String date, String signature,
-                     String medicName, String head, String licence) {
+                     String medicName, String head, String licence, String validity) {
         this.name = name;
         this.result = result;
         this.type = type;
@@ -31,6 +33,7 @@ public class PrintTask  implements Printable {
 
         this.head = Objects.requireNonNullElse(head, "ООО \"Трансавто-7\"");
         this.licence = Objects.requireNonNullElse(licence, "Бессрочная лицензия от 09.12.2020 № Л041-1177-91/00366739");
+        this.validity = Objects.requireNonNullElse(validity, "");
     }
 
     @Override
@@ -51,7 +54,8 @@ public class PrintTask  implements Printable {
                         this.admit,
                         this.date,
                         this.signature,
-                        this.medicName);
+                        this.medicName,
+                        this.validity);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -62,10 +66,10 @@ public class PrintTask  implements Printable {
 
 
     public void getImage(Graphics g, int width, String name, String result, String type,
-                         String admit, String date, String signature, String medicName) throws IOException {
+                         String admit, String date, String signature, String medicName, String validity) throws IOException {
 
         Font big = new Font("Arial", Font.PLAIN, 8);
-        Font normal = new Font("Arial", Font.PLAIN, 6);
+        Font normal = new Font("Arial", Font.PLAIN, 5);
         Font small = new Font("Arial", Font.PLAIN, 4);
 
         g.setFont(big);
@@ -80,7 +84,7 @@ public class PrintTask  implements Printable {
         g.setFont(normal);
         g.setColor(Color.BLACK);
         center = (width / 2) - (g.getFontMetrics().stringWidth(name) / 2);
-        g.drawString(name, center, 26);
+        g.drawString(name, center, 24);
 
         g.setFont(normal);
         printString(0, g, result + " " + type, width);
@@ -92,7 +96,7 @@ public class PrintTask  implements Printable {
         }
 
         center = (width / 2) - (g.getFontMetrics().stringWidth(date) / 2);
-        g.drawString(date, center, 66);
+        g.drawString(date, center, 60);
 
         if (signature == null) {
             signature = "Неизвестно";
@@ -100,14 +104,17 @@ public class PrintTask  implements Printable {
 
         g.setFont(normal);
         center = (width / 2) - (g.getFontMetrics().stringWidth(medicName) / 2);
-        g.drawString(medicName, center, 73);
+        g.drawString(medicName, center, 65);
 
         center = (width / 2) - (g.getFontMetrics().stringWidth("ЭЦП " + signature) / 2);
-        g.drawString("ЭЦП " + signature, center, 80);
+        g.drawString("ЭЦП " + signature, center, 70);
+
+        center = (width / 2) - (g.getFontMetrics().stringWidth(validity) / 2);
+        g.drawString(validity, center, 75);
     }
 
     private static void printString(int i, Graphics g, String text, int width)  {
         int center = (width / 2) - (g.getFontMetrics().stringWidth(text) / 2);
-        g.drawString(text, center, 35 + (7 * i));
+        g.drawString(text, center, 30 + (6 * i));
     }
 }

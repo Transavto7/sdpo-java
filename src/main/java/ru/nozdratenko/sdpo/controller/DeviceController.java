@@ -48,10 +48,10 @@ public class DeviceController {
     @PostMapping(value = "/device/video/test")
     @ResponseBody
     public ResponseEntity videoTest() {
-            String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
-            CameraHelper.makeVideo(name);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
+        String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
+        CameraHelper.makeVideo(name);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
     }
 
     @GetMapping(value = "/device/video/size")
@@ -173,7 +173,8 @@ public class DeviceController {
                     "допущен",
                     "23-10-2022 06:00:00",
                     "test-cat-test",
-                    "Котов Кот Котыч");
+                    "Котов Кот Котыч",
+                    "С 1.01.2000 по 1.01.2077");
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error printer: " + e);
