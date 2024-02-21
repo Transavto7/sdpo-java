@@ -8,6 +8,7 @@ export default {
       interval: null,
       seconds: 5,
       needRetry: false,
+      showRetry: false,
     }
   },
   methods: {
@@ -27,6 +28,9 @@ export default {
     },
     async retry() {
       this.needRetry = true;
+      setTimeout(() => {
+        this.showRetry = true;
+      }, 3000)
       await closeAlcometer();
       this.runCountdown();
     },
@@ -91,37 +95,51 @@ export default {
 </script>
 <template>
   <div class="step-alcometer__outer">
-    <div class="step-alcometer">
+    <div v-if="!showRetry" class="step-alcometer">
       <h3 class="animate__animated animate__fadeInDown">Проверка на алкоголь</h3>
 
-      <div class="step-alcometer__items">
-        <div v-if="!needRetry" class="step-alcometer__item animate__animated animate__fadeInUp d-1">
+      <div  class="step-alcometer__items">
+        <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span>1</span>
           <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
           <label>Проверьте, что вставлена воронка</label>
         </div>
-        <div v-if="!needRetry" class="step-alcometer__item animate__animated animate__fadeInUp d-2">
+        <div class="step-alcometer__item animate__animated animate__fadeInUp d-2">
           <span>2</span>
           <img width="100" src="@/assets/images/alco_guide_2.png">
           Держите алкотестер на расстоянии 2-3 см от рта
-        </div>
-        <div v-if="needRetry" class="step-alcometer__item animate__animated animate__fadeInUp d-1">
-          <span style="min-height: 30px">3</span>
-          <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
-          Снимите воронку , установите мундштук
         </div>
         <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
           Дождитесь ГОТОВ на экране алкометра<br><br>
           Начните дуть с умеренной силой до окончания<br>
           звукового сигнала.<br><br>
-
-          Дуйте {{ status }}
+          <p v-if="!needRetry">Дуйте {{ status }}</p>
+          <p v-if="needRetry" style="width: 100%">Результат: Положительный</p>
         </div>
       </div>
-      <p v-if="!needRetry" class="alert red">
+      <p v-if="!showRetry" class="alert red">
         <i class="ri-alarm-warning-fill"></i>
         НЕ ПРИКАСАТЬСЯ К АЛКОТЕСТЕРУ ГУБАМИ
       </p>
+    </div>
+    <div v-if="showRetry" class="step-alcometer">
+      <h3  class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
+      <div  class="step-alcometer__items">
+        <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
+          <span style="min-height: 30px">3</span>
+          <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
+          Снимите воронку , установите мундштук
+        </div>
+        <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
+          Снимите мундштук-воронка<br><br>
+          Установите индивидуальный мундштук<br><br>
+          Дождитесь ГОТОВ на экране алкометра<br><br>
+          Начните дуть с умеренной силой до окончания<br>
+          звукового сигнала.<br><br>
+          Снимите индивидуальный мундштук<br><br>
+          Установите мундштук-воронка<br><br>
+        </div>
+      </div>
     </div>
     <div class="step-buttons">
       <button @click="prevStep()" class="btn opacity blue">Назад</button>
