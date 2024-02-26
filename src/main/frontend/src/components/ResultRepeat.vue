@@ -10,7 +10,7 @@ export default {
     messageContent: {
       type: String,
       require: true,
-      default : ''
+      default: ''
     }
   },
   methods: {
@@ -36,15 +36,15 @@ export default {
        class="medics__overlay animate__animated animate__fadeIn">
   </div>
   <div v-if="visible" class="approval animate__animated animate__fadeInRight">
-    <div class="approval__title">
-      <span
-          style="font-weight: 400;">Не идетифицирован</span>
+    <div class="not-identify__title">
+      <h3>Не идентифицирован</h3>
     </div>
     <div class="approval__content">
-      <div>
-        {{this.messageContent}}
+      <div class="not-identify__content">
+        {{ this.messageContent }}
       </div>
-      <button @click="accept" class="btn approval__button-submit animate__animated animate__fadeInUp">В начало осмотра</button>
+      <button @click="accept" class="btn approval__button-submit animate__animated animate__fadeInUp">В начало осмотра
+      </button>
     </div>
   </div>
 

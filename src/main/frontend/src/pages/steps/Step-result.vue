@@ -8,8 +8,8 @@ export default {
     return {
       backTimeout: null,
       result: {},
-      conclusion : {
-        admitted : '',
+      conclusion: {
+        admitted: '',
         comments: '',
       },
       notIdentified: 'Не идентифицирован',
@@ -48,7 +48,7 @@ export default {
     },
     redirectRepeat() {
       if (this.$route.name === 'step-result') {
-        this.$router.push({ name: 'step-retry' });
+        this.$router.push({name: 'step-retry'});
       }
     },
     setTimeoutAndRedirect() {
@@ -119,7 +119,6 @@ export default {
                         Счастливого пути!
                 </p>
             </span>
-
       <div class="step-result__buttons">
         <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
         <button v-if="result?.admitted === 'Допущен'"
