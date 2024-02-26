@@ -10,8 +10,9 @@ export default {
       result: {},
       conclusion : {
         admitted : '',
-        comments: ''
+        comments: '',
       },
+      notIdentified: 'Не идентифицирован',
     }
   },
   async mounted() {
@@ -51,7 +52,7 @@ export default {
       }
     },
     setTimeoutAndRedirect() {
-      if (this.result.admitted === 'Не идетифицирован') {
+      if (this.result.admitted !== this.notIdentified) {
         return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
       }
       return setTimeout(this.redirectHome, 5000);
@@ -62,7 +63,7 @@ export default {
       return this.system.auto_start;
     },
     showRetryModal() {
-      return this.result.admitted === 'Не идетифицирован';
+      return this.result.admitted === this.notIdentified;
     },
     getComment() {
       return this.result.comments ?? '';
