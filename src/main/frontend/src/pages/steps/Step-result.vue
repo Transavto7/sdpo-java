@@ -52,7 +52,7 @@ export default {
       }
     },
     setTimeoutAndRedirect() {
-      if (this.result.admitted !== this.notIdentified) {
+      if (this.result.admitted === this.notIdentified) {
         return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
       }
       return setTimeout(this.redirectHome, 5000);
