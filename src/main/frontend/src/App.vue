@@ -9,23 +9,37 @@ export default {
     ErrorModal
   },
   computed: {
-      point() {
-          return this.$store.state.point;
-      },
+    point() {
+      return this.$store.state.point;
+    },
+    dateVerification() {
+      return this.$store.state.verification.dateInspection
+    },
+    serialNumber() {
+      return this.$store.state.verification.serialNumberTerminal
+    },
   },
 }
 </script>
 
 <template>
-  <navigation />
-  <error-modal />
-    <transition name="fade">
-      <router-view></router-view>
-    </transition>
-    <div class="footer">
+  <navigation/>
+  <error-modal/>
+  <transition name="fade">
+    <router-view></router-view>
+  </transition>
+  <div class="footer">
+    <div class="footer__point-version">
       {{ point || 'Незвестный пункт выпуска' }}
-      <span>СДПО 2.5.9</span>
+      <span>Версия: 2.5.9</span>
     </div>
+  </div>
+  <div class="footer__serial-number_date-notification">
+    <div>
+      <span class="date-notification">{{dateVerification || ''}}</span>
+    </div>
+    <span class="serial-number">{{(serialNumber ? 'S/N ' + serialNumber : '') }}</span>
+  </div>
 </template>
 
 <style>

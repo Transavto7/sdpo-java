@@ -1,6 +1,5 @@
 <script>
 import { saveInspection, replayPrint } from '@/helpers/api';
-import { mapActions } from 'vuex';
 
 export default {
     data() {
@@ -25,9 +24,6 @@ export default {
         clearTimeout(this.backTimeout);
     },
     methods: {
-        ...mapActions([
-          'pushLog'
-        ]),
         getSleepStatus(status) {
             return status === 'Да' ? 'Выспались' : 'Не выспались';
         },
@@ -35,8 +31,6 @@ export default {
             return status === 'Да' ? 'Хорошее' : 'Плохое';
         },
         async save() {
-            await this.pushLog(`Visible pulse: ${this.inspection.pulse}`)
-            await this.pushLog(`Visible tonometer: ${this.inspection.tonometer}`)
             this.result = await saveInspection();
         },
         async replayPrint() {

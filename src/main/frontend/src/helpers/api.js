@@ -28,7 +28,6 @@ export async function saveInspection(inspection = store.state.inspection) {
     if (store.state.config?.main?.selected_medic?.id) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
-    inspection.logs = store.state.logs ?? [];
     return await axios.post(`inspection/save`, inspection).then(({ data }) => {
         console.log(data);
         return data;
@@ -59,6 +58,18 @@ export async function getPoint() {
     }).catch((error) => {
         console.log(error);
     });
+}
+
+
+export async function getVerification() {
+    let response = await axios.get('api/verification').then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+    let date = response.date_check ?? '';
+    let serialNumberTerminal = response.serial_number ?? '';
+    return {dateInspection: date, serialNumberTerminal: serialNumberTerminal};
 }
 
 export async function getMedics() {
