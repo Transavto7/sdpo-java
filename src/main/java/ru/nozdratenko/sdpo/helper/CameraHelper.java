@@ -44,7 +44,7 @@ public class CameraHelper {
 
     private static FrameGrabber findWebcam(){
         if(workWebcam == null){
-            findWebcam(false);
+            findWebcam(true);
         }
         return workWebcam;
     }
@@ -54,7 +54,7 @@ public class CameraHelper {
         if(workWebcam == null && isCameraAvailable()) {
 
             List<Webcam> webcams = Webcam.getWebcams();
-            SdpoLog.info( String.format("Find %s camers: [ %s ]", webcams.size(), webcams.stream().map(entry -> entry.getName())
+            SdpoLog.info( String.format("Find %s camers: [ %s ]", (webcams.size() + 1), webcams.stream().map(entry -> entry.getName())
                     .collect(Collectors.joining(", "))));
             if(webcams.size() > 1 && !isDefaultWebcam){
                 workWebcam = new OpenCVFrameGrabber(1);
@@ -63,8 +63,11 @@ public class CameraHelper {
                 workWebcam = new OpenCVFrameGrabber(0);
             }
 
-            SdpoLog.info( String.format("Camera options: %s", workWebcam.getOptions().entrySet().stream()
-                    .map(entry -> entry.getKey().toString() + entry.getValue().toString()).collect(Collectors.joining(";\n"))));
+            if(webcams == null){
+                SdpoLog.info("Camera not selected!");
+            }
+
+            SdpoLog.info( String.format("Selected %s camera", workWebcam.getOptions().toString()));
         }
 
         return workWebcam;
