@@ -1,7 +1,6 @@
 package ru.nozdratenko.sdpo.task;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;

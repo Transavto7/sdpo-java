@@ -1,12 +1,13 @@
 package ru.nozdratenko.sdpo.websocket;
 
-import com.github.sarxos.webcam.Webcam;
 import org.springframework.stereotype.Component;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.task.TranslationVideoTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.websocket.*;
+import javax.websocket.MessageHandler;
+import javax.websocket.OnError;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.ArrayList;

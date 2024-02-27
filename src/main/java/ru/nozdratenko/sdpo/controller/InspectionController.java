@@ -226,6 +226,8 @@ public class InspectionController {
         String result = response.sendPost(jsonObject.toString());
 
         JSONObject resultJson = new JSONObject(result);
+        SdpoLog.info("Saved inspection: " + resultJson.toString());
+
         if (Sdpo.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(resultJson);
         }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'ru.nozdratenko'
-version = '2.5.8-SNAPSHOT'
+version = '2.5.9-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -23,6 +23,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation group: 'org.json', name: 'json', version: '20210307'
 	implementation group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.12'
+	implementation group: 'org.bytedeco', name: 'javacv', version: '1.5.10'
+	implementation group: 'org.bytedeco', name: 'openblas-platform', version: '0.3.26-1.5.10'
+	implementation group: 'org.bytedeco', name: 'opencv-platform', version: '4.9.0-1.5.10'
+	implementation group: 'org.bytedeco', name: 'ffmpeg-platform', version: '6.1.1-1.5.10'
 	implementation group: 'xuggle', name: 'xuggle-xuggler', version: '5.4'
 	implementation group: 'io.humble', name: 'humble-video-all', version: '0.3.0'
 	implementation group: 'io.github.java-native', name: 'jssc', version: '2.9.4'
@@ -31,4 +35,8 @@ dependencies {
 	implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
 	implementation group: 'org.springframework', name: 'spring-websocket'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+configurations {
+	javacpp
 }
