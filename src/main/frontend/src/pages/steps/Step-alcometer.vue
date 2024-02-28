@@ -1,5 +1,10 @@
 <script>
-import {closeAlcometer, getAlcometerResult} from '@/helpers/alcometer';
+import {
+  closeAlcometer,
+  enableModeFromSystemConfig,
+  enableSlowModeAlcometer,
+  getAlcometerResult
+} from '@/helpers/alcometer';
 import {makeMedia} from '@/helpers/camera';
 
 export default {
@@ -30,7 +35,8 @@ export default {
       this.needRetry = true;
       setTimeout(() => {
         this.showRetry = true;
-      }, 3000)
+      }, 3000);
+      await enableSlowModeAlcometer();
       await closeAlcometer();
       this.runCountdown();
     },
@@ -69,6 +75,7 @@ export default {
     }, 1000);
   },
   unmounted() {
+    enableModeFromSystemConfig()
     clearInterval(this.requestInterval);
     clearInterval(this.timerInterval);
   },

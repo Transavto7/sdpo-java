@@ -15,6 +15,25 @@ export async function closeAlcometer() {
     }).catch(defaultError);
 }
 
+export async function enableFastModeAlcometer() {
+    return changeMode("fast");
+}
+
+export async function enableSlowModeAlcometer() {
+       return changeMode("slow");
+}
+
+export async function enableModeFromSystemConfig() {
+    if (this.$store.state.config?.system.alcometer_fast) return enableFastModeAlcometer();
+    if (!this.$store.state.config?.system.alcometer_fast) return enableSlowModeAlcometer();
+}
+
+async function changeMode(modeName) {
+    return await axios.post(`device/alcometer/change-mode`, {mode: modeName}).then(({ data }) => {
+        return data;
+    }).catch(defaultError);
+}
+
 function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {
