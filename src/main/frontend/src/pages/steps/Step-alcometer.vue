@@ -45,7 +45,7 @@ export default {
 
     },
     checkRetry(result) {
-      return this.system.alcometer_retry && Number(result) > 0 && !this.needRetry;
+      return this.system.alcometer_fast && this.system.alcometer_retry && Number(result) > 0 && !this.needRetry;
     },
     runCountdown() {
       this.seconds = 5;
@@ -75,7 +75,7 @@ export default {
     }, 1000);
   },
   unmounted() {
-    enableModeFromSystemConfig()
+    enableModeFromSystemConfig(this.system.alcometer_fast);
     clearInterval(this.requestInterval);
     clearInterval(this.timerInterval);
   },

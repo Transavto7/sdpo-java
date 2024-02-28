@@ -23,9 +23,9 @@ export async function enableSlowModeAlcometer() {
        return changeMode("slow");
 }
 
-export async function enableModeFromSystemConfig() {
-    if (this.$store.state.config?.system.alcometer_fast) return enableFastModeAlcometer();
-    if (!this.$store.state.config?.system.alcometer_fast) return enableSlowModeAlcometer();
+export async function enableModeFromSystemConfig(isFastMode) {
+    if (isFastMode) return enableFastModeAlcometer();
+    if (!isFastMode) return enableSlowModeAlcometer();
 }
 
 async function changeMode(modeName) {
