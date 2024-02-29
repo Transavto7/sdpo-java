@@ -141,6 +141,7 @@ public class Sdpo {
                 .setDefault("thermometer_visible", true)
                 .setDefault("manual_mode", false)
                 .setDefault("auto_start", true)
+                .setDefault("delay_before_retry_inspection", 5000)
                 .saveFile();
         systemConfig = fileConfiguration;
     }

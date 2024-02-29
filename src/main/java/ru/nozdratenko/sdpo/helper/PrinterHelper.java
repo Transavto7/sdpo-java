@@ -27,6 +27,7 @@ public class PrinterHelper {
         String date = "0000-00-00 00:00:00";
         String signature = "неизвестная-подпись";
         String medicName = "неизвестный сотрудник";
+        String validity = "";
 
         if (json.has("driver_fio")) {
             name = json.getString("driver_fio");
@@ -65,12 +66,16 @@ public class PrinterHelper {
             licence = json.getString("stamp_licence");
         }
 
+        if (json.has("validity")) {
+            validity = json.getString("validity");
+        }
+
         if (admit.equals("допущен")) {
-            PrinterHelper.print(name, result, type, admit, date, signature, medicName);
+            PrinterHelper.print(name, result, type, admit, date, signature, medicName, validity);
         }
     }
 
-    public static void print(String name, String result, String type, String admit, String date, String signature, String medicName) {
+    public static void print(String name, String result, String type, String admit, String date, String signature, String medicName, String validity) {
         PrinterJob pj = PrinterJob.getPrinterJob();
 
         PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
@@ -86,7 +91,7 @@ public class PrinterHelper {
         aset.add(new Copies(count));
         aset.add(new MediaPrintableArea(0f, 0f, 160 / 72f, 280 / 72f, MediaPrintableArea.INCH));
 
-        pj.setPrintable(new PrintTask(name, result, type, admit, date, signature, medicName, head, licence));
+        pj.setPrintable(new PrintTask(name, result, type, admit, date, signature, medicName, head, licence, validity));
 
         try {
             pj.print(aset);

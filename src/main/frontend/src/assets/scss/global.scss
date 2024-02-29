@@ -286,7 +286,7 @@ html.disable-mouse * {
 }
 
 .footer__serial-number_date-notification {
-    position: absolute;
+    position: fixed;
     bottom: 5px;
     right: 5px;
     font-size: 14px;

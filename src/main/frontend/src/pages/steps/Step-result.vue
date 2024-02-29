@@ -1,97 +1,131 @@
 <script>
-import { saveInspection, replayPrint } from '@/helpers/api';
+import {saveInspection, replayPrint} from '@/helpers/api';
+import ResultRepeat from "@/components/ResultRepeat";
 
 export default {
-    data() {
-        return {
-            backTimeout: null,
-            result: {}
-        }
-    },
-    async mounted() {
-        await this.save();
+  components: {ResultRepeat},
+  data() {
+    return {
+      backTimeout: null,
+      result: {},
+      conclusion: {
+        admitted: '',
+        comments: '',
+      },
+      notIdentified: 'Не идентифицирован',
+    }
+  },
+  async mounted() {
+    await this.save();
 
-        if (this.system.auto_start) {
-           this.backTimeout = setTimeout(() => {
-                if (this.$route.name == 'step-result') {
-                    this.$router.push('/');
-                }
-            }, 5000); 
-        }
-        
+    if (this.autoStart) {
+      this.backTimeout = this.setTimeoutAndRedirect();
+    }
+
+  },
+  unmounted() {
+    clearTimeout(this.backTimeout);
+  },
+  methods: {
+    getSleepStatus(status) {
+      return status === 'Да' ? 'Выспались' : 'Не выспались';
     },
-    unmounted() {
-        clearTimeout(this.backTimeout);
+    getPeopleStatus(status) {
+      return status === 'Да' ? 'Хорошее' : 'Плохое';
     },
-    methods: {
-        getSleepStatus(status) {
-            return status === 'Да' ? 'Выспались' : 'Не выспались';
-        },
-        getPeopleStatus(status) {
-            return status === 'Да' ? 'Хорошее' : 'Плохое';
-        },
-        async save() {
-            this.result = await saveInspection();
-        },
-        async replayPrint() {
-            await replayPrint();
-        }
+    async save() {
+      this.result = await saveInspection();
+      this.conclusion.admitted = this.result.admitted ?? '';
+      this.conclusion.comments = this.result.comments ?? '';
     },
-    computed: {
-        inspection() {
-            return this.$store.state.inspection;
-        },
-        system() {
-            return this.$store.state.config?.system || {};
-        }
+    async replayPrint() {
+      await replayPrint();
     },
+    redirectHome() {
+      if (this.$route.name === 'step-result') {
+        this.$router.push('/');
+      }
+    },
+    redirectRepeat() {
+      if (this.$route.name === 'step-result') {
+        this.$router.push({name: 'step-retry'});
+      }
+    },
+    setTimeoutAndRedirect() {
+      if (this.result.admitted === this.notIdentified) {
+        return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
+      }
+      return setTimeout(this.redirectHome, 5000);
+    },
+  },
+  computed: {
+    autoStart() {
+      return this.system.auto_start;
+    },
+    showRetryModal() {
+      return this.result.admitted === this.notIdentified;
+    },
+    getComment() {
+      return this.result.comments ?? '';
+    },
+    inspection() {
+      return this.$store.state.inspection;
+    },
+    system() {
+      return this.$store.state.config?.system || {};
+    }
+  },
 }
 </script>
 
 <template>
-    <div class="step-result">
-        <h3 class="animate__animated animate__fadeInDown">Результаты осмотра</h3>
-        <div class="step-result__cards">
-            <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">
-                <span>Давление</span>
-                {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer  : 'Неизвестно' }}
-            </div>
-            <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Пульс</span>
-                {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
-            </div>
-            <div v-if="system.alcometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Количество промилле</span>
-                {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
-            </div>
-            <div v-if="system.thermometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Температура тела</span>
-                {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
-            </div>
-            <div v-if="system.question_sleep" class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Сонливость</span>
-                {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
-            </div>
-            <div v-if="system.question_helth" class="step-result__card animate__animated animate__fadeInUp d-2">
-                <span>Самочувствие</span>
-                {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
-            </div>
-        </div>
-        <div class="step-result__footer">
+  <result-repeat v-model:visible="showRetryModal"
+                 v-model:message-content="getComment"
+                 @accept="redirectRepeat()"
+  ></result-repeat>
+  <div class="step-result">
+    <h3 class="animate__animated animate__fadeInDown">Результаты осмотра</h3>
+    <div class="step-result__cards">
+      <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">
+        <span>Давление</span>
+        {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer : 'Неизвестно' }}
+      </div>
+      <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
+        <span>Пульс</span>
+        {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
+      </div>
+      <div v-if="system.alcometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
+        <span>Количество промилле</span>
+        {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
+      </div>
+      <div v-if="system.thermometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
+        <span>Температура тела</span>
+        {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
+      </div>
+      <div v-if="system.question_sleep" class="step-result__card animate__animated animate__fadeInUp d-2">
+        <span>Сонливость</span>
+        {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
+      </div>
+      <div v-if="system.question_helth" class="step-result__card animate__animated animate__fadeInUp d-2">
+        <span>Самочувствие</span>
+        {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
+      </div>
+    </div>
+    <div class="step-result__footer">
             <span class="step-result__text animate__animated animate__fadeInUp">
                 {{ result.admitted || 'ожидание ответа' }}<br>
-                <p v-if="result.admitted === 'Допущен'" 
-                    class="animate__animated animate__fadeInUp">
+                <p v-if="result.admitted === 'Допущен'"
+                   class="animate__animated animate__fadeInUp">
                         Счастливого пути!
                 </p>
             </span>
-
-            <div class="step-result__buttons">
-                <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
-                <button v-if="result?.admitted === 'Допущен'" 
-                    @click="replayPrint()" 
-                    class="btn opacity animate__animated animate__fadeInUp">Повтор печати</button>
-            </div>
-        </div>
+      <div class="step-result__buttons">
+        <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
+        <button v-if="result?.admitted === 'Допущен'"
+                @click="replayPrint()"
+                class="btn opacity animate__animated animate__fadeInUp">Повтор печати
+        </button>
+      </div>
     </div>
+  </div>
 </template>
