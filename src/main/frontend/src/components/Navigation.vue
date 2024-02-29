@@ -52,7 +52,6 @@ export default {
             return this.$route.path;
         },
         pageNumber() {
-            console.log(this.$route.meta?.number);
             return this.$route.meta?.number || 0;
         },
         logout() {

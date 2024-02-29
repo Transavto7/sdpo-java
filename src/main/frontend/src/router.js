@@ -6,7 +6,7 @@ export const routes = [
 
     { 
         path: '/step/driver', component: () => import('./pages/steps/Step-driver'), name: 'step-driver',
-        meta: {visible: 'driver_info', next: 'step-photo', prev: 'home', number: 1 } 
+        meta: {visible: 'driver_info', next: 'step-photo', prev: 'home', number: 1 }
     },
     { 
         path: '/step/photo', component: () => import('./pages/steps/Step-photo'), name: 'step-photo', 
@@ -40,4 +40,7 @@ export const routes = [
         path: '/step/result', component: () => import('./pages/steps/Step-result'), name: 'step-result', 
         meta: { next: 'home', prev: 'step-result', number: 9 } 
     },
+    {
+        path: '/step/retry', component: () => import('./pages/steps/Step-result'), name: 'step-retry',
+        meta: { next: 'step-driver', prev: 'step-result', number: 0 } },
 ]

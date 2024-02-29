@@ -36,11 +36,15 @@ router.beforeEach((to, from, next) => {
     closeAlcometer();
   }
 
+  if (to.name === 'step-retry') {
+    from.meta.number = 0;
+    return router.push({ name: to.meta.next });
+  }
+
   if (to.path.includes('/step/')) {
     if (!store.state.inspection?.driver_id) {
       return router.push({ name: 'home'});
     }
-
     if (to.meta?.visible && store.state.config?.system) {
       if (!JSON.parse(store.state.config.system[to.meta.visible])) {
         if (from.meta?.number > to.meta.number) {
