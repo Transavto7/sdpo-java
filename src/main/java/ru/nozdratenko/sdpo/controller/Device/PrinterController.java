@@ -20,7 +20,8 @@ public class PrinterController {
                     "допущен",
                     "23-10-2022 06:00:00",
                     "test-cat-test",
-                    "Котов Кот Котыч");
+                    "Котов Кот Котыч",
+                    "С 1.01.2000 по 1.01.2077");
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error printer: " + e);
