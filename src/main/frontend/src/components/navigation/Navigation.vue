@@ -57,10 +57,10 @@ export default {
   },
   computed: {
     needButtonRedirectOnHomePage() {
-      return this.isHelpPage || this.isInspectionPage || this.isLoginPage;
+      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage;
     },
     isHomePage() {
-        return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage);
+        return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage);
     },
     isHelpPage() {
       return this.currentRouter.includes('/help');
@@ -73,6 +73,9 @@ export default {
     },
     isInspectionPage() {
       return this.currentRouter.includes('/step');
+    },
+    isPrintPage() {
+      return this.currentRouter.includes('/print');
     },
     currentRouter() {
       return this.$route.path;
@@ -112,6 +115,7 @@ export default {
     <div class="nav__buttons" v-if="isHomePage">
       <login-navigation @select-medic="$store.state.selectingMedic = true"
                         @get-help="$router.push('/help')"
+                        @get-last-inspection="$router.push('/print/index2')"
                         @settings="$router.push('/login')" />
     </div>
   </div>

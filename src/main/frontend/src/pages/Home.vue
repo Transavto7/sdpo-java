@@ -1,12 +1,13 @@
 <script>
-import { getDriver } from '../helpers/api';
+import { getDriver } from '@/helpers/api';
 import { useToast } from "vue-toastification";
 import MedicSelect from '@/components/MedicSelect.vue';
 import ApprovalModal from '@/components/ApprovalModal.vue';
+import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
 
 export default {
    name: 'Home',
-   components: { MedicSelect, ApprovalModal },
+   components: { MedicSelect, ApprovalModal, InputPersonalNumberForm },
    data() {
     return {
         driver_id: '',
@@ -31,6 +32,9 @@ export default {
 
         this.$router.push({ name: 'step-driver' });
     },
+     updateDriverId(inputPassword) {
+       this.driver_id = inputPassword;
+     },
     async checkDriver() {
         this.$store.state.inspection = {};
         this.error = null;
@@ -105,20 +109,9 @@ export default {
                 <input type="number" class="animate__animated animate__fadeIn d-5" v-model="driver_id" @input="checkDriver" />
             </div>
 
-            <div class="number-buttons" ref="numbers">
-                <button class="number-buttons__item" @click="driver_id += '1'">1</button>
-                <button class="number-buttons__item" @click="driver_id += '2'">2</button>
-                <button class="number-buttons__item" @click="driver_id += '3'">3</button>
-                <button class="number-buttons__item" @click="driver_id += '4'">4</button>
-                <button class="number-buttons__item" @click="driver_id += '5'">5</button>
-                <button class="number-buttons__item" @click="driver_id += '6'">6</button>
-                <button class="number-buttons__item" @click="driver_id += '7'">7</button>
-                <button class="number-buttons__item" @click="driver_id += '8'">8</button>
-                <button class="number-buttons__item" @click="driver_id += '9'">9</button>
-                <button class="number-buttons__item" @click="driver_id = ''"><i class="ri-close-fill"></i></button>
-                <button class="number-buttons__item" @click="driver_id += '0'">0</button>
-                <button class="number-buttons__item" @click="driver_id = driver_id.slice(0, -1)"><i class="ri-delete-back-line"></i></button>
-            </div>
+          <input-personal-number-form
+              @password=" (inputPassword) => updateDriverId(inputPassword)"
+          />
           <div v-if="hasDriver" class="login__approval-card animate__animated animate__fadeInUp">
             <input type="checkbox" v-model="processingApproval"> <p>Даю согласие на <ins @click="visibleApprovalDoc = true"> обработку персональных данных </ins></p>
           </div>
