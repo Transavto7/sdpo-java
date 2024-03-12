@@ -91,32 +91,39 @@ export default {
     </div>
 
 
-    <div class="admin__system-card animate__animated animate__fadeInUp d-2">
-      <div class="admin__system-card__title">
-        Алкометр
-      </div>
-      <div class="admin__system-card__item">
-        <span>Пропуск</span>
-        <label class="switch">
-          <input type="checkbox" v-model="system.alcometer_skip">
-          <div class="slider round"></div>
-        </label>
-      </div>
-      <div class="admin__system-card__item">
-        <span>включен</span>
-        <label class="switch">
-          <input type="checkbox" v-model="system.alcometer_visible">
-          <div class="slider round"></div>
-        </label>
-      </div>
-      <div class="admin__system-card__item">
-        <span>Быстрый режим</span>
-        <label class="switch">
-          <input type="checkbox" v-model="system.alcometer_fast">
-          <div class="slider round"></div>
-        </label>
-      </div>
-    </div>
+        <div class="admin__system-card animate__animated animate__fadeInUp d-2">
+            <div class="admin__system-card__title">
+                Алкометр
+            </div>
+            <div class="admin__system-card__item">
+                <span>Пропуск</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.alcometer_skip">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+            <div class="admin__system-card__item">
+                <span>включен</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.alcometer_visible">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+            <div class="admin__system-card__item">
+                <span>Быстрый режим</span>
+                <label class="switch">
+                    <input type="checkbox" v-model="system.alcometer_fast">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+          <div class="admin__system-card__item">
+            <span>Количественный замер при положительном тесте</span>
+            <label class="switch">
+              <input type="checkbox" v-model="system.alcometer_retry">
+              <div class="slider round"></div>
+            </label>
+          </div>
+        </div>
 
 
     <div class="admin__system-card animate__animated animate__fadeInUp d-3">
