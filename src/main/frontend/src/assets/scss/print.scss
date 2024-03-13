@@ -1,14 +1,20 @@
 .last-inspection {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
   padding: 0 4rem 10px 4rem;
+
+  .last-inspection_body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
 
   .content-block {
 
     &__calendar {
       width: auto;
-      --dp-cell-size: 9vh;
+      --dp-cell-size: 5vw;
       --dp-font-size: 2rem;
       --dp-month-year-row-height: 80px;
       --dp-month-year-row-button-size: 90px;
@@ -31,7 +37,7 @@
 
     &__table {
       width: 100%;
-      padding-left: 10vh;
+      padding-left: 2vw;
 
       table {
         border-collapse: collapse;
@@ -57,7 +63,7 @@
 
         tr {
           height: 10vh;
-        }
+          font-weight: 600;        }
       }
 
       th {

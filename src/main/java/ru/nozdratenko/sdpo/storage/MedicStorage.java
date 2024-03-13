@@ -27,8 +27,7 @@ public class MedicStorage extends FileBase {
             if (!str.isEmpty()) {
                 JSONObject result = new JSONObject(read());
                 if (result.has("data")) {
-                    JSONObject store = result.getJSONObject("data");
-                    this.store = store;
+                    this.store = result.getJSONObject("data");
                 }
             }
         } catch (Exception e) {
@@ -40,8 +39,7 @@ public class MedicStorage extends FileBase {
         try {
             Request request = new Request(url);
             String response = request.sendGet();
-            JSONObject store = new JSONObject(response);
-            this.store = store;
+            this.store = new JSONObject(response);
             this.lastUpdate = new Date().getTime();
         } catch (ApiException | Exception e) {
             SdpoLog.error("Error load medic list");

@@ -7,21 +7,22 @@ export default {
   data() {
     return {
       date: new Date(),
+      name: 'Иванов Иван Иванович',
       lastInspections: [
         {
           time: "00:00:00",
           date: '01-02-2021 ',
-          name: 'Иванов Иван Иванович'
+          type: 'Предрейсовый/предсменный'
         },
         {
           time: "00:00:00",
           date: '02-03-2022',
-          name: 'Иванов Иван Иванович'
+          type: 'Предрейсовый/предсменный'
         },
         {
           time: "00:00:00",
           date: '03-04-2023',
-          name: 'Иванов Иван Иванович'
+          type: "Другой"
         }
       ]
     }
@@ -36,7 +37,7 @@ export default {
     dateNow() {
       return new Date();
     },
-    firstDayLastMonth () {
+    firstDayLastMonth() {
       let lastDate = new Date();
       lastDate.setMonth(lastDate.getMonth() - 1, 1);
       return lastDate
@@ -53,41 +54,46 @@ export default {
 
 <template>
   <div class="last-inspection">
-    <div class="content-block__calendar">
-      <VueDatePicker v-model="date"
-                     inline
-                     auto-apply
-                     :disable-year-select="true"
-                     disabled-times
-                     locale="ru"
-                     :hide-navigation="['month','time', 'hours', 'seconds']"
-                     :min-date="firstDayLastMonth"
-                     :max-date="dateNow"
-                     prevent-min-max-navigation
-      />
+    <div class="last-inspection__header">
+      <h1>{{ name }}</h1>
     </div>
-    <div v-if="hasInspections" class="content-block__table">
-      <table>
-        <thead>
-        <tr>
-          <th>Время</th>
-          <th>Дата</th>
-          <th>ФИО</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="inspection in this.lastInspections">
-          <td>{{ inspection.time }}</td>
-          <td>{{ inspection.date }}</td>
-          <td>{{ inspection.name }}</td>
-          <td><a class="btn icon "> <i class="ri-printer-fill"></i> </a></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <div v-if="!hasInspections">
-      <div class="driver-form__not-found animate__animated animate__fadeInUp">Ранее осмотры не проводились</div>
+    <div class="last-inspection_body">
+      <div class="content-block__calendar">
+        <VueDatePicker v-model="date"
+                       inline
+                       auto-apply
+                       :disable-year-select="true"
+                       disabled-times
+                       locale="ru"
+                       :hide-navigation="['month','time', 'hours', 'seconds']"
+                       :min-date="firstDayLastMonth"
+                       :max-date="dateNow"
+                       prevent-min-max-navigation
+        />
+      </div>
+      <div v-if="hasInspections" class="content-block__table">
+        <table>
+          <thead>
+          <tr>
+            <th>Время</th>
+            <th>Дата</th>
+            <th>Тип осмотра</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="inspection in this.lastInspections">
+            <td>{{ inspection.time }}</td>
+            <td>{{ inspection.date }}</td>
+            <td>{{ inspection.type }}</td>
+            <td><a class="btn icon "> <i class="ri-printer-fill"></i> </a></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="!hasInspections">
+        <div class="driver-form__not-found animate__animated animate__fadeInUp">Ранее осмотры не проводились</div>
+      </div>
     </div>
   </div>
 </template>

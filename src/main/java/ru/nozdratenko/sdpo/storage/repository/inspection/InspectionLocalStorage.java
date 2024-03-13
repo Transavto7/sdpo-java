@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.storage;
+package ru.nozdratenko.sdpo.storage.repository.inspection;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -7,17 +7,18 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
-public class InspectionStorage extends FileBase {
+public class InspectionLocalStorage extends FileBase implements InspectionRepositoryInterface {
+
     public JSONArray store = new JSONArray();
     public JSONObject storeObjects = new JSONObject();
 
 
-    public InspectionStorage() {
+    public InspectionLocalStorage() {
         this("storage/inspections.json");
 
     }
 
-    public InspectionStorage(String path) {
+    public InspectionLocalStorage(String path) {
         super(path);
 
         try {
@@ -52,18 +53,9 @@ public class InspectionStorage extends FileBase {
         return this.storeObjects;
     }
 
-    public void getInspectionsFromStorageWithObjectFormat(String path) {
-        this.path = path;
-        try {
-            String str = read();
-            if (!str.isEmpty()) {
-                JSONObject result = new JSONObject(read());
-                if (result.has("data")) {
-                    this.storeObjects = result.getJSONObject("data");
-                }
-            }
-        } catch (Exception e) {
-            SdpoLog.error(e);
-        }
+    @Override
+    public JSONArray getInspections(String driverHashId) {
+        //todo фильтрация по id водителя
+        return store;
     }
 }

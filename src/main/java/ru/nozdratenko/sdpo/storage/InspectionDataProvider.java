@@ -7,17 +7,17 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
-public class InspectionStorage extends FileBase {
+public class InspectionDataProvider extends FileBase {
     public JSONArray store = new JSONArray();
     public JSONObject storeObjects = new JSONObject();
 
 
-    public InspectionStorage() {
+    public InspectionDataProvider() {
         this("storage/inspections.json");
 
     }
 
-    public InspectionStorage(String path) {
+    public InspectionDataProvider(String path) {
         super(path);
 
         try {

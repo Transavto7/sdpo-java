@@ -1,20 +1,27 @@
 <script>
-import PrintLogin2 from "@/pages/print/PrintLogin2";
+import PrintLogin from "@/pages/print/PrintLogin";
 import PrintIndex from "@/pages/print/PrintIndex";
+import Loader from "@/components/common/Loader";
+import { getInspections } from '@/helpers/api';
+
 
 export default {
-  name: 'PrintLogin',
-  components: {PrintIndex, PrintLogin2},
+  components: {Loader, PrintIndex, PrintLogin},
   data() {
     return {
       driverId: null,
       inspection: {},
+      inspections: {},
       print: false,
-      driverIdRequest : null,
-      errorAuthentication : false
+      driverIdRequest: null,
+      errorAuthentication: false,
+      loading: false,
     }
   },
   methods: {
+    getInspections() {
+
+    },
     confirmPrint() {
       // todo после подтверждения отправить запрос на печать
     },
@@ -23,9 +30,6 @@ export default {
     },
     setDriver(driver) {
       this.driverId = driver
-      console.log(this.inspection)
-      console.log(this.hasQuery)
-      console.log('login ' + this.login)
     },
     setDriverIdRequest(driver) {
       this.driverIdRequest = driver;
@@ -34,6 +38,9 @@ export default {
   watch: {
     driverIdRequest: () => {
       this.errorAuthentication = this.driverId !== this.driverIdRequest;
+    },
+    driverId: () => {
+      this.getInspections()
     }
   },
   computed: {
@@ -49,10 +56,14 @@ export default {
 </script>
 
 <template>
-  <print-login2 v-if="!this.login" @success-auth="(driver) => setDriver(driver)"/>
-  <print-index v-if="this.login && !this.hasQuery" @print="(inspectionAttr) => printQuery(inspectionAttr)"/>
-<!--  <print-login2 v-if="this.login && this.hasQuery" @success-auth="(driver) => setDriverIdRequest(driver)"-->
+  <print-login v-if="!this.login" @success-auth="(driver) => setDriver(driver)"/>
+  <print-index v-if="this.login && !this.hasQuery"
+               @print="(inspectionAttr) => printQuery(inspectionAttr)"
+               v-model:inspection="inspections"
+  />
+  <!--  <print-login2 v-if="this.login && this.hasQuery" @success-auth="(driver) => setDriverIdRequest(driver)"-->
   />
   <!--//todo доавить модалку с ожиданием печати-->
   <!--//todo добавить обработку ошибок-->
+  <loader v-model:loading="loading"/>
 </template>

@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Map;
 
 @RestController
-public class InspectionController {
+public class PrintController {
 
     @PostMapping("inspection/{id}")
     public ResponseEntity inspectionStart(@PathVariable String id) throws IOException {
@@ -70,31 +70,6 @@ public class InspectionController {
 
         return ResponseEntity.status(200).body("");
     }
-
-    @PostMapping("api/{id}/inspections")
-    public ResponseEntity getInspectionsDriver(@PathVariable int id) throws IOException {
-        if (Sdpo.isConnection()) {
-            Request response = new Request("sdpo/driver/" + id + "/prints");
-            try {
-                String result = response.sendGet();
-                return ResponseEntity.status(HttpStatus.OK).body(result);
-            } catch (ApiException e) {
-                SdpoLog.error(e);
-                return ResponseEntity.status(400).body(e.getResponse().toMap());
-            }
-
-        } else {
-            String name = Sdpo.inspectionStorage.getStore().get(id);
-            if (name != null) {
-                JSONObject response = new JSONObject();
-                response.put("hash_id", id);
-                response.put("fio", name);
-                return ResponseEntity.status(HttpStatus.OK).body(response.toMap());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
-    }
-
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {

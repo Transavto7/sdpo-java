@@ -115,7 +115,7 @@ export default {
     <div class="nav__buttons" v-if="isHomePage">
       <login-navigation @select-medic="$store.state.selectingMedic = true"
                         @get-help="$router.push('/help')"
-                        @get-last-inspection="$router.push('/print/index2')"
+                        @get-last-inspection="$router.push('/print/index')"
                         @settings="$router.push('/login')" />
     </div>
   </div>

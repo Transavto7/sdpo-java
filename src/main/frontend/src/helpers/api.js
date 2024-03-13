@@ -109,6 +109,48 @@ export async function saveMedic(medic) {
     });
 }
 
+export async function getInspections(hashId) {
+    return await axios.post('api/inspections/', {
+        driver: hashId
+    }).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function getInspections(hashId) {
+    return await axios.post(`api/${hashId}/inspections/`).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function getInspections(hashId) {
+    return await axios.post(`api/${hashId}/inspections/`).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function getInspections(hashId) {
+    return await axios.post(`api/${hashId}/inspections/`).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function getInspections(hashId) {
+    return await axios.post(`api/${hashId}/inspections/`).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 function defaultError(error) {
     const data = error.response?.data;
     if (data?.message) {

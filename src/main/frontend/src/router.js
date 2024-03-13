@@ -2,9 +2,7 @@ export const routes = [
     { path: '', name: 'home',  component: () => import('./pages/Home') },
     { path: '/help', component: () => import('./pages/Help') },
     { path: '/login', component: () => import('./pages/admin/AdminLogin') },
-    { path: '/print/login', component: () => import('./pages/print/PrintLogin') },
-    { path: '/print/index', component: () => import('./pages/print/PrintIndex') },
-    { path: '/print/index2', component: () => import('./pages/print/PrintMain') },
+    { path: '/print/index', component: () => import('./pages/print/PrintMain') },
     { path: '/admin', component: () => import('./pages/admin/Index') },
 
     { 
