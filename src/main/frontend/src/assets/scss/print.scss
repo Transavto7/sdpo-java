@@ -14,7 +14,7 @@
 
     &__calendar {
       width: auto;
-      --dp-cell-size: 5vw;
+      --dp-cell-size: 65px;
       --dp-font-size: 2rem;
       --dp-month-year-row-height: 80px;
       --dp-month-year-row-button-size: 90px;
@@ -53,6 +53,9 @@
       }
 
       tbody {
+        height: 80px;
+        //height: 60vh;
+        overflow-y: auto;
         tr:nth-child(even) {
           background-color: #f2f2f2;
         }
@@ -62,8 +65,9 @@
         }
 
         tr {
-          height: 10vh;
-          font-weight: 600;        }
+          height: 62.5px;
+          font-weight: 600;
+        }
       }
 
       th {
@@ -71,6 +75,11 @@
         padding-bottom: 12px;
         text-align: left;
       }
+    }
+
+    &__warning {
+      width: 100%;
+      text-align: center;
     }
   }
 }

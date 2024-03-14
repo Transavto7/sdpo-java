@@ -2,54 +2,55 @@
 import PrintLogin from "@/pages/print/PrintLogin";
 import PrintIndex from "@/pages/print/PrintIndex";
 import Loader from "@/components/common/Loader";
-import { getInspections } from '@/helpers/api';
+import {getInspections, printInspection} from '@/helpers/api';
 
 
 export default {
   components: {Loader, PrintIndex, PrintLogin},
   data() {
     return {
+      driver: null,
       driverId: null,
       inspection: {},
       inspections: {},
       print: false,
-      driverIdRequest: null,
       errorAuthentication: false,
       loading: false,
+      hasQuery : false,
     }
   },
   methods: {
-    getInspections() {
+    async confirmPrint() {
+      console.log('print')
+      await printInspection(this.inspection)
+      console.log('stop print')
+      this.$router.push('/');
 
     },
-    confirmPrint() {
-      // todo после подтверждения отправить запрос на печать
-    },
     printQuery(inspectionAttr) {
+      console.log(inspectionAttr)
+      this.hasQuery = true;
       this.inspection = inspectionAttr
     },
-    setDriver(driver) {
-      this.driverId = driver
+    async setDriver(driver) {
+      this.driver = driver;
+      this.driverId = driver.hash_id
+      this.loading = true
+      this.inspections =  await getInspections(driver.hash_id);
+      this.loading = false;
     },
     setDriverIdRequest(driver) {
       this.driverIdRequest = driver;
-    }
-  },
-  watch: {
-    driverIdRequest: () => {
-      this.errorAuthentication = this.driverId !== this.driverIdRequest;
-    },
-    driverId: () => {
-      this.getInspections()
+      if (this.driverIdRequest.hash_id === this.driver.hash_id) {
+        this.confirmPrint()
+      } else {
+        this.errorAuthentication = true
+      }
     }
   },
   computed: {
     login() {
       return this.driverId !== null
-    },
-    hasQuery() {
-      return false;
-      // return this.inspection.inspection_id;
     },
   },
 }
@@ -59,9 +60,10 @@ export default {
   <print-login v-if="!this.login" @success-auth="(driver) => setDriver(driver)"/>
   <print-index v-if="this.login && !this.hasQuery"
                @print="(inspectionAttr) => printQuery(inspectionAttr)"
-               v-model:inspection="inspections"
+               v-model:inspections="inspections"
+               v-model:driver="driver"
   />
-  <!--  <print-login2 v-if="this.login && this.hasQuery" @success-auth="(driver) => setDriverIdRequest(driver)"-->
+    <print-login v-if="this.login && this.hasQuery" @success-auth="(driver) => setDriverIdRequest(driver)"
   />
   <!--//todo доавить модалку с ожиданием печати-->
   <!--//todo добавить обработку ошибок-->

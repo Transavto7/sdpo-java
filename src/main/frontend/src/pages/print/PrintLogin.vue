@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     async start() {
-      this.$emit('success-auth', this.driver.hash_id)
+      this.$emit('success-auth', this.driver)
     },
     updateDriverId(inputPassword) {
       this.driver_id = inputPassword;

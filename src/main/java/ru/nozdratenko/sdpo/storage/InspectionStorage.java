@@ -9,7 +9,6 @@ import java.io.IOException;
 
 public class InspectionStorage extends FileBase {
     public JSONArray store = new JSONArray();
-    public JSONObject storeObjects = new JSONObject();
 
 
     public InspectionStorage() {
@@ -44,25 +43,6 @@ public class InspectionStorage extends FileBase {
             create();
             this.writeFile(store.toString(1));
         } catch (IOException e) {
-            SdpoLog.error(e);
-        }
-    }
-
-    public JSONObject storeObjects() {
-        return this.storeObjects;
-    }
-
-    public void getInspectionsFromStorageWithObjectFormat(String path) {
-        this.path = path;
-        try {
-            String str = read();
-            if (!str.isEmpty()) {
-                JSONObject result = new JSONObject(read());
-                if (result.has("data")) {
-                    this.storeObjects = result.getJSONObject("data");
-                }
-            }
-        } catch (Exception e) {
             SdpoLog.error(e);
         }
     }

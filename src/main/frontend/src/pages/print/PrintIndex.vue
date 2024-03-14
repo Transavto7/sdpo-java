@@ -2,34 +2,39 @@
 import VueDatePicker from "@vuepic/vue-datepicker";
 
 export default {
-  name: 'PrintIndex',
   components: {VueDatePicker},
+  props: {
+    inspections: {
+      type: Array,
+      require: true,
+      default: []
+    },
+    driver : {
+      type: Object,
+      require: true,
+    }
+  },
   data() {
     return {
       date: new Date(),
-      name: 'Иванов Иван Иванович',
-      lastInspections: [
-        {
-          time: "00:00:00",
-          date: '01-02-2021 ',
-          type: 'Предрейсовый/предсменный'
-        },
-        {
-          time: "00:00:00",
-          date: '02-03-2022',
-          type: 'Предрейсовый/предсменный'
-        },
-        {
-          time: "00:00:00",
-          date: '03-04-2023',
-          type: "Другой"
-        }
-      ]
     }
   },
   methods: {
-    print(id) {
-
+    print(inspection) {
+      this.$emit('print', inspection )
+    },
+    getDates() {
+      let array = [];
+      for (const value of JSON.parse(JSON.stringify(this.inspections))) {
+        if ((new Date(value.created_at)).toDateString() === new Date(this.date).toDateString()) {
+          array[value.created_at] = {
+            date: value.created_at,
+            type: 'line',
+            color: 'red',
+          };
+        }
+      }
+      return array;
     }
   },
   watch: {},
@@ -43,8 +48,8 @@ export default {
       return lastDate
     },
     hasInspections() {
-      return this.lastInspections.length > 0;
-    }
+      return this.inspections.length > 0;
+    },
   },
   mounted() {
 
@@ -55,7 +60,7 @@ export default {
 <template>
   <div class="last-inspection">
     <div class="last-inspection__header">
-      <h1>{{ name }}</h1>
+      <h1>{{ driver.fio }}</h1>
     </div>
     <div class="last-inspection_body">
       <div class="content-block__calendar">
@@ -75,23 +80,21 @@ export default {
         <table>
           <thead>
           <tr>
-            <th>Время</th>
-            <th>Дата</th>
+            <th>Дата Время</th>
             <th>Тип осмотра</th>
             <th></th>
           </tr>
           </thead>
           <tbody>
-          <tr v-for="inspection in this.lastInspections">
-            <td>{{ inspection.time }}</td>
-            <td>{{ inspection.date }}</td>
-            <td>{{ inspection.type }}</td>
-            <td><a class="btn icon "> <i class="ri-printer-fill"></i> </a></td>
+          <tr v-for="inspection in this.inspections">
+            <td>{{ inspection.created_at }}</td>
+            <td>{{ inspection.type_view }}</td>
+            <td><a class="btn icon" @click="print(inspection)"> <i class="ri-printer-fill"></i> </a></td>
           </tr>
           </tbody>
         </table>
       </div>
-      <div v-if="!hasInspections">
+      <div v-if="!hasInspections" class="content-block__warning">
         <div class="driver-form__not-found animate__animated animate__fadeInUp">Ранее осмотры не проводились</div>
       </div>
     </div>

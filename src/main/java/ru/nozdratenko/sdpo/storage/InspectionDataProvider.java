@@ -1,69 +1,19 @@
 package ru.nozdratenko.sdpo.storage;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
-import ru.nozdratenko.sdpo.file.FileBase;
-import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 
 import java.io.IOException;
 
-public class InspectionDataProvider extends FileBase {
-    public JSONArray store = new JSONArray();
-    public JSONObject storeObjects = new JSONObject();
+public class InspectionDataProvider {
 
-
-    public InspectionDataProvider() {
-        this("storage/inspections.json");
-
+    InspectionRepositoryInterface repository;
+    public InspectionDataProvider(InspectionRepositoryInterface repository) {
+            this.repository = repository;
     }
 
-    public InspectionDataProvider(String path) {
-        super(path);
+    public JSONArray getInspectionsOnDriverHashId (String id) throws IOException {
 
-        try {
-            String str = read();
-            if (!str.isEmpty()) {
-                this.store = new JSONArray(read());
-            }
-        } catch (Exception e) {
-            SdpoLog.error(e);
-        }
-    }
-
-    public JSONArray getStore() {
-        return store;
-    }
-
-    public void saveInspection(JSONObject inspection) {
-        store.put(inspection);
-        this.save();
-    }
-
-    public void save() {
-        try {
-            create();
-            this.writeFile(store.toString(1));
-        } catch (IOException e) {
-            SdpoLog.error(e);
-        }
-    }
-
-    public JSONObject storeObjects() {
-        return this.storeObjects;
-    }
-
-    public void getInspectionsFromStorageWithObjectFormat(String path) {
-        this.path = path;
-        try {
-            String str = read();
-            if (!str.isEmpty()) {
-                JSONObject result = new JSONObject(read());
-                if (result.has("data")) {
-                    this.storeObjects = result.getJSONObject("data");
-                }
-            }
-        } catch (Exception e) {
-            SdpoLog.error(e);
-        }
+        return repository.getInspectionsByDriverHashId(id);
     }
 }

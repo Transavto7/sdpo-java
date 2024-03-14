@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -13,12 +14,17 @@ import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRemoteRepository;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -72,27 +78,18 @@ public class InspectionController {
     }
 
     @PostMapping("api/{id}/inspections")
-    public ResponseEntity getInspectionsDriver(@PathVariable int id) throws IOException {
-        if (Sdpo.isConnection()) {
-            Request response = new Request("sdpo/driver/" + id + "/prints");
-            try {
-                String result = response.sendGet();
-                return ResponseEntity.status(HttpStatus.OK).body(result);
-            } catch (ApiException e) {
-                SdpoLog.error(e);
-                return ResponseEntity.status(400).body(e.getResponse().toMap());
-            }
+    public ResponseEntity getInspectionsDriver(@PathVariable String id) throws IOException {
+        InspectionRepositoryInterface repository;
 
+        if (Sdpo.isConnection()) {
+            repository = new InspectionRemoteRepository();
         } else {
-            String name = Sdpo.inspectionStorage.getStore().get(id);
-            if (name != null) {
-                JSONObject response = new JSONObject();
-                response.put("hash_id", id);
-                response.put("fio", name);
-                return ResponseEntity.status(HttpStatus.OK).body(response.toMap());
-            }
+            repository = new InspectionLocalStorageRepository();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+
+        JSONArray inspections = (new InspectionDataProvider(repository)).getInspectionsOnDriverHashId(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(inspections.toString());
     }
 
 
