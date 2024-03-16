@@ -13,6 +13,7 @@ import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
+import java.awt.print.PrinterAbortException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

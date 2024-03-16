@@ -3,6 +3,7 @@ import PrintLogin from "@/pages/print/PrintLogin";
 import PrintIndex from "@/pages/print/PrintIndex";
 import Loader from "@/components/common/Loader";
 import {getInspections, printInspection} from '@/helpers/api';
+import {useToast} from "vue-toastification";
 
 
 export default {
@@ -10,6 +11,7 @@ export default {
   data() {
     return {
       driver: null,
+      toast: useToast(),
       inspections: {},
       print: false,
       errorAuthentication: false,
@@ -19,6 +21,7 @@ export default {
   methods: {
     async confirmPrint(inspection) {
       await printInspection(inspection)
+      this.toast.success('Задание на печать отправлено');
       this.$router.push('/');
 
     },

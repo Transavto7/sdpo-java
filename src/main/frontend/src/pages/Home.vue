@@ -106,7 +106,8 @@ export default {
               @password=" (inputPassword) => updateDriverId(inputPassword)"
           />
           <div v-if="hasDriver" class="login__approval-card animate__animated animate__fadeInUp">
-            <input type="checkbox" v-model="processingApproval"> <p>Даю согласие на <ins @click="visibleApprovalDoc = true"> обработку персональных данных </ins></p>
+            <input type="checkbox" v-model="processingApproval">
+              <p>Даю согласие на <ins @click="visibleApprovalDoc = true"> обработку персональных данных </ins></p>
           </div>
             <button v-if="hasDriver && processingApproval" @click="start" class="btn animate__animated animate__fadeInUp">начать осмотр</button>
             <div v-else-if="error" class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>

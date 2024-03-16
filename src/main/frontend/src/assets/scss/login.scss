@@ -6,7 +6,8 @@
     &__approval-card {
         display: flex;
         flex-direction: row;
-        max-width: 455px;
+        max-width: 100%;
+        font-size: 21px;
         width: 100%;
         justify-content: space-between;
         margin: 10px 0px 5px 0px;

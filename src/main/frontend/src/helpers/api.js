@@ -123,6 +123,7 @@ export async function printInspection(inspection) {
         return data;
     }).catch((error) => {
         console.log(error);
+        return error;
     });
 }
 

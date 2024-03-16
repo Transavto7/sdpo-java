@@ -81,7 +81,7 @@ createApp(App)
     .use(store)
     .use(Toast, {
         position: 'top-center',
-        timeout: 2500
+        timeout: 4500
     })
     .use(router)
     .component('VueDatePicker', VueDatePicker)
