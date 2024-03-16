@@ -24,26 +24,32 @@ export default {
     }
   },
   methods: {
+    getTimeOnly(data) {
+      return (new Date(data).toTimeString()).split(' ')[0];
+    },
     print(inspection) {
       this.$emit('print', inspection)
     },
     initDateRange() {
-      for (const value of (this.inspections)) {
+      if (this.hasInspections) {
+        for (const value of (this.inspections)) {
           this.dateFiltered.push({
             date: value.created_at,
-            type: 'dot',
+            type: 'line',
             color: 'red',
           });
+        }
       }
     }
   },
   watch: {
     date() {
-      this.initDateRange()
       this.inspectionsFiltered = [];
-      for (const value of (this.inspections)) {
-        if ((new Date(value.created_at)).toDateString() === new Date(this.date).toDateString()) {
-          this.inspectionsFiltered.push(value);
+      if (this.hasInspections) {
+        for (const value of (this.inspections)) {
+          if ((new Date(value.created_at)).toDateString() === new Date(this.date).toDateString()) {
+            this.inspectionsFiltered.push(value);
+          }
         }
       }
     }
@@ -57,13 +63,18 @@ export default {
       lastDate.setMonth(lastDate.getMonth() - 1, 1);
       return lastDate
     },
-    hasInspections() {
+    hasSelectInspections() {
       return this.inspectionsFiltered.length > 0;
+    },
+    hasInspections() {
+      return this.inspections.length > 0;
     },
   },
   mounted() {
     this.initDateRange()
-    console.log(this.dateFiltered)
+    this.date = this.dateNow;
+  },
+  unmounted() {
   }
 }
 </script>
@@ -87,26 +98,28 @@ export default {
                        :markers="dateFiltered"
         />
       </div>
-      <div v-if="hasInspections" class="content-block__table">
+      <div v-if="hasSelectInspections" class="content-block__table">
         <table>
           <thead>
           <tr>
-            <th>Дата Время</th>
+            <th style="width: 40%;">Дата Время</th>
             <th>Тип осмотра</th>
             <th></th>
           </tr>
           </thead>
-          <tbody>
-          <tr v-for="inspection in this.inspectionsFiltered">
-            <td>{{ inspection.created_at }}</td>
+          <tbody class=" animate__animated animate__fadeInUp">
+          <tr class=" animate__animated animate__fadeInUp" v-for="inspection in this.inspectionsFiltered">
+            <td class="time">{{ getTimeOnly(inspection.created_at) }}</td>
             <td>{{ inspection.type_view }}</td>
             <td><a class="btn icon" @click="print(inspection)"> <i class="ri-printer-fill"></i> </a></td>
           </tr>
           </tbody>
         </table>
       </div>
-      <div v-if="!hasInspections" class="content-block__warning">
-        <div class="driver-form__not-found animate__animated animate__fadeInUp">Ранее осмотры не проводились</div>
+      <div v-if="!hasSelectInspections" class="content-block__warning">
+        <div class="driver-form__not-found animate__animated animate__fadeInUp">Осмотры на выбранную дату не
+          проводились
+        </div>
       </div>
     </div>
   </div>

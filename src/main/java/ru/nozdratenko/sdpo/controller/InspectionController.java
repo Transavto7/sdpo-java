@@ -86,7 +86,6 @@ public class InspectionController {
         } else {
             repository = new InspectionLocalStorageRepository();
         }
-
         JSONArray inspections = (new InspectionDataProvider(repository)).getInspectionsOnDriverHashId(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(inspections.toString());

@@ -10,7 +10,6 @@ export default {
   data() {
     return {
       driver: null,
-      inspection: {},
       inspections: {},
       print: false,
       errorAuthentication: false,
@@ -18,20 +17,20 @@ export default {
     }
   },
   methods: {
-    async confirmPrint() {
-      await printInspection(this.inspection)
+    async confirmPrint(inspection) {
+      await printInspection(inspection)
       this.$router.push('/');
 
     },
     printQuery(inspectionAttr) {
-      this.inspection = inspectionAttr
-      this.confirmPrint()
+      this.confirmPrint(inspectionAttr)
     },
     async setDriver(driver) {
       this.loading = true
       this.inspections = await getInspections(driver.hash_id);
-      this.loading = false;
       this.driver = driver;
+      this.loading = false;
+
     },
   },
   computed: {
@@ -43,8 +42,8 @@ export default {
 </script>
 
 <template>
-  <print-login v-if="!this.login" @success-auth="(driver) => setDriver(driver)"/>
-  <print-index v-if="this.login"
+  <print-login v-if="!this.login && !this.loading" @success-auth="(driver) => setDriver(driver)"/>
+  <print-index v-if="this.login && !this.loading"
                @print="(inspectionAttr) => printQuery(inspectionAttr)"
                v-model:inspections="inspections"
                v-model:driver="driver"/>

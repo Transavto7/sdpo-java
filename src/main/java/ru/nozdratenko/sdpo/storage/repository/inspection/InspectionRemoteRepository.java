@@ -14,6 +14,7 @@ public class InspectionRemoteRepository implements InspectionRepositoryInterface
         Request request = new Request("sdpo/driver/" + driverHashId + "/prints");
         try {
             String response = request.sendGet();
+
             return new JSONArray(response);
         } catch (ApiException e) {
             SdpoLog.error(e);

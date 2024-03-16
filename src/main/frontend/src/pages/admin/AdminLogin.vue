@@ -28,11 +28,7 @@ export default {
     }
    },
    mounted() {
-    this.$refs.numbers.querySelectorAll('button').forEach((button, index) => {
-        button.classList.add('animate__animated');
-        button.classList.add('animate__fadeInUp');
-        button.style.setProperty('animation-delay', `${0.6 + (0.05 * index)}s`);
-    });
+    
    },
    watch: {
         password: function (val) {
