@@ -50,7 +50,5 @@ export default {
                @print="(inspectionAttr) => printQuery(inspectionAttr)"
                v-model:inspections="inspections"
                v-model:driver="driver"/>
-  <!--//todo доавить модалку с ожиданием печати-->
-  <!--//todo добавить обработку ошибок-->
   <loader v-model:loading="loading"/>
 </template>

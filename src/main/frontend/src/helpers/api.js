@@ -122,7 +122,6 @@ export async function printInspection(inspection) {
     return await axios.post('/device/printer/inspection', inspection).then(({data}) => {
         return data;
     }).catch((error) => {
-        console.log(error);
         return error;
     });
 }
