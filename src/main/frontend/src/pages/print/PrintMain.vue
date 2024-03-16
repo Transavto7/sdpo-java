@@ -10,47 +10,33 @@ export default {
   data() {
     return {
       driver: null,
-      driverId: null,
       inspection: {},
       inspections: {},
       print: false,
       errorAuthentication: false,
       loading: false,
-      hasQuery : false,
     }
   },
   methods: {
     async confirmPrint() {
-      console.log('print')
       await printInspection(this.inspection)
-      console.log('stop print')
       this.$router.push('/');
 
     },
     printQuery(inspectionAttr) {
-      console.log(inspectionAttr)
-      this.hasQuery = true;
       this.inspection = inspectionAttr
+      this.confirmPrint()
     },
     async setDriver(driver) {
-      this.driver = driver;
-      this.driverId = driver.hash_id
       this.loading = true
-      this.inspections =  await getInspections(driver.hash_id);
+      this.inspections = await getInspections(driver.hash_id);
       this.loading = false;
+      this.driver = driver;
     },
-    setDriverIdRequest(driver) {
-      this.driverIdRequest = driver;
-      if (this.driverIdRequest.hash_id === this.driver.hash_id) {
-        this.confirmPrint()
-      } else {
-        this.errorAuthentication = true
-      }
-    }
   },
   computed: {
     login() {
-      return this.driverId !== null
+      return this.driver !== null
     },
   },
 }
@@ -58,13 +44,10 @@ export default {
 
 <template>
   <print-login v-if="!this.login" @success-auth="(driver) => setDriver(driver)"/>
-  <print-index v-if="this.login && !this.hasQuery"
+  <print-index v-if="this.login"
                @print="(inspectionAttr) => printQuery(inspectionAttr)"
                v-model:inspections="inspections"
-               v-model:driver="driver"
-  />
-    <print-login v-if="this.login && this.hasQuery" @success-auth="(driver) => setDriverIdRequest(driver)"
-  />
+               v-model:driver="driver"/>
   <!--//todo доавить модалку с ожиданием печати-->
   <!--//todo добавить обработку ошибок-->
   <loader v-model:loading="loading"/>

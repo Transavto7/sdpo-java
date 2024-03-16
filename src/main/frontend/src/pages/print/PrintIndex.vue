@@ -5,11 +5,13 @@ export default {
   components: {VueDatePicker},
   props: {
     inspections: {
-      type: Array,
+      type: Object,
       require: true,
-      default: []
+      default: () => {
+        return {};
+      }
     },
-    driver : {
+    driver: {
       type: Object,
       require: true,
     }
@@ -17,27 +19,35 @@ export default {
   data() {
     return {
       date: new Date(),
+      inspectionsFiltered: [],
+      dateFiltered: []
     }
   },
   methods: {
     print(inspection) {
-      this.$emit('print', inspection )
+      this.$emit('print', inspection)
     },
-    getDates() {
-      let array = [];
-      for (const value of JSON.parse(JSON.stringify(this.inspections))) {
-        if ((new Date(value.created_at)).toDateString() === new Date(this.date).toDateString()) {
-          array[value.created_at] = {
+    initDateRange() {
+      for (const value of (this.inspections)) {
+          this.dateFiltered.push({
             date: value.created_at,
-            type: 'line',
+            type: 'dot',
             color: 'red',
-          };
-        }
+          });
       }
-      return array;
     }
   },
-  watch: {},
+  watch: {
+    date() {
+      this.initDateRange()
+      this.inspectionsFiltered = [];
+      for (const value of (this.inspections)) {
+        if ((new Date(value.created_at)).toDateString() === new Date(this.date).toDateString()) {
+          this.inspectionsFiltered.push(value);
+        }
+      }
+    }
+  },
   computed: {
     dateNow() {
       return new Date();
@@ -48,11 +58,12 @@ export default {
       return lastDate
     },
     hasInspections() {
-      return this.inspections.length > 0;
+      return this.inspectionsFiltered.length > 0;
     },
   },
   mounted() {
-
+    this.initDateRange()
+    console.log(this.dateFiltered)
   }
 }
 </script>
@@ -68,12 +79,12 @@ export default {
                        inline
                        auto-apply
                        :disable-year-select="true"
-                       disabled-times
                        locale="ru"
                        :hide-navigation="['month','time', 'hours', 'seconds']"
                        :min-date="firstDayLastMonth"
                        :max-date="dateNow"
                        prevent-min-max-navigation
+                       :markers="dateFiltered"
         />
       </div>
       <div v-if="hasInspections" class="content-block__table">
@@ -86,7 +97,7 @@ export default {
           </tr>
           </thead>
           <tbody>
-          <tr v-for="inspection in this.inspections">
+          <tr v-for="inspection in this.inspectionsFiltered">
             <td>{{ inspection.created_at }}</td>
             <td>{{ inspection.type_view }}</td>
             <td><a class="btn icon" @click="print(inspection)"> <i class="ri-printer-fill"></i> </a></td>
