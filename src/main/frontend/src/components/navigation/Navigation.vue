@@ -57,10 +57,10 @@ export default {
   },
   computed: {
     needButtonRedirectOnHomePage() {
-      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage;
+      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage || this.isSetNumberPhonePage;
     },
     isHomePage() {
-        return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage);
+        return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage);
     },
     isHelpPage() {
       return this.currentRouter.includes('/help');
@@ -76,6 +76,9 @@ export default {
     },
     isPrintPage() {
       return this.currentRouter.includes('/print');
+    },
+    isSetNumberPhonePage() {
+      return this.currentRouter.includes('/number-phone/add/');
     },
     currentRouter() {
       return this.$route.path;

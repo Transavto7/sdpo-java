@@ -1,14 +1,15 @@
 <script>
-import {getDriver} from '@/helpers/api';
+import {getDriver, savePhone} from '@/helpers/api';
 import {useToast} from "vue-toastification";
 import MedicSelect from '@/components/MedicSelect.vue';
-import ApprovalModal from '@/components/ApprovalModal.vue';
+import ApprovalModal from '@/components/home/ApprovalModal.vue';
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
 import InputPhoneNumber from "@/components/InputPhoneNumber";
+import InputAndSavePhone from "@/pages/driver/InputAndSavePhone";
 
 export default {
   name: 'Home',
-  components: {InputPhoneNumber, MedicSelect, ApprovalModal, InputPersonalNumberForm},
+  components: {InputAndSavePhone, InputPhoneNumber, MedicSelect, ApprovalModal, InputPersonalNumberForm},
   data() {
     return {
       driver_id: '',
@@ -63,6 +64,8 @@ export default {
       }
 
       this.loading = false;
+
+      if (this.needSetNumberPhone) this.$router.push('/number-phone/add/')
     }
   },
   watch: {
@@ -80,6 +83,12 @@ export default {
     },
     hasDriver() {
       return this.inspection.driver_id && !this.error
+    },
+    hasPhoneNumber() {
+      return this.$store.state.driver.phone && !this.error
+    },
+    needSetNumberPhone() {
+      return this.hasDriver && !this.hasPhoneNumber
     }
   },
 }
@@ -87,7 +96,6 @@ export default {
 
 <template>
   <medic-select/>
-  <input-phone-number/>
   <approval-modal v-model:visible="visibleApprovalDoc"
                   @close-modal="visibleApprovalDoc = false"
                   @accept="processingApproval = true"
@@ -101,22 +109,32 @@ export default {
         Введите ваш идентификатор
       </div>
       <div class="driver-form__input">
-        <input type="number" class="animate__animated animate__fadeIn d-5" v-model="driver_id" @input="checkDriver"/>
+        <input type="number"
+               class="animate__animated animate__fadeIn d-5"
+               v-model="driver_id"
+               @input="checkDriver"/>
       </div>
 
       <input-personal-number-form
           @password=" (inputPassword) => updateDriverId(inputPassword)"
       />
-      <div v-if="hasDriver" class="login__approval-card animate__animated animate__fadeInUp">
-        <input type="checkbox" v-model="processingApproval">
+      <div v-if="hasDriver"
+           class="login__approval-card animate__animated animate__fadeInUp">
+        <input type="checkbox"
+               v-model="processingApproval">
         <p>Даю согласие на
-          <ins @click="visibleApprovalDoc = true"> обработку персональных данных</ins>
+          <ins @click="visibleApprovalDoc = true">
+            обработку персональных данных
+          </ins>
         </p>
       </div>
-      <button v-if="hasDriver && processingApproval" @click="start" class="btn animate__animated animate__fadeInUp">
+      <button v-if="hasDriver && processingApproval"
+              @click="start"
+              class="btn animate__animated animate__fadeInUp">
         начать осмотр
       </button>
-      <div v-else-if="error" class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
+      <div v-else-if="error"
+           class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
     </div>
   </div>
 </template>

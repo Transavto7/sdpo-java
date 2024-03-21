@@ -31,8 +31,6 @@ export default {
         if (!(this.originNumber.length === 0 && char === '8'))
           this.originNumber += char;
       }
-      console.log(this.originNumber)
-
     },
     popIntoNumber() {
       this.originNumber = this.originNumber.slice(0, -1)
@@ -64,7 +62,7 @@ export default {
         resNumber = this.replaceAt(resNumber, resNumber.indexOf('.'), value)
       })
       this.maskNumber = resNumber.split('.').join('');
-      if (this.isMaxLengthReached()) this.$emit('acceptOn', this.maskNumber.split(' ').join(''));
+      this.$emit('acceptOn', this.maskNumber.split(' ').join(''));
     }
   },
   watch: {
@@ -78,13 +76,11 @@ export default {
 }
 </script>
 <template>
-
-  <div class="home">
-    <div class="driver-form">
-      <div class="driver-form__title animate__animated animate__fadeInDown d-2">
-        Введите номер личный номер телефона
+  <div class="number-form">
+      <div class="number-form__title animate__animated animate__fadeInDown d-2">
+        Введите личный номер телефона
       </div>
-      <div class="driver-form__input">
+      <div class="number-form__input">
         <input type="text" class="animate__animated animate__fadeIn d-5"
                style="letter-spacing: 4px;"
                v-model="maskNumber"/>
@@ -95,6 +91,5 @@ export default {
           @popIntoNumber="() => popIntoNumber()"
           @clearNumber="() => clearNumber()"
       />
-    </div>
   </div>
 </template>

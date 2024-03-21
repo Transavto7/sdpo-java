@@ -4,6 +4,7 @@ export const routes = [
     { path: '/login', component: () => import('./pages/admin/AdminLogin') },
     { path: '/print/index', component: () => import('./pages/print/PrintMain') },
     { path: '/admin', component: () => import('./pages/admin/Index') },
+    { path: '/number-phone/add', component: () => import('./pages/driver/InputAndSavePhone') },
 
     { 
         path: '/step/driver', component: () => import('./pages/inspection/Step-driver'), name: 'step-driver',
