@@ -29,7 +29,6 @@ export default {
       this.loading = true
       await savePhone(this.formattingPhoneNumber(), this.$store.state.inspection.driver_id)
       this.loading = false
-      this.toast.success("Личный номер телефона сохранен")
       this.$router.push('/')
     }
   },
