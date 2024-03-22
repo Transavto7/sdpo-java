@@ -44,9 +44,10 @@ public class Sdpo {
 
         tonometerResultTask.start();
         thermometerResultTask.start();
+        mediaMakeTask.start();
         alcometerResultTask.start();
         tonometerConnectTask.start();
-        mediaMakeTask.start();
+
         runScannerTask();
     }
 

@@ -39,7 +39,7 @@ public class VideoCommand extends Command {
             }
         }
 
-        CameraHelper.closeCam();
+
     }
 
     private void testVideo(int number) throws InterruptedException {

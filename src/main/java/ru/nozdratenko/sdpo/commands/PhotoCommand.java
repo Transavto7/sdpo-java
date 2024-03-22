@@ -39,7 +39,7 @@ public class PhotoCommand extends Command {
             }
         }
 
-        CameraHelper.closeCam();
+
     }
 
     private void testPhoto(int number) throws InterruptedException {

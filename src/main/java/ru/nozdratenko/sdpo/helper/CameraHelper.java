@@ -4,10 +4,9 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
-import org.bytedeco.javacv.*;
 import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.*;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
-import org.bytedeco.opencv.opencv_core.IplImage;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.file.FileBase;
@@ -15,7 +14,9 @@ import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,12 +30,11 @@ import java.util.stream.Collectors;
 
 public class CameraHelper {
     public static File lastResultVideo = null;
-    public static File getLastResultPhoto = null;
     private static FrameGrabber workWebcam = null;
+    private static transient boolean isCameraWorked = false;
 
     public static boolean isCameraAvailable() {
         try {
-
             return !Webcam.getWebcams().isEmpty();
         } catch (WebcamException e) {
             SdpoLog.warning("No webcam has been detected!" + e);
@@ -67,7 +67,6 @@ public class CameraHelper {
                 SdpoLog.info("Camera not selected!");
             }
 
-            SdpoLog.info( String.format("Selected %s camera", workWebcam.getOptions().toString()));
         }
 
         return workWebcam;
@@ -83,14 +82,18 @@ public class CameraHelper {
             SdpoLog.warning(e);
         } finally {
             SdpoLog.info("Camera dimensions initialized");
+            openCam();
         }
     }
 
     public static void openCam() {
-        if (isCameraAvailable()) {
+        if(isCameraWorked){
+            SdpoLog.info("Camera is open.");
+        }else if (isCameraAvailable()) {
             try {
                 workWebcam = findWebcam();
                 workWebcam.start();
+                isCameraWorked = true;
                 SdpoLog.info("Camera opened successfully.");
 
             } catch (FrameGrabber.Exception e) {
@@ -105,6 +108,8 @@ public class CameraHelper {
         if (isCameraAvailable()) {
             try {
                 findWebcam().close();
+                workWebcam = null;
+                isCameraWorked = false;
             } catch (FrameGrabber.Exception e) {
                 SdpoLog.error("Failed to close camera: " + e);
             }
@@ -165,29 +170,65 @@ public class CameraHelper {
         return String.valueOf((int) result);
     }
 
+    public static byte[] makePhotoBytes() throws IOException{
+        if (isCameraAvailable()) {
+            SdpoLog.info("Make a foto, width name camera: " + Webcam.getDefault().getName());
+
+            org.bytedeco.javacv.Frame frame = null;
+            workWebcam = findWebcam();
+
+            frame = workWebcam.grab();
+            SdpoLog.info("Image capture " + ( frame == null ? "is empty" : "successful"));
+            if (frame != null) {
+                BufferedImage im = new Java2DFrameConverter().convert(frame);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] bytes = null;
+                try{
+                    ImageIO.write(im,"jpg",baos);
+                    baos.flush();
+                    bytes = baos.toByteArray();
+                }finally{
+                    baos.close();
+                }
+                SdpoLog.info("Frame converted to foto. Image size: " + bytes.length);
+                frame.close();
+                return bytes;
+            } else {
+                SdpoLog.info("Failed to capture image.");
+            }
+        } else {
+            SdpoLog.info("No camera available. Skipping photo capture.");
+        }
+        return null;
+    }
+
     public static String makePhoto(String name) throws IOException {
         if (isCameraAvailable()) {
             SdpoLog.info("Make a foto, width name camera: " + Webcam.getDefault().getName());
 
             org.bytedeco.javacv.Frame frame = null;
             workWebcam = findWebcam();
-            openCam();
-            frame = workWebcam.grab();
-            SdpoLog.info("Make a foto, is not null: " + (frame != null));
+            try {
+                frame = workWebcam.grabFrame();
+            } catch (FrameGrabber.Exception e) {
+                SdpoLog.error(e);
+                frame.close();
+                throw new IOException("Get capture is fail!");
+            }
+
             if (frame != null) {
                 String photo = savePhoto(frame, name);
-                SdpoLog.info("Make a foto, width name: " + photo);
-                closeCam();
+                SdpoLog.info("Maked a foto is done! Path: " + photo);
                 frame.close();
                 return photo;
             } else {
                 SdpoLog.info("Failed to capture image.");
-                return null;
             }
         } else {
             SdpoLog.info("No camera available. Skipping photo capture.");
-            return null;
+
         }
+        return null;
     }
     public static JSONObject makePhotoAndVideo(){
         return makePhotoAndVideo("");
@@ -214,21 +255,30 @@ public class CameraHelper {
     }
 
     public static void makeVideo(String name) {
-        if (isCameraAvailable()) {
-            String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
-            SdpoLog.info("Make video with path: " + path);
-            new File(path).getParentFile().mkdirs();
-            recordScreen(path, 10);
+        if (getPathRecordVideo(name) != null) {
             SdpoLog.info("Saving video");
             saveVideo(name);
         } else {
             SdpoLog.info("No camera available. Skipping video capture.");
         }
     }
+
+    private static String getPathRecordVideo(String name){
+        if (!isCameraAvailable()) {
+            SdpoLog.info("No camera available.");
+            return null;
+        }
+        String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
+        SdpoLog.info("Make video with path: " + path);
+        new File(path).getParentFile().mkdirs();
+        recordScreen(path, 15);
+        return path;
+    }
+
     private static void recordScreen(String filename, int duration) {
         try {
             workWebcam = findWebcam();
-            openCam();
+
 
             FrameRecorder recorder = new FFmpegFrameRecorder(filename,
                     workWebcam.getImageWidth(), workWebcam.getImageHeight());
@@ -246,7 +296,7 @@ public class CameraHelper {
             }
 
             recorder.stop();
-            closeCam();
+            layer.close();
             recorder.release();
         } catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
             SdpoLog.error("Error capturing video:");
@@ -271,18 +321,17 @@ public class CameraHelper {
         return bufferedOutputStream.toByteArray();
     }
 
-    public static String savePhoto(Frame image, String name) throws IOException {
+    public static String savePhoto(Frame image, String name) {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
         SdpoLog.info("Save photo with path: " + path);
         File photo = new File(path);
 
         photo.getParentFile().mkdirs();
 
-        OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-        IplImage img = converter.convert(image);
-        opencv_imgcodecs.cvSaveImage(path, img);
+        opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
 
         if (!photo.exists() || photo.isDirectory()) {
+            SdpoLog.error("Photo exists or directory!");
             return null;
         }
 
@@ -290,18 +339,16 @@ public class CameraHelper {
             sendPhoto(photo);
         }
 
-        getLastResultPhoto = photo;
-
         return MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png";
     }
 
     public static void sendPhoto(File file) {
         int dotIndex = file.getName().lastIndexOf('.');
         String name = (dotIndex == -1) ? file.getName() : file.getName().substring(0, dotIndex);
-
+        SdpoLog.info("Send photo to server with name: " + name);
         new Thread(() -> {
             try {
-                SdpoLog.info("Send photo to server with name: " + name);
+                SdpoLog.info("Send photo in new thread with name: " + name);
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "photo");
                 multipartUtility.addFormField("name",  name);
@@ -331,15 +378,17 @@ public class CameraHelper {
         }
 
         lastResultVideo = video;
+
+
     }
 
     public static void sendVideo(File file) {
         int dotIndex = file.getName().lastIndexOf('.');
         String name = (dotIndex == -1) ? file.getName() : file.getName().substring(0, dotIndex);
-
+        SdpoLog.info("Send video to server with name: " + name);
         new Thread(() -> {
             try {
-                SdpoLog.info("Send video to server with name: " + name);
+                SdpoLog.info("Send video in new thread with name: " + name);
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "video");
                 multipartUtility.addFormField("name", name);
