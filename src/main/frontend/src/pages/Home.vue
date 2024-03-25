@@ -6,6 +6,7 @@ import ApprovalModal from '@/components/home/ApprovalModal.vue';
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
 import InputPhoneNumber from "@/components/InputPhoneNumber";
 import InputAndSavePhone from "@/pages/driver/InputAndSavePhone";
+import store from "@/store";
 
 export default {
   name: 'Home',
@@ -88,7 +89,7 @@ export default {
       return this.$store.state.driver.phone && !this.error
     },
     needSetNumberPhone() {
-      return this.hasDriver && !this.hasPhoneNumber
+      return this.hasDriver && !this.hasPhoneNumber && store.state.connection !== undefined;
     }
   },
 }

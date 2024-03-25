@@ -29,7 +29,7 @@ export default {
       this.loading = true
       await savePhone(this.formattingPhoneNumber(), this.$store.state.inspection.driver_id)
       this.loading = false
-      this.$router.push('/')
+      this.$router.push({name: 'step-driver'});
     }
   },
   computed: {
