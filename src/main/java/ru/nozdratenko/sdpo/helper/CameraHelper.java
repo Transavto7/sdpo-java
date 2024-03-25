@@ -54,14 +54,13 @@ public class CameraHelper {
         if(workWebcam == null && isCameraAvailable()) {
 
             List<Webcam> webcams = Webcam.getWebcams();
-            SdpoLog.info( String.format("Find %s camers: [ %s ]", (webcams.size() + 1), webcams.stream().map(entry -> entry.getName())
-                    .collect(Collectors.joining(", "))));
-            if(webcams.size() > 1 && !isDefaultWebcam){
-                workWebcam = new OpenCVFrameGrabber(1);
-            }else {
-                SdpoLog.info("This is the default camera.");
+            SdpoLog.info( String.format("Find %s camers: [ %s ]", webcams.size(), webcams.stream().map(entry -> entry.getName())
+                    .collect(Collectors.joining("], ["))));
+            if(isDefaultWebcam){
+                SdpoLog.info("Entered default camera.");
                 workWebcam = new OpenCVFrameGrabber(0);
-            }
+                SdpoLog.info("En");
+            }else if(webcams.size() > 1) workWebcam = new OpenCVFrameGrabber(1);
 
             if(webcams == null){
                 SdpoLog.info("Camera not selected!");
@@ -92,6 +91,7 @@ public class CameraHelper {
         }else if (isCameraAvailable()) {
             try {
                 workWebcam = findWebcam();
+                SdpoLog.info("Opening camera");
                 workWebcam.start();
                 isCameraWorked = true;
                 SdpoLog.info("Camera opened successfully.");
@@ -209,6 +209,7 @@ public class CameraHelper {
             org.bytedeco.javacv.Frame frame = null;
             workWebcam = findWebcam();
             try {
+                workWebcam.grab();
                 frame = workWebcam.grabFrame();
             } catch (FrameGrabber.Exception e) {
                 SdpoLog.error(e);
