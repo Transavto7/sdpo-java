@@ -10,6 +10,7 @@ import java.io.IOException;
 public class InspectionStorage extends FileBase {
     public JSONArray store = new JSONArray();
 
+
     public InspectionStorage() {
         this("storage/inspections.json");
 
@@ -21,8 +22,7 @@ public class InspectionStorage extends FileBase {
         try {
             String str = read();
             if (!str.isEmpty()) {
-                JSONArray result = new JSONArray(read());
-                this.store = result;
+                this.store = new JSONArray(read());
             }
         } catch (Exception e) {
             SdpoLog.error(e);

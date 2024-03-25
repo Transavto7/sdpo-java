@@ -1,37 +1,42 @@
 .login {
-    height: 80vh;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+
+  &__approval-card {
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    max-width: 100%;
+    font-size: 2em;
+    width: 100%;
+    justify-content: space-between;
+    margin: 10px 0px 5px 0px;
+    font-weight: 500;
 
-    &__approval-card {
-        display: flex;
-        flex-direction: row;
-        max-width: 455px;
-        width: 100%;
-        justify-content: space-between;
-        margin: 10px 0px 5px 0px;
-
-        ins {
-            color: #c53936;
-        }
-
-        input {
-            border: none;
-            outline: none;
-            padding: 5px 0 5px 10px;
-            font-weight: 500;
-            border-radius: 5px;
-            width: 25px;
-
-            &.small {
-                max-width: 35px;
-            }
-        }
+    ins {
+      color: #c53936;
     }
+
+    input {
+      border: none;
+      outline: none;
+      padding: 5px 0 5px 10px;
+      font-weight: 500;
+      border-radius: 5px;
+      width: 35px;
+      margin: 25px;
+
+      &.small {
+        max-width: 35px;
+      }
+    }
+  }
 }
+
 .driver-form {
-    height: 80vh !important;
-    button.btn {
-        margin-top: 0px;
-    }
+  height: 80vh !important;
+
+  button.btn {
+    margin-top: 0px;
+  }
 }

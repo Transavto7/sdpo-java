@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -13,12 +14,17 @@ import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRemoteRepository;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -70,6 +76,21 @@ public class InspectionController {
 
         return ResponseEntity.status(200).body("");
     }
+
+    @PostMapping("api/{id}/inspections")
+    public ResponseEntity getInspectionsDriver(@PathVariable String id) throws IOException {
+        InspectionRepositoryInterface repository;
+
+        if (Sdpo.isConnection()) {
+            repository = new InspectionRemoteRepository();
+        } else {
+            repository = new InspectionLocalStorageRepository();
+        }
+        JSONArray inspections = (new InspectionDataProvider(repository)).getInspectionsOnDriverHashId(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(inspections.toString());
+    }
+
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {

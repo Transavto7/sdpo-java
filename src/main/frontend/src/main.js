@@ -10,8 +10,10 @@ import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
 import { loadSettings } from './helpers/settings'
 import { checkConnect } from './helpers/api'
-import 'animate.css'
 import { closeAlcometer } from './helpers/alcometer'
+import 'animate.css'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
@@ -79,7 +81,8 @@ createApp(App)
     .use(store)
     .use(Toast, {
         position: 'top-center',
-        timeout: 2500
+        timeout: 4500
     })
     .use(router)
+    .component('VueDatePicker', VueDatePicker)
     .mount('#app')
