@@ -33,7 +33,10 @@ export default {
       this.$store.state.inspection.driver_id = driver.hash_id;
       this.$store.state.inspection.driver_fio = driver.fio;
 
-      this.$router.push({name: 'step-driver'});
+      if (this.needSetNumberPhone)
+        this.$router.push('/number-phone/add/')
+      else
+        this.$router.push({name: 'step-driver'});
     },
     updateDriverId(inputPassword) {
       this.driver_id = inputPassword;
@@ -65,8 +68,6 @@ export default {
       }
 
       this.loading = false;
-
-      if (this.needSetNumberPhone) this.$router.push('/number-phone/add/')
     }
   },
   watch: {
@@ -135,7 +136,8 @@ export default {
         начать осмотр
       </button>
       <div v-else-if="error"
-           class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
+           class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}
+      </div>
     </div>
   </div>
 </template>
