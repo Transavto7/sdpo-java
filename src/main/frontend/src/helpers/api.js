@@ -115,7 +115,7 @@ export async function savePhone(phoneNumber, driverId) {
             phone_number: phoneNumber,
             driver_id : driverId
     }).then(({data}) => {
-        this.toast.success("Личный номер телефона сохранен")
+        toast.success("Личный номер телефона сохранен")
         return data;
     }).catch((error) => {
         console.log(error);
