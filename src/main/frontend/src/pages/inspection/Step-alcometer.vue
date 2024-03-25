@@ -71,6 +71,7 @@ export default {
         return;
       }
       this.inspection.alcometer_result = Number(result) || 0;
+      this.inspection.alcometer_mode = this.system.alcometer_fast ? '0' : '1';
       this.nextStep();
     }, 1000);
   },
