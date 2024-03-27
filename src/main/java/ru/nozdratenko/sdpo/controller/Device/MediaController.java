@@ -21,6 +21,7 @@ public class MediaController {
     public ResponseEntity photo() {
         try {
             String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
+            SdpoLog.info("Make photo with name: " + name);
             CameraHelper.makePhoto(name);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
@@ -33,6 +34,7 @@ public class MediaController {
     @PostMapping(value = "/device/media")
     @ResponseBody
     public ResponseEntity media(@RequestBody Map<String, String> json) {
+        SdpoLog.info("make photo and video");
         JSONObject result = CameraHelper.makePhotoAndVideo(json.get("driver_id"));
         return ResponseEntity.status(HttpStatus.OK).body(result.toMap());
     }
@@ -41,6 +43,7 @@ public class MediaController {
     @ResponseBody
     public ResponseEntity videoTest() {
         String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
+        SdpoLog.info("Make photo test with name: " + name);
         CameraHelper.makeVideo(name);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
