@@ -1,15 +1,9 @@
 package ru.nozdratenko.sdpo.commands;
 
 
-import com.github.sarxos.webcam.Webcam;
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
-import ru.nozdratenko.sdpo.task.AlcometerResultTask;
-import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-import ru.nozdratenko.sdpo.util.StatusType;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -45,7 +39,7 @@ public class PhotoCommand extends Command {
             }
         }
 
-        CameraHelper.closeCam();
+
     }
 
     private void testPhoto(int number) throws InterruptedException {

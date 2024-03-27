@@ -1,7 +1,6 @@
 package ru.nozdratenko.sdpo.commands;
 
 
-import com.github.sarxos.webcam.Webcam;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -40,7 +39,7 @@ public class VideoCommand extends Command {
             }
         }
 
-        CameraHelper.closeCam();
+
     }
 
     private void testVideo(int number) throws InterruptedException {

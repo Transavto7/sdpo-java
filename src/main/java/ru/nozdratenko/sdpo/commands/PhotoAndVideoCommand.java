@@ -1,13 +1,9 @@
 package ru.nozdratenko.sdpo.commands;
 
 
-import com.github.sarxos.webcam.Webcam;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PhotoAndVideoCommand extends Command {
 

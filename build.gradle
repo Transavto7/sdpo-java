@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.6'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.bytedeco.gradle-javacpp-platform' version "1.5.10"
 }
 
 group = 'ru.nozdratenko'
@@ -18,11 +19,21 @@ repositories {
 	}
 }
 
+ext {
+	javacppPlatform = 'linux-x86_64,windows-x86_64' // defaults to Loader.getPlatform()
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation group: 'org.json', name: 'json', version: '20210307'
 	implementation group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.12'
+	implementation group: 'org.bytedeco', name: 'javacv', version: '1.5.9'
+	implementation group: 'org.bytedeco', name: 'opencv-platform', version: '4.7.0-1.5.9'
+	implementation group: 'org.bytedeco.javacpp-presets', name: 'opencv-platform', version: '4.0.1-1.4.4'
+	implementation group: 'org.bytedeco', name: 'ffmpeg-platform', version: '6.0-1.5.9'
+	implementation group: 'org.bytedeco.javacpp-presets', name: 'openblas-platform', version: '0.3.5-1.4.4'
+	implementation group: 'org.bytedeco', name: 'openblas', version: '0.3.23-1.5.9'
 	implementation group: 'xuggle', name: 'xuggle-xuggler', version: '5.4'
 	implementation group: 'io.humble', name: 'humble-video-all', version: '0.3.0'
 	implementation group: 'io.github.java-native', name: 'jssc', version: '2.9.4'

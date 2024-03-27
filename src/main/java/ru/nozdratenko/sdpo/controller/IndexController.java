@@ -1,10 +1,9 @@
 package ru.nozdratenko.sdpo.controller;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
@@ -16,13 +15,8 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
 
 import javax.websocket.Session;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Map;
 
 @Controller
