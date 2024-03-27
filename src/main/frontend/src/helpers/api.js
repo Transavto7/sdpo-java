@@ -110,6 +110,19 @@ export async function saveMedic(medic) {
     });
 }
 
+export async function savePhone(phoneNumber, driverId) {
+    return await axios.post('api/driver/phone/save',  {
+            phone_number: phoneNumber,
+            driver_id : driverId
+    }).then(({data}) => {
+        toast.success("Личный номер телефона сохранен")
+        return data;
+    }).catch((error) => {
+        console.log(error);
+        toast.error('Ошибка сохранения номера телефона. Повторите попытку или обратитесь к администратору')
+    });
+}
+
 export async function getInspections(hashId) {
     return await axios.post(`api/${hashId}/inspections/`).then(({data}) => {
         return data;
