@@ -17,10 +17,10 @@ export default {
     }
   },
   methods: {
-    async saveWebCam() {
+    async saveWebCam(restart = false) {
       if ((JSON.parse(this.system.camera_photo) && !this.inspection.photo)
           || (JSON.parse(this.system.camera_video) && !this.inspection.video)) {
-        const data = await makeMedia(this.$store.state.inspection.driver_id);
+        const data = await makeMedia(this.$store.state.inspection.driver_id, restart);
         this.inspection.photo = data?.photo;
         this.inspection.video = data?.video;
       }
@@ -37,6 +37,7 @@ export default {
         this.showRetry = true;
       }, 3000);
       await enableSlowModeAlcometer();
+      await this.saveWebCam(true);
       await closeAlcometer();
       this.runCountdown();
     },

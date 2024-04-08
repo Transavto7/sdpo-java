@@ -1,6 +1,4 @@
-import store from "@/store";
-import { useToast } from "vue-toastification";
-const toast = useToast();
+import {defaultError} from "@/helpers/http-errors";
 
 export async function makePhoto() {
     return await axios.post(`device/photo`).then(({ data }) => {
@@ -15,9 +13,10 @@ export async function getSizes() {
 }
 
 
-export async function makeMedia(driver_id) {
+export async function makeMedia(driver_id, restart = false) {
     return await axios.post(`device/media`, {
         driver_id,
+        restart
     }).then(({ data }) => {
         return data;
     }).catch(defaultError);
@@ -27,12 +26,4 @@ export async function makeVideoTest() {
     return await axios.post(`device/video/test`).then(({ data }) => {
         return data;
     }).catch(defaultError);
-}
-
-function defaultError(error) {
-    if (error.response) {
-        store.$state.loseConnect = true;
-    }
-    
-    console.log(error);
 }
