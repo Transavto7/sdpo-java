@@ -231,6 +231,11 @@ public class CameraHelper {
         }
         return null;
     }
+
+    public static void restartMediaTask(){
+        MediaMakeTask.mediaLastKill();
+    }
+
     public static JSONObject makePhotoAndVideo(){
         return makePhotoAndVideo("");
     }
@@ -400,4 +405,5 @@ public class CameraHelper {
             }
         }).start();
     }
+
 }

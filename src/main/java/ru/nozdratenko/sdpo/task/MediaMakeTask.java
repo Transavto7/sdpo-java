@@ -18,6 +18,10 @@ public class MediaMakeTask extends Thread {
         SdpoLog.info(String.format("Queue size: %s added new thread media task, name: %s", medias.size(), name));
     }
 
+    public static void mediaLastKill() {
+        MediaMakeTask.medias.remove();
+    }
+
     @Override
     public void run() {
 
