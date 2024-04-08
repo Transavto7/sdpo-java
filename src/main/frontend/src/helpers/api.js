@@ -1,5 +1,6 @@
 import store from "@/store";
 import axios from "axios";
+import {defaultError} from "@/helpers/http-errors";
 import {useToast} from "vue-toastification";
 
 const toast = useToast();
@@ -48,7 +49,7 @@ export async function checkConnect(address) {
         return data;
     }).catch((error) => {
         if (!error.response) {
-            store.$state.loseConnect = true;
+            store.state.loseConnect = true;
         }
     });
 }
@@ -139,21 +140,4 @@ export async function printInspection(inspection) {
     });
 }
 
-function defaultError(error) {
-    const data = error.response?.data;
-    if (data?.message) {
-        toast.error(data.message);
-    } else if (error.response) {
-        switch (error?.response?.status) {
-            case 400:
-                toast.error('Ошибка авторизации запроса')
-            default:
-                toast.error('Неизвестная ошибка запроса')
 
-        }
-    } else {
-        store.$state.loseConnect = true;
-    }
-
-    console.log(error);
-}
