@@ -34,10 +34,12 @@ public class MediaController {
     @PostMapping(value = "/device/media")
     @ResponseBody
     public ResponseEntity media(@RequestBody Map<String, String> json) {
-        SdpoLog.info("make photo and video");
+        SdpoLog.info(json.get("restart"));
         if(json.get("restart").equals("true")) {
+            SdpoLog.info("stop photo and video");
             CameraHelper.restartMediaTask();
         }
+        SdpoLog.info("make photo and video");
         JSONObject result = CameraHelper.makePhotoAndVideo(json.get("driver_id"));
         return ResponseEntity.status(HttpStatus.OK).body(result.toMap());
     }

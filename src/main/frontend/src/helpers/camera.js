@@ -22,7 +22,7 @@ export async function makeMedia(driver_id) {
     }).catch(defaultError);
 }
 
-export async function stopMedia(driver_id) {
+export async function restartMedia(driver_id) {
     return await axios.post(`device/media`, {
         driver_id,
         restart: true
