@@ -38,6 +38,7 @@ export default {
       }, 3000);
       await enableSlowModeAlcometer();
       await this.saveWebCam(true);
+      await this.saveWebCam();
       await closeAlcometer();
       this.runCountdown();
     },
