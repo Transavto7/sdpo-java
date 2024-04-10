@@ -34,7 +34,6 @@ public class MediaController {
     @PostMapping(value = "/device/media")
     @ResponseBody
     public ResponseEntity media(@RequestBody Map<String, String> json) {
-        SdpoLog.info(json.get("restart"));
         if(json.get("restart").equals("true")) {
             SdpoLog.info("stop photo and video");
             CameraHelper.restartMediaTask();
