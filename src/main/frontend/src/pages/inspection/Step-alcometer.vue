@@ -5,7 +5,7 @@ import {
   enableSlowModeAlcometer,
   getAlcometerResult
 } from '@/helpers/alcometer';
-import {makeMedia} from '@/helpers/camera';
+import {makeMedia, stopMedia} from '@/helpers/camera';
 
 export default {
   data() {
@@ -17,13 +17,18 @@ export default {
     }
   },
   methods: {
-    async saveWebCam(restart = false) {
+    async saveWebCam() {
       if ((JSON.parse(this.system.camera_photo) && !this.inspection.photo)
           || (JSON.parse(this.system.camera_video) && !this.inspection.video)) {
-        const data = await makeMedia(this.$store.state.inspection.driver_id, restart);
+        const data = await makeMedia(this.$store.state.inspection.driver_id);
         this.inspection.photo = data?.photo;
         this.inspection.video = data?.video;
       }
+    },
+    async stopWebCam() {
+      await stopMedia(this.$store.state.inspection.driver_id);
+      this.inspection.photo = null;
+      this.inspection.video = null;
     },
     async nextStep() {
       this.$router.push({name: 'step-sleep'});
@@ -37,7 +42,7 @@ export default {
         this.showRetry = true;
       }, 3000);
       await enableSlowModeAlcometer();
-      await this.saveWebCam(true);
+      await this.stopWebCam();
       await this.saveWebCam();
       await closeAlcometer();
       this.runCountdown();
