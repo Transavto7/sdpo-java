@@ -5,7 +5,7 @@ import {
   enableSlowModeAlcometer,
   getAlcometerResult
 } from '@/helpers/alcometer';
-import {makeMedia, restartMedia} from '@/helpers/camera';
+import {makeMedia, stopMedia} from '@/helpers/camera';
 
 export default {
   data() {
@@ -26,7 +26,7 @@ export default {
       }
     },
     async restartWebCam() {
-      await restartMedia(this.$store.state.inspection.driver_id);
+      await stopMedia(this.$store.state.inspection.driver_id);
       this.inspection.photo = null;
       this.inspection.video = null;
     },
@@ -42,8 +42,8 @@ export default {
         this.showRetry = true;
       }, 3000);
       await enableSlowModeAlcometer();
-      await this.restartWebCam();
       await closeAlcometer();
+      await this.restartWebCam();
       this.runCountdown();
     },
     hasResult(result) {

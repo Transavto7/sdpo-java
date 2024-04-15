@@ -232,7 +232,7 @@ public class CameraHelper {
         return null;
     }
 
-    public static void restartMediaTask(){
+    public static void stopMediaIntoTask(){
         MediaMakeTask.mediaLastKill();
     }
 
