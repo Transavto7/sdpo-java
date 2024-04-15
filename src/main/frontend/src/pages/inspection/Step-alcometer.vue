@@ -25,7 +25,7 @@ export default {
         this.inspection.video = data?.video;
       }
     },
-    async restartWebCam() {
+    async stopWebCam() {
       await stopMedia(this.$store.state.inspection.driver_id);
       this.inspection.photo = null;
       this.inspection.video = null;
@@ -41,10 +41,11 @@ export default {
       setTimeout(() => {
         this.showRetry = true;
       }, 3000);
+      await this.stopWebCam();
       await enableSlowModeAlcometer();
       await closeAlcometer();
-      await this.restartWebCam();
       this.runCountdown();
+      await this.saveWebCam();
     },
     hasResult(result) {
       return !(result === undefined || result === null || result === 'next');
