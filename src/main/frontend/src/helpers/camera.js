@@ -22,7 +22,7 @@ export async function makeMedia(driver_id) {
 }
 
 export async function stopMedia(driver_id) {
-    return await axios.post(`device/media`, {
+    return await axios.post(`device/media/stop`, {
         driver_id,
     }).then(({ data }) => {
         return data;
