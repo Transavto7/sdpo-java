@@ -60,11 +60,17 @@ public class AlcometerResultTask extends Thread {
 
                 this.currentStatus = StatusType.WAIT;
 
-            } else if (this.currentStatus == StatusType.WAIT || this.currentStatus == StatusType.READY ) {
+            } else if (this.currentStatus == StatusType.WAIT
+                    || this.currentStatus == StatusType.READY
+                    || this.currentStatus == StatusType.ANALYSE ) {
                 try {
                     String result = AlcometerHelper.result();
                     if (Objects.equals(result, "STATUS_READY")) {
                         this.currentStatus = StatusType.READY;
+                        continue;
+                    }
+                    if (Objects.equals(result, "ANALYSE")) {
+                        this.currentStatus = StatusType.ANALYSE;
                         continue;
                     }
                     if (result == null) {

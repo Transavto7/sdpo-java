@@ -96,6 +96,9 @@ public class AlcometerHelper {
         if (result.contains("$STANBY")) {
            return "STATUS_READY";
         }
+        if (result.contains("$BREATH") || result.contains("$TRIGGER")) {
+            return "ANALYSE";
+        }
 
         if (result.contains("$FLOW,ERR")) {
             throw new AlcometerException("Ошибка теста, попробуйте еще раз");
