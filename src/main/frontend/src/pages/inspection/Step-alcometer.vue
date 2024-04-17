@@ -55,6 +55,9 @@ export default {
     needStartMedia(result) {
       return result === 'ready' && this.statusAlcometer !== 'ready';
     },
+    checkReady(result) {
+      return result === 'ready';
+    },
     checkRetry(result) {
       return this.system.alcometer_fast && this.system.alcometer_retry && Number(result) > 0 && !this.needRetry;
     },
@@ -84,12 +87,15 @@ export default {
         return;
       }
       if (this.needStartMedia(result)) {
-        this.setStatusAlcometerIsReady();
         await this.stopWebCam();
         await this.runWebCam();
-        return;
       }
-      this.resetStatusAlcometerIsReady()
+      if (this.checkReady(result)) {
+        this.setStatusAlcometerIsReady();
+        return;
+      } else {
+        this.resetStatusAlcometerIsReady()
+      }
 
       if (this.checkRetry(result)) {
         await this.retry();
