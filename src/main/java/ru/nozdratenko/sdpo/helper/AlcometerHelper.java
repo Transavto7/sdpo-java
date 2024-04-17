@@ -86,7 +86,7 @@ public class AlcometerHelper {
         }
 
         String result = getSerialPort().readString();
-
+        SdpoLog.warning(result);
         if (result == null) {
             AlcometerHelper.setComPort();
             return null;
