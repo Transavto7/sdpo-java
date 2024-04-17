@@ -78,7 +78,7 @@ export default {
     }
   },
   async mounted() {
-    // await this.runWebCam();
+    await this.runWebCam();
     this.runCountdown()
 
     this.requestInterval = setInterval(async () => {
