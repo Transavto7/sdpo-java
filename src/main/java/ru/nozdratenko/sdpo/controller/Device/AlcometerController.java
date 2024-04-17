@@ -41,7 +41,7 @@ public class AlcometerController {
 //        }
 
         if (task.currentStatus == StatusType.ERROR) {
-            return ResponseEntity.status(500).body(task.error.toMap());
+            return ResponseEntity.ok().body("error");
         }
 
         if (task.currentStatus == StatusType.RESULT) {

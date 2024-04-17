@@ -53,7 +53,7 @@ export default {
 
     },
     needStartMedia(result) {
-      return result === 'ready' && this.statusAlcometer !== 'ready';
+      return (result === 'ready' && this.statusAlcometer !== 'ready') || result === "error" ;
     },
     checkReady(result) {
       return result === 'ready';
