@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 
 import java.util.Map;
@@ -19,8 +20,10 @@ public class AlcometerController {
     @ResponseBody
     public ResponseEntity alcometer() {
         AlcometerResultTask task = Sdpo.alcometerResultTask;
+        SdpoLog.info(task.currentStatus);
         if (task.currentStatus == StatusType.FREE) {
             task.currentStatus = StatusType.REQUEST;
+
             return ResponseEntity.ok().body("next");
         }
 
