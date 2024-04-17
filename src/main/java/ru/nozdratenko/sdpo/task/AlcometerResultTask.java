@@ -8,6 +8,7 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 public class AlcometerResultTask extends Thread {
     public String result = "0";
@@ -59,9 +60,13 @@ public class AlcometerResultTask extends Thread {
 
                 this.currentStatus = StatusType.WAIT;
 
-            } else if (this.currentStatus == StatusType.WAIT) {
+            } else if (this.currentStatus == StatusType.WAIT || this.currentStatus == StatusType.READY ) {
                 try {
                     String result = AlcometerHelper.result();
+                    if (Objects.equals(result, "STATUS_READY")) {
+                        this.currentStatus = StatusType.READY;
+                        continue;
+                    }
                     if (result == null) {
                         continue;
                     }

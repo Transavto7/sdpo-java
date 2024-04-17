@@ -86,13 +86,16 @@ public class AlcometerHelper {
         }
 
         String result = getSerialPort().readString();
-        SdpoLog.warning(result);
         if (result == null) {
             AlcometerHelper.setComPort();
             return null;
         }
 
         result = result.trim();
+
+        if (result.contains("$STANBY")) {
+           return "STATUS_READY";
+        }
 
         if (result.contains("$FLOW,ERR")) {
             throw new AlcometerException("Ошибка теста, попробуйте еще раз");

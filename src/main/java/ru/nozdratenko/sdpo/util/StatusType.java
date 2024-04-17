@@ -4,6 +4,8 @@ public enum StatusType {
     REQUEST(false),
     WAIT(false),
     STOP(false),
+
+    READY(false),
     RESULT(true),
     ERROR(true),
     FREE(true);
