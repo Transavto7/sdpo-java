@@ -89,6 +89,7 @@ export default {
       if (this.needStartMedia(result)) {
         await this.stopWebCam();
         await this.runWebCam();
+        return;
       }
       if (this.checkReady(result)) {
         this.setStatusAlcometerIsReady();
