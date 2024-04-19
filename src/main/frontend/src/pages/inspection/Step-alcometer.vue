@@ -14,7 +14,8 @@ export default {
       seconds: 5,
       needRetry: false,
       showRetry: false,
-      statusAlcometer: "ready",
+      statusAlcometer: "",
+      itsFirstStep: true
     }
   },
   methods: {
@@ -53,7 +54,7 @@ export default {
 
     },
     needStartMedia(result) {
-      return (result === 'ready' && this.statusAlcometer !== 'ready') || this.hasError(result) ;
+      return (result === 'ready' && this.statusAlcometer !== 'ready') || this.hasError(result) || !this.itsFirstStep;
     },
     hasError(result) {
       return result === "error";
@@ -90,6 +91,7 @@ export default {
         return;
       }
       if (this.needStartMedia(result)) {
+        this.itsFirstStep = false;
         await this.stopWebCam();
         await this.runWebCam();
         if (this.checkReady(result))  {
@@ -99,6 +101,7 @@ export default {
         }
         return;
       }
+      this.itsFirstStep = false;
       if (this.checkReady(result)) {
         this.setStatusAlcometerIsReady();
         return;
