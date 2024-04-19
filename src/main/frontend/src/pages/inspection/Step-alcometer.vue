@@ -15,7 +15,6 @@ export default {
       needRetry: false,
       showRetry: false,
       statusAlcometer: "",
-      itsFirstStep: true
     }
   },
   methods: {
@@ -54,7 +53,7 @@ export default {
 
     },
     needStartMedia(result) {
-      return (result === 'ready' && this.statusAlcometer !== 'ready') || this.hasError(result) || !this.itsFirstStep;
+      return (result === 'ready' && this.statusAlcometer !== 'ready') || this.hasError(result);
     },
     hasError(result) {
       return result === "error";
@@ -91,7 +90,6 @@ export default {
         return;
       }
       if (this.needStartMedia(result)) {
-        this.itsFirstStep = false;
         await this.stopWebCam();
         await this.runWebCam();
         if (this.checkReady(result))  {
@@ -101,7 +99,6 @@ export default {
         }
         return;
       }
-      this.itsFirstStep = false;
       if (this.checkReady(result)) {
         this.setStatusAlcometerIsReady();
         return;
@@ -116,7 +113,7 @@ export default {
       this.inspection.alcometer_result = Number(result) || 0;
       this.inspection.alcometer_mode = this.system.alcometer_fast ? '0' : '1';
       this.nextStep();
-    }, 1000);
+    }, 500);
   },
   unmounted() {
     enableModeFromSystemConfig(this.system.alcometer_fast);
