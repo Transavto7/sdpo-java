@@ -1,9 +1,10 @@
 <script>
 import {saveInspection, replayPrint} from '@/helpers/api';
 import ResultRepeat from "@/components/ResultRepeat";
+import Loader from "@/components/common/Loader";
 
 export default {
-  components: {ResultRepeat},
+  components: {Loader, ResultRepeat},
   data() {
     return {
       backTimeout: null,
@@ -13,11 +14,12 @@ export default {
         comments: '',
       },
       notIdentified: 'Не идентифицирован',
+      loading: false
     }
   },
   async mounted() {
+    await this.checkRecordMedia();
     await this.save();
-
     if (this.autoStart) {
       this.backTimeout = this.setTimeoutAndRedirect();
     }
@@ -27,58 +29,81 @@ export default {
     clearTimeout(this.backTimeout);
   },
   methods: {
-    getSleepStatus(status) {
-      return status === 'Да' ? 'Выспались' : 'Не выспались';
-    },
-    getPeopleStatus(status) {
-      return status === 'Да' ? 'Хорошее' : 'Плохое';
-    },
-    async save() {
-      this.result = await saveInspection();
-      this.conclusion.admitted = this.result.admitted ?? '';
-      this.conclusion.comments = this.result.comments ?? '';
-    },
-    async replayPrint() {
-      await replayPrint();
-    },
-    redirectHome() {
-      if (this.$route.name === 'step-result') {
-        this.$router.push('/');
+    async checkRecordMedia() {
+      this.loading = true;
+      if (this.$store.state.waitRecordMedia) {
+        setTimeout(function check() {
+          if (this.$store.state.waitRecordMedia) {
+            setTimeout(check, 1000);
+          }
+        }, 1000);
       }
-    },
-    redirectRepeat() {
-      if (this.$route.name === 'step-result') {
-        this.$router.push({name: 'step-retry'});
-      }
-    },
-    setTimeoutAndRedirect() {
-      if (this.result.admitted === this.notIdentified) {
-        return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
-      }
-      return setTimeout(this.redirectHome, 5000);
-    },
+    this.loading = false;
   },
-  computed: {
-    autoStart() {
-      return this.system.auto_start;
-    },
-    showRetryModal() {
-      return this.result.admitted === this.notIdentified;
-    },
-    getComment() {
-      return this.result.comments ?? '';
-    },
-    inspection() {
-      return this.$store.state.inspection;
-    },
-    system() {
-      return this.$store.state.config?.system || {};
+  getSleepStatus(status) {
+    return status === 'Да' ? 'Выспались' : 'Не выспались';
+  },
+  getPeopleStatus(status) {
+    return status === 'Да' ? 'Хорошее' : 'Плохое';
+  },
+  async save() {
+    this.result = await saveInspection();
+    this.conclusion.admitted = this.result.admitted ?? '';
+    this.conclusion.comments = this.result.comments ?? '';
+  },
+  async replayPrint() {
+    await replayPrint();
+  },
+  redirectHome() {
+    if (this.$route.name === 'step-result') {
+      this.$router.push('/');
     }
   },
+  redirectRepeat() {
+    if (this.$route.name === 'step-result') {
+      this.$router.push({name: 'step-retry'});
+    }
+  },
+  setTimeoutAndRedirect() {
+    if (this.result.admitted === this.notIdentified) {
+      return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
+    }
+    return setTimeout(this.redirectHome, 5000);
+  },
+}
+,
+computed: {
+  autoStart()
+  {
+    return this.system.auto_start;
+  }
+,
+  showRetryModal()
+  {
+    return this.result.admitted === this.notIdentified;
+  }
+,
+  getComment()
+  {
+    return this.result.comments ?? '';
+  }
+,
+  inspection()
+  {
+    return this.$store.state.inspection;
+  }
+,
+  system()
+  {
+    return this.$store.state.config?.system || {};
+  }
+}
+,
 }
 </script>
 
 <template>
+  <loader v-model:loading="loading"/>
   <result-repeat v-model:visible="showRetryModal"
                  v-model:message-content="getComment"
                  @accept="redirectRepeat()"

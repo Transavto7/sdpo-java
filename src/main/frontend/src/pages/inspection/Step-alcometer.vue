@@ -113,7 +113,7 @@ export default {
       this.inspection.alcometer_result = Number(result) || 0;
       this.inspection.alcometer_mode = this.system.alcometer_fast ? '0' : '1';
       this.nextStep();
-    }, 500);
+    }, 1000);
   },
   unmounted() {
     enableModeFromSystemConfig(this.system.alcometer_fast);

@@ -16,6 +16,33 @@
     max-width: 600px;
   }
 
+  &__input input {
+    margin: 20px 0;
+    box-sizing: border-box;
+    text-align: center;
+    caret-color: transparent;
+    border: none;
+    padding: 10px 20px 10px 40px;
+    font-size: 46px;
+    letter-spacing: 40px;
+    -moz-appearance: textfield;
+    font-weight: 500;
+    outline:none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 580px;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+    }
+  }
+
   &__not-found {
     margin-top: 25px;
     font-size: 22px;
@@ -33,4 +60,28 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+}
+
+@media screen and (max-height: 760px) {
+  .number-form, .login-form, .password-form {
+    &__input input, .number-buttons {
+      max-width: 550px;
+    }
+
+    .number-buttons {
+      &__item {
+        min-height: 65px;
+      }
+    }
+
+    &__title {
+      font-size: 4vh;
+    }
+
+    &__input input {
+      margin: 15px 0;
+      padding: 5px 20px 10px 40px;
+      font-size: 4vh;
+    }
+  }
 }
