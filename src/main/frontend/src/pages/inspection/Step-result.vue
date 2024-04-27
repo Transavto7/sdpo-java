@@ -1,9 +1,10 @@
 <script>
 import {saveInspection, replayPrint} from '@/helpers/api';
 import ResultRepeat from "@/components/ResultRepeat";
+import Loader from "@/components/common/Loader";
 
 export default {
-  components: {ResultRepeat},
+  components: {Loader, ResultRepeat},
   data() {
     return {
       backTimeout: null,
@@ -13,15 +14,26 @@ export default {
         comments: '',
       },
       notIdentified: 'Не идентифицирован',
+      loading: false
     }
   },
   async mounted() {
-    await this.save();
-
-    if (this.autoStart) {
-      this.backTimeout = this.setTimeoutAndRedirect();
+    this.$data.loading = true;
+    if (this.$store.state.waitRecordMedia) {
+      let thisVar = this;
+      let checker = async function () {
+        if (thisVar.$store.state.waitRecordMedia) {
+          setTimeout(checker, 1000);
+        } else {
+          thisVar.loading = false;
+          await thisVar.save();
+          if (thisVar.autoStart) {
+            thisVar.backTimeout = thisVar.setTimeoutAndRedirect();
+          }
+        }
+      }
+      setTimeout(checker, 1000);
     }
-
   },
   unmounted() {
     clearTimeout(this.backTimeout);
@@ -57,33 +69,40 @@ export default {
       }
       return setTimeout(this.redirectHome, 5000);
     },
-  },
+  }
+  ,
   computed: {
     autoStart() {
       return this.system.auto_start;
-    },
+    }
+    ,
     showRetryModal() {
       return this.result.admitted === this.notIdentified;
-    },
+    }
+    ,
     getComment() {
       return this.result.comments ?? '';
-    },
+    }
+    ,
     inspection() {
       return this.$store.state.inspection;
-    },
+    }
+    ,
     system() {
       return this.$store.state.config?.system || {};
     }
-  },
+  }
+  ,
 }
 </script>
 
 <template>
+  <loader v-model:loading="loading"/>
   <result-repeat v-model:visible="showRetryModal"
                  v-model:message-content="getComment"
                  @accept="redirectRepeat()"
   ></result-repeat>
-  <div class="step-result">
+  <div v-if="!loading" class="step-result">
     <h3 class="animate__animated animate__fadeInDown">Результаты осмотра</h3>
     <div class="step-result__cards">
       <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">

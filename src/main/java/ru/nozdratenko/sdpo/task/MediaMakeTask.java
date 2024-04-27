@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MediaMakeTask extends Thread {
     private transient static final Queue<String> medias = new PriorityQueue<>();
     private static final Lock cameraLock = new ReentrantLock();
+    public static transient boolean skip = false;
 
     public static void record(String name) {
         medias.offer(name);
@@ -19,7 +20,8 @@ public class MediaMakeTask extends Thread {
     }
 
     public static void mediaLastKill() {
-        MediaMakeTask.medias.remove();
+        SdpoLog.info("Skip other frame first video. Kill video task!");
+        MediaMakeTask.skip = true;
     }
 
     @Override

@@ -232,7 +232,7 @@ public class CameraHelper {
         return null;
     }
 
-    public static void restartMediaTask(){
+    public static void stopMediaIntoTask(){
         MediaMakeTask.mediaLastKill();
     }
 
@@ -297,9 +297,11 @@ public class CameraHelper {
             long start = System.currentTimeMillis();
 
             org.bytedeco.javacv.Frame layer;
-            while ((layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L) {
+            while ((layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L && MediaMakeTask.skip) {
                 recorder.record(layer);
             }
+
+            MediaMakeTask.skip = false;
 
             recorder.stop();
             layer.close();

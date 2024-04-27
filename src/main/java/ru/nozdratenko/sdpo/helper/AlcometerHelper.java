@@ -86,13 +86,19 @@ public class AlcometerHelper {
         }
 
         String result = getSerialPort().readString();
-
         if (result == null) {
             AlcometerHelper.setComPort();
             return null;
         }
 
         result = result.trim();
+
+        if (result.contains("$STANBY")) {
+           return "STATUS_READY";
+        }
+        if (result.contains("$BREATH") || result.contains("$TRIGGER")) {
+            return "ANALYSE";
+        }
 
         if (result.contains("$FLOW,ERR")) {
             throw new AlcometerException("Ошибка теста, попробуйте еще раз");

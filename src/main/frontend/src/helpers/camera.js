@@ -1,4 +1,5 @@
 import {defaultError} from "@/helpers/http-errors";
+import {startWaitTimerRecordMedia} from "@/helpers/media";
 
 export async function makePhoto() {
     return await axios.post(`device/photo`).then(({ data }) => {
@@ -16,16 +17,15 @@ export async function getSizes() {
 export async function makeMedia(driver_id) {
     return await axios.post(`device/media`, {
         driver_id,
-        restart: false
     }).then(({ data }) => {
+        startWaitTimerRecordMedia()
         return data;
     }).catch(defaultError);
 }
 
-export async function restartMedia(driver_id) {
-    return await axios.post(`device/media`, {
+export async function stopMedia(driver_id) {
+    return await axios.post(`device/media/stop`, {
         driver_id,
-        restart: true
     }).then(({ data }) => {
         return data;
     }).catch(defaultError);

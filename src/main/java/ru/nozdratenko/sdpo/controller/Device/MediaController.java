@@ -34,13 +34,17 @@ public class MediaController {
     @PostMapping(value = "/device/media")
     @ResponseBody
     public ResponseEntity media(@RequestBody Map<String, String> json) {
-        if(json.get("restart").equals("true")) {
-            SdpoLog.info("stop photo and video");
-            CameraHelper.restartMediaTask();
-        }
-        SdpoLog.info("make photo and video");
+        SdpoLog.info("Make photo and video");
         JSONObject result = CameraHelper.makePhotoAndVideo(json.get("driver_id"));
         return ResponseEntity.status(HttpStatus.OK).body(result.toMap());
+    }
+
+    @PostMapping(value = "/device/media/stop")
+    @ResponseBody
+    public ResponseEntity mediaStop(@RequestBody Map<String, String> json) {
+            SdpoLog.info("Stop photo and video");
+            CameraHelper.stopMediaIntoTask();
+            return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
     @PostMapping(value = "/device/video/test")

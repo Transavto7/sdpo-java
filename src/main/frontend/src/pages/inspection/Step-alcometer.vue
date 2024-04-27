@@ -5,7 +5,7 @@ import {
   enableSlowModeAlcometer,
   getAlcometerResult
 } from '@/helpers/alcometer';
-import {makeMedia, restartMedia} from '@/helpers/camera';
+import {makeMedia, stopMedia} from '@/helpers/camera';
 
 export default {
   data() {
@@ -14,10 +14,11 @@ export default {
       seconds: 5,
       needRetry: false,
       showRetry: false,
+      statusAlcometer: "",
     }
   },
   methods: {
-    async saveWebCam() {
+    async runWebCam() {
       if ((JSON.parse(this.system.camera_photo) && !this.inspection.photo)
           || (JSON.parse(this.system.camera_video) && !this.inspection.video)) {
         const data = await makeMedia(this.$store.state.inspection.driver_id);
@@ -25,8 +26,8 @@ export default {
         this.inspection.video = data?.video;
       }
     },
-    async restartWebCam() {
-      await restartMedia(this.$store.state.inspection.driver_id);
+    async stopWebCam() {
+      await stopMedia(this.$store.state.inspection.driver_id);
       this.inspection.photo = null;
       this.inspection.video = null;
     },
@@ -41,14 +42,24 @@ export default {
       setTimeout(() => {
         this.showRetry = true;
       }, 3000);
+      await this.stopWebCam();
       await enableSlowModeAlcometer();
-      await this.restartWebCam();
       await closeAlcometer();
       this.runCountdown();
+      // await this.runWebCam();
     },
     hasResult(result) {
       return !(result === undefined || result === null || result === 'next');
 
+    },
+    needStartMedia(result) {
+      return (result === 'ready' && this.statusAlcometer !== 'ready') || this.hasError(result);
+    },
+    hasError(result) {
+      return result === "error";
+    },
+    checkReady(result) {
+      return result === 'ready';
     },
     checkRetry(result) {
       return this.system.alcometer_fast && this.system.alcometer_retry && Number(result) > 0 && !this.needRetry;
@@ -62,9 +73,15 @@ export default {
         }
       }, 1000);
     },
+    setStatusAlcometerIsReady() {
+      this.statusAlcometer = 'ready';
+    },
+    resetStatusAlcometerIsReady() {
+      this.statusAlcometer = '';
+    }
   },
   async mounted() {
-    await this.saveWebCam();
+    await this.runWebCam();
     this.runCountdown()
 
     this.requestInterval = setInterval(async () => {
@@ -72,6 +89,23 @@ export default {
       if (!this.hasResult(result)) {
         return;
       }
+      if (this.needStartMedia(result)) {
+        await this.stopWebCam();
+        await this.runWebCam();
+        if (this.checkReady(result))  {
+          this.setStatusAlcometerIsReady();
+        } else {
+          this.resetStatusAlcometerIsReady()
+        }
+        return;
+      }
+      if (this.checkReady(result)) {
+        this.setStatusAlcometerIsReady();
+        return;
+      } else {
+        this.resetStatusAlcometerIsReady()
+      }
+
       if (this.checkRetry(result)) {
         await this.retry();
         return;
@@ -104,7 +138,7 @@ export default {
         return 'через ' + this.seconds + ' секунды';
       }
     }
-  }
+  },
 }
 </script>
 <template>
