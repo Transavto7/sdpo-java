@@ -10,6 +10,7 @@ export function startWaitTimerRecordMedia() {
     store.state.waitRecordMedia = true
     let timerInterval = setInterval(() => {
         seconds--;
+        console.log('осталось ' + seconds)
         if (seconds < 1) {
             store.state.waitRecordMedia = false
             clearInterval(timerInterval);

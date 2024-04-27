@@ -18,87 +18,81 @@ export default {
     }
   },
   async mounted() {
-    await this.checkRecordMedia();
-    await this.save();
-    if (this.autoStart) {
-      this.backTimeout = this.setTimeoutAndRedirect();
+    this.$data.loading = true;
+    if (this.$store.state.waitRecordMedia) {
+      let thisVar = this;
+      let checker = async function () {
+        if (thisVar.$store.state.waitRecordMedia) {
+          setTimeout(checker, 1000);
+        } else {
+          thisVar.loading = false;
+          await thisVar.save();
+          if (thisVar.autoStart) {
+            thisVar.backTimeout = thisVar.setTimeoutAndRedirect();
+          }
+        }
+      }
+      setTimeout(checker, 1000);
     }
-
   },
   unmounted() {
     clearTimeout(this.backTimeout);
   },
   methods: {
-    async checkRecordMedia() {
-      this.loading = true;
-      if (this.$store.state.waitRecordMedia) {
-        setTimeout(function check() {
-          if (this.$store.state.waitRecordMedia) {
-            setTimeout(check, 1000);
-          }
-        }, 1000);
+    getSleepStatus(status) {
+      return status === 'Да' ? 'Выспались' : 'Не выспались';
+    },
+    getPeopleStatus(status) {
+      return status === 'Да' ? 'Хорошее' : 'Плохое';
+    },
+    async save() {
+      this.result = await saveInspection();
+      this.conclusion.admitted = this.result.admitted ?? '';
+      this.conclusion.comments = this.result.comments ?? '';
+    },
+    async replayPrint() {
+      await replayPrint();
+    },
+    redirectHome() {
+      if (this.$route.name === 'step-result') {
+        this.$router.push('/');
       }
-    this.loading = false;
-  },
-  getSleepStatus(status) {
-    return status === 'Да' ? 'Выспались' : 'Не выспались';
-  },
-  getPeopleStatus(status) {
-    return status === 'Да' ? 'Хорошее' : 'Плохое';
-  },
-  async save() {
-    this.result = await saveInspection();
-    this.conclusion.admitted = this.result.admitted ?? '';
-    this.conclusion.comments = this.result.comments ?? '';
-  },
-  async replayPrint() {
-    await replayPrint();
-  },
-  redirectHome() {
-    if (this.$route.name === 'step-result') {
-      this.$router.push('/');
+    },
+    redirectRepeat() {
+      if (this.$route.name === 'step-result') {
+        this.$router.push({name: 'step-retry'});
+      }
+    },
+    setTimeoutAndRedirect() {
+      if (this.result.admitted === this.notIdentified) {
+        return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
+      }
+      return setTimeout(this.redirectHome, 5000);
+    },
+  }
+  ,
+  computed: {
+    autoStart() {
+      return this.system.auto_start;
     }
-  },
-  redirectRepeat() {
-    if (this.$route.name === 'step-result') {
-      this.$router.push({name: 'step-retry'});
+    ,
+    showRetryModal() {
+      return this.result.admitted === this.notIdentified;
     }
-  },
-  setTimeoutAndRedirect() {
-    if (this.result.admitted === this.notIdentified) {
-      return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
+    ,
+    getComment() {
+      return this.result.comments ?? '';
     }
-    return setTimeout(this.redirectHome, 5000);
-  },
-}
-,
-computed: {
-  autoStart()
-  {
-    return this.system.auto_start;
+    ,
+    inspection() {
+      return this.$store.state.inspection;
+    }
+    ,
+    system() {
+      return this.$store.state.config?.system || {};
+    }
   }
-,
-  showRetryModal()
-  {
-    return this.result.admitted === this.notIdentified;
-  }
-,
-  getComment()
-  {
-    return this.result.comments ?? '';
-  }
-,
-  inspection()
-  {
-    return this.$store.state.inspection;
-  }
-,
-  system()
-  {
-    return this.$store.state.config?.system || {};
-  }
-}
-,
+  ,
 }
 </script>
 
@@ -108,7 +102,7 @@ computed: {
                  v-model:message-content="getComment"
                  @accept="redirectRepeat()"
   ></result-repeat>
-  <div class="step-result">
+  <div v-if="!loading" class="step-result">
     <h3 class="animate__animated animate__fadeInDown">Результаты осмотра</h3>
     <div class="step-result__cards">
       <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">
