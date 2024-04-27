@@ -131,6 +131,7 @@ public class Sdpo {
                 .setDefault("tonometer_skip", true)
                 .setDefault("tonometer_visible", true)
                 .setDefault("camera_video", true)
+                .setDefault("check_phone_number", true)
                 .setDefault("camera_photo", true)
                 .setDefault("driver_photo", false)
                 .setDefault("camera_dimension", CameraHelper.getDefaultSize())

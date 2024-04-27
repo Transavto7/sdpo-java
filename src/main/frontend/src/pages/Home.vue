@@ -90,7 +90,10 @@ export default {
       return this.$store.state.driver.phone && !this.error
     },
     needSetNumberPhone() {
-      return this.hasDriver && !this.hasPhoneNumber && store.state.connection !== undefined;
+      return this.config.system.check_phone_number
+          && this.hasDriver
+          && !this.hasPhoneNumber
+          && store.state.connection !== undefined;
     }
   },
 }
