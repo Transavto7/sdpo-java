@@ -31,7 +31,6 @@ export async function saveInspection(inspection = store.state.inspection) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
     return await axios.post(`inspection/save`, inspection).then(({data}) => {
-        console.log(data);
         return data;
     }).catch(defaultError);
 }
@@ -49,7 +48,7 @@ export async function checkConnect(address) {
         return data;
     }).catch((error) => {
         if (!error.response) {
-            store.state.loseConnect = true;
+            // store.state.loseConnect = true;
         }
     });
 }

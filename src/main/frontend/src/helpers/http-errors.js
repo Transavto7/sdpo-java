@@ -18,7 +18,7 @@ export function defaultError(error) {
                 toast.error('Неизвестная ошибка запроса');
         }
     } else {
-        store.state.loseConnect = true;
+        // store.state.loseConnect = true;
     }
     console.log(error);
 }
