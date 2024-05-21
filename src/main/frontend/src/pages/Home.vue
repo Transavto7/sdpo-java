@@ -6,6 +6,7 @@ import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
 import InputPhoneNumber from "@/components/InputPhoneNumber";
 import InputAndSavePhone from "@/pages/driver/InputAndSavePhone";
 import store from "@/store";
+import {getSettings} from "@/helpers/settings";
 
 export default {
   name: 'Home',
@@ -86,7 +87,7 @@ export default {
       return this.$store.state.driver.phone && !this.error
     },
     needSetNumberPhone() {
-      return this.config.system.check_phone_number
+      return getSettings('check_phone_number')
           && this.hasDriver
           && !this.hasPhoneNumber
           && store.state.connection !== undefined;

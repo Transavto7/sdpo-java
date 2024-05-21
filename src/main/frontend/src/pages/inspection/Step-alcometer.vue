@@ -6,6 +6,7 @@ import {
   getAlcometerResult
 } from '@/helpers/alcometer';
 import {makeMedia, stopMedia} from '@/helpers/camera';
+import {getSettings} from "@/helpers/settings";
 
 export default {
   data() {
@@ -116,7 +117,7 @@ export default {
     }, 1000);
   },
   unmounted() {
-    enableModeFromSystemConfig(this.system.alcometer_fast);
+    enableModeFromSystemConfig(getSettings('alcometer_fast'));
     clearInterval(this.requestInterval);
     clearInterval(this.timerInterval);
   },

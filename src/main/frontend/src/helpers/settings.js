@@ -47,3 +47,10 @@ export async function saveTonometerMac(address) {
         console.log(error);
     });
 }
+
+export function getSettings(name) {
+    if (store.state.config.system.hasOwnProperty(name)) {
+        return JSON.parse(store.state.config.system[name])
+    }
+    return false;
+}
