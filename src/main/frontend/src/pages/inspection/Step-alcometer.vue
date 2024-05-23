@@ -20,8 +20,8 @@ export default {
   },
   methods: {
     async runWebCam() {
-      if ((JSON.parse(this.system.camera_photo) && !this.inspection.photo)
-          || (JSON.parse(this.system.camera_video) && !this.inspection.video)) {
+      if ((getSettings('camera_photo') && !this.inspection.photo)
+          || (getSettings('camera_video') && !this.inspection.video)) {
         const data = await makeMedia(this.$store.state.inspection.driver_id);
         this.inspection.photo = data?.photo;
         this.inspection.video = data?.video;
@@ -32,7 +32,7 @@ export default {
       this.inspection.photo = null;
       this.inspection.video = null;
     },
-    async nextStep() {
+    nextStep() {
       this.$router.push({name: 'step-sleep'});
     },
     async prevStep() {
@@ -47,7 +47,6 @@ export default {
       await enableSlowModeAlcometer();
       await closeAlcometer();
       this.runCountdown();
-      // await this.runWebCam();
     },
     hasResult(result) {
       return !(result === undefined || result === null || result === 'next');
@@ -59,11 +58,11 @@ export default {
     hasError(result) {
       return result === "error";
     },
-    checkReady(result) {
+    isReady(result) {
       return result === 'ready';
     },
     checkRetry(result) {
-      return this.system.alcometer_fast && this.system.alcometer_retry && Number(result) > 0 && !this.needRetry;
+      return getSettings('alcometer_fast') && getSettings('alcometer_retry') && Number(result) > 0 && !this.needRetry;
     },
     runCountdown() {
       this.seconds = 5;
@@ -93,14 +92,14 @@ export default {
       if (this.needStartMedia(result)) {
         await this.stopWebCam();
         await this.runWebCam();
-        if (this.checkReady(result))  {
+        if (this.isReady(result))  {
           this.setStatusAlcometerIsReady();
         } else {
           this.resetStatusAlcometerIsReady()
         }
         return;
       }
-      if (this.checkReady(result)) {
+      if (this.isReady(result)) {
         this.setStatusAlcometerIsReady();
         return;
       } else {
@@ -112,7 +111,7 @@ export default {
         return;
       }
       this.inspection.alcometer_result = Number(result) || 0;
-      this.inspection.alcometer_mode = this.system.alcometer_fast ? '0' : '1';
+      this.inspection.alcometer_mode = getSettings('alcometer_fast') ? '0' : '1';
       this.nextStep();
     }, 1000);
   },

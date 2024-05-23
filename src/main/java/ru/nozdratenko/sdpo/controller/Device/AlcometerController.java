@@ -39,13 +39,6 @@ public class AlcometerController {
             return ResponseEntity.ok().body("next");
         }
 
-
-//        if (task.currentStatus == StatusType.ANALYSE) {
-//            return ResponseEntity.ok().body("analyse");
-//        }
-
-
-
         if (task.currentStatus == StatusType.RESULT) {
             task.currentStatus = StatusType.FREE;
             return ResponseEntity.ok().body(task.result);

@@ -19,7 +19,6 @@ export default {
   },
   async mounted() {
     this.$data.loading = true;
-    // if (this.$store.state.waitRecordMedia) {
       let thisVar = this;
       let checker = async function () {
         if (thisVar.$store.state.waitRecordMedia) {
@@ -33,7 +32,6 @@ export default {
         }
       }
       setTimeout(checker, 1000);
-    // }
   },
   unmounted() {
     clearTimeout(this.backTimeout);
