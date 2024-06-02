@@ -22,10 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CameraHelper {
@@ -303,14 +301,12 @@ public class CameraHelper {
             long start = System.currentTimeMillis();
 
             org.bytedeco.javacv.Frame layer = null;
-            while (MediaMakeTask.skip && (layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L) {
+            while (!MediaMakeTask.skip && (layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L) {
                 recorder.record(layer);
             }
 
-            MediaMakeTask.skip = false;
-
             recorder.stop();
-            layer.close();
+            if(Objects.nonNull(layer)) layer.close();
             recorder.release();
         } catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
             SdpoLog.error("Error capturing video:");
@@ -318,7 +314,7 @@ public class CameraHelper {
             closeCam();
             openCam();
         }
-
+        MediaMakeTask.skip = false;
     }
 
     public static byte[] readVideoByte() throws IOException {
