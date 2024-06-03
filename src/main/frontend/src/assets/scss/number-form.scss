@@ -50,6 +50,32 @@
     color: #c53936;
   }
 
+  &__input input {
+    margin: 20px 0;
+    box-sizing: border-box;
+    text-align: center;
+    caret-color: transparent;
+    border: none;
+    padding: 10px 20px 10px 40px;
+    font-size: 46px;
+    letter-spacing: 40px;
+    -moz-appearance: textfield;
+    font-weight: 500;
+    outline: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    width: 100%;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+    }
+  }
+
   .btn {
     margin-top: 20px;
   }

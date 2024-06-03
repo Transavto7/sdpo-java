@@ -329,14 +329,7 @@ html.disable-mouse * {
         }
     }
 }
-@media screen and (max-height: 800px) {
-    .footer {
-        &__point-version {
-            align-items: start;
-            width: fit-content;
-        }
-    }
-}
+
 .input-file-row {
 	display: inline-block;
 }
