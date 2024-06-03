@@ -9,16 +9,16 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import java.io.IOException;
 import java.util.Date;
 
-public class MedicStorage extends FileBase implements RemoteServerRequest, StoreInLocalMemory {
+public class ServiceDataStorage extends FileBase implements RemoteServerRequest, StoreInLocalMemory {
 
     protected JSONObject store = new JSONObject();
     protected Long lastUpdate = 0L;
 
-    public MedicStorage() {
-        this("storage/medics.json");
+    public ServiceDataStorage() {
+        this("storage/service.json");
     }
 
-    public MedicStorage(String path) {
+    public ServiceDataStorage(String path) {
         super(path);
 
         try {
@@ -38,16 +38,18 @@ public class MedicStorage extends FileBase implements RemoteServerRequest, Store
         this.saveToLocalStorage();
     }
 
+    public JSONObject getStore() {
+        return store;
+    }
+
     public void setStore(JSONObject store) {
         this.store = store;
     }
 
-    public JSONObject getStore() {
-        return store;
-    }
     public void load() throws IOException {
-        this.loadApi("sdpo/medics");
+        this.loadApi("sdpo/stamp");
     }
+
 
     @Override
     public void loadApi(String url) throws IOException {
@@ -57,7 +59,7 @@ public class MedicStorage extends FileBase implements RemoteServerRequest, Store
             this.store = new JSONObject(response);
             this.lastUpdate = new Date().getTime();
         } catch (ApiException | Exception e) {
-            SdpoLog.error("Error load medic list");
+            SdpoLog.error("Error load service list");
         }
     }
 

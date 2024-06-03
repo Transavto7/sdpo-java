@@ -3,6 +3,7 @@ package ru.nozdratenko.sdpo.helper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.storage.ServiceDataStorage;
 import ru.nozdratenko.sdpo.task.PrintTask;
 
 import javax.print.*;
@@ -44,7 +45,7 @@ public class PrinterHelper {
             date = json.getString("created_at");
         }
 
-        if (json.has("user_eds")) {
+        if (json.has("user_eds") && !json.isNull("user_eds")) {
             signature = json.getString("user_eds");
         }
 
@@ -90,6 +91,16 @@ public class PrinterHelper {
 
         aset.add(new Copies(count));
         aset.add(new MediaPrintableArea(0f, 0f, 160 / 72f, 280 / 72f, MediaPrintableArea.INCH));
+
+        JSONObject json = Sdpo.serviceDataStorage.getStore();
+
+        if (json.has("stamp_licence") && !json.isNull("stamp_licence")) {
+            head = json.getString("stamp_licence");
+        }
+
+        if (json.has("stamp_head") && !json.isNull("stamp_head")) {
+            licence = json.getString("stamp_head");
+        }
 
         pj.setPrintable(new PrintTask(name, result, type, admit, date, signature, medicName, head, licence, validity));
 
