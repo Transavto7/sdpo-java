@@ -126,7 +126,7 @@ public class IndexController {
 
                 return ResponseEntity.ok().body(jsonObject.toMap());
             } else {
-                return ResponseEntity.ok().body(Sdpo.medicStorage.getStore().toMap());
+                return ResponseEntity.ok().body(Sdpo.medicStorage.getDataFromLocalStorage().toMap());
             }
 
         } catch (JSONException | IOException | ApiException e) {

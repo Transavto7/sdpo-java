@@ -17,6 +17,7 @@ import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRemoteRepository;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -81,11 +82,7 @@ public class InspectionController {
     public ResponseEntity getInspectionsDriver(@PathVariable String id) throws IOException {
         InspectionRepositoryInterface repository;
 
-        if (Sdpo.isConnection()) {
-            repository = new InspectionRemoteRepository();
-        } else {
-            repository = new InspectionLocalStorageRepository();
-        }
+        repository = InspectionRepositoryFactory.get();
         JSONArray inspections = (new InspectionDataProvider(repository)).getInspectionsOnDriverHashId(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(inspections.toString());

@@ -6,7 +6,7 @@ import ru.nozdratenko.sdpo.helper.*;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
-import ru.nozdratenko.sdpo.storage.ServiceDataStorage;
+import ru.nozdratenko.sdpo.storage.StampStorage;
 import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -20,7 +20,7 @@ public class Sdpo {
     public static DriverStorage driverStorage;
     public static MedicStorage medicStorage;
 
-    public static ServiceDataStorage serviceDataStorage;
+    public static StampStorage serviceDataStorage;
     public static InspectionStorage inspectionStorage;
 
     public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
@@ -61,10 +61,10 @@ public class Sdpo {
         driverStorage.save();
 
         medicStorage = new MedicStorage();
-        medicStorage.save();
+        medicStorage.saveToLocalStorage();
 
-        serviceDataStorage = new ServiceDataStorage();
-        serviceDataStorage.save();
+        serviceDataStorage = new StampStorage();
+        serviceDataStorage.saveToLocalStorage();
 
         inspectionStorage = new InspectionStorage();
         inspectionStorage.save();
@@ -74,11 +74,11 @@ public class Sdpo {
                 driverStorage.load();
                 driverStorage.save();
 
-                medicStorage.load();
-                medicStorage.save();
+                medicStorage.loadFromApi();
+                medicStorage.saveToLocalStorage();
 
-                serviceDataStorage.load();
-                serviceDataStorage.save();
+                serviceDataStorage.loadFromApi();
+                serviceDataStorage.saveToLocalStorage();
             } catch (IOException e) {
                 SdpoLog.error(e);
             }

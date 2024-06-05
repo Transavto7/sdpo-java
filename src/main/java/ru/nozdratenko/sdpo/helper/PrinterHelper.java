@@ -3,7 +3,6 @@ package ru.nozdratenko.sdpo.helper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.storage.ServiceDataStorage;
 import ru.nozdratenko.sdpo.task.PrintTask;
 
 import javax.print.*;
@@ -92,7 +91,7 @@ public class PrinterHelper {
         aset.add(new Copies(count));
         aset.add(new MediaPrintableArea(0f, 0f, 160 / 72f, 280 / 72f, MediaPrintableArea.INCH));
 
-        JSONObject json = Sdpo.serviceDataStorage.getStore();
+        JSONObject json = Sdpo.serviceDataStorage.getDataFromLocalStorage();
 
         if (json.has("stamp_licence") && !json.isNull("stamp_licence")) {
             head = json.getString("stamp_licence");

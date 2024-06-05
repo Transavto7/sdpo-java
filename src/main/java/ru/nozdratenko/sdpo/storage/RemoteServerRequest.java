@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface RemoteServerRequest {
 
-    public void loadApi(String url) throws IOException;
+    public void loadFromApi() throws IOException;
 
 }
