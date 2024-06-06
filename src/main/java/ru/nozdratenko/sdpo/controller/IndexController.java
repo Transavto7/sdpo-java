@@ -143,6 +143,34 @@ public class IndexController {
         return ResponseEntity.ok().body("ok");
     }
 
+    @GetMapping(value = "api/stamps", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity getStamps() {
+        try {
+            if (Sdpo.isConnection()) {
+                Request request = new Request( "sdpo/stamps");
+                String response = request.sendGet();
+                JSONObject jsonObject = new JSONObject(response);
+
+                return ResponseEntity.ok().body(jsonObject.toMap());
+            } else {
+                return ResponseEntity.ok().body(Sdpo.serviceDataStorage.getDataFromLocalStorage().toMap());
+            }
+
+        } catch (JSONException | IOException | ApiException e) {
+            SdpoLog.error("Error get stamp list");
+        }
+        return ResponseEntity.status(403).body("error");
+    }
+
+    @PostMapping(value = "api/stamp", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity apiSaveStamp(@RequestBody Map<String, String> json) {
+        Sdpo.mainConfig.getJson().put("selected_stamp", json);
+        Sdpo.mainConfig.saveFile();
+        return ResponseEntity.ok().body("ok");
+    }
+
     @PostMapping("/api/photo")
     @ResponseBody
     public ResponseEntity apiSavePhoto(@RequestBody Map<String, String> json) {

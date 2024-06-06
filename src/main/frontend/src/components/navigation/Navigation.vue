@@ -69,7 +69,7 @@ export default {
       return this.currentRouter.includes('/login');
     },
     isAdminPage() {
-      return this.currentRouter.includes('/admin');
+      return this.currentRouter.includes('/settings');
     },
     isInspectionPage() {
       return this.currentRouter.includes('/step');

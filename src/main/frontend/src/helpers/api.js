@@ -81,6 +81,13 @@ export async function getMedics() {
     });
 }
 
+export async function getStamps() {
+    return await axios.get('api/stamps').then(({data}) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
 
 export async function close() {
     axios.post('exit').then(({data}) => {

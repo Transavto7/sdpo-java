@@ -3,7 +3,7 @@ import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
 
 export default {
   components: {InputPersonalNumberForm},
-   name: 'AdminLogin',
+   name: 'Login',
    data() {
     return {
         password: '',
@@ -16,7 +16,7 @@ export default {
         }
 
         this.$store.state.admin = true;
-        this.$router.push('/admin');
+        this.$router.push('/settings');
     },
      updatePassword(inputPassword) {
        this.password = inputPassword;

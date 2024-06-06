@@ -58,7 +58,7 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  if (to.path.includes('/admin/')) {
+  if (to.path.includes('/settings/')) {
     if (!store.state.admin) {
       return router.push({ name: 'home' });
     }

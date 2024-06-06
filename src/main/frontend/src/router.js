@@ -1,9 +1,9 @@
 export const routes = [
     { path: '', name: 'home',  component: () => import('./pages/Home') },
     { path: '/help', component: () => import('./pages/Help') },
-    { path: '/login', component: () => import('./pages/admin/AdminLogin') },
+    { path: '/login', component: () => import('./pages/settings/Login') },
     { path: '/print/index', component: () => import('./pages/print/PrintMain') },
-    { path: '/admin', component: () => import('./pages/admin/Index') },
+    { path: '/settings', component: () => import('./pages/settings/Index') },
     { path: '/number-phone/add', component: () => import('./pages/driver/InputAndSavePhone') },
 
     { 
