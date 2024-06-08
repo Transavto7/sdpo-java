@@ -3,7 +3,6 @@ package ru.nozdratenko.sdpo.storage;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.storage.repository.medic.MedicLocalStorageRepository;
 import ru.nozdratenko.sdpo.storage.repository.medic.MedicRemoteRepository;
-import ru.nozdratenko.sdpo.storage.repository.stamp.StampRemoteRepository;
 
 import java.io.IOException;
 
@@ -19,7 +18,6 @@ public class MedicStorage implements RemoteServerRequest, StoreInLocalMemory {
 
     public void saveToLocalStorage() {
         this.localStorageRepository.store(this.data);
-
     }
 
     public JSONObject getDataFromLocalStorage() {
