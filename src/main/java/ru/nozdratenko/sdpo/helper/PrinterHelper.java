@@ -94,9 +94,11 @@ public class PrinterHelper {
         JSONObject stamp = Sdpo.mainConfig.getJson().getJSONObject("selected_stamp");
 
         if (Sdpo.isConnection()) {
-            stamp = Sdpo.serviceDataStorage.getFromApi();
-            Sdpo.serviceDataStorage.selectStamp(stamp);
-
+            JSONObject raw = Sdpo.serviceDataStorage.getFromApi();
+            if (!raw.isNull("stamp_head") || !raw.isNull("stamp_licence")) {
+                stamp = Sdpo.serviceDataStorage.getFromApi();
+                Sdpo.serviceDataStorage.selectStamp(stamp);
+            }
         }
 
         if (!stamp.isNull("stamp_head")) {

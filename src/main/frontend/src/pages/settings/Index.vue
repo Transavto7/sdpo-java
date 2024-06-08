@@ -5,9 +5,13 @@ import Password from "./tabs/Password.vue";
 import MainSettings from "./tabs/MainSettings";
 import Logo from "./tabs/Logo.vue";
 import Print from "@/pages/settings/tabs/Print";
+import {loadSettings} from "@/helpers/settings";
 
 export default {
   components: {Print, Testing, Tonometer, Password, MainSettings, Logo},
+  mounted() {
+    loadSettings()
+  },
   data() {
     return {
       selected: 'main',
