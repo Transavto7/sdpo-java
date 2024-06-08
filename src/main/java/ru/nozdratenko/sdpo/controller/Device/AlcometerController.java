@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.controller.device;
+package ru.nozdratenko.sdpo.controller.Device;
 
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
