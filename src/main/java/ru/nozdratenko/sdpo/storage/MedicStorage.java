@@ -25,7 +25,7 @@ public class MedicStorage implements RemoteServerRequest, StoreInLocalMemory {
     public JSONObject getDataFromLocalStorage() {
         return localStorageRepository.getStore();
     }
-    public void loadFromApi() throws IOException {
+    public void getAllFromApi() throws IOException {
         this.data = (new MedicRemoteRepository()).get();
     }
 

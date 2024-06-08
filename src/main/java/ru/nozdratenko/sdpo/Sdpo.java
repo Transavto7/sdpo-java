@@ -74,10 +74,10 @@ public class Sdpo {
                 driverStorage.load();
                 driverStorage.save();
 
-                medicStorage.loadFromApi();
+                medicStorage.getAllFromApi();
                 medicStorage.saveToLocalStorage();
 
-                serviceDataStorage.loadFromApi();
+                serviceDataStorage.getAllFromApi();
                 serviceDataStorage.saveToLocalStorage();
             } catch (IOException e) {
                 SdpoLog.error(e);

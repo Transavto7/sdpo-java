@@ -43,8 +43,9 @@ public class StampController {
     @PostMapping(value = "api/stamp/save", produces = "application/json; charset=utf-8")
     @ResponseBody
     public ResponseEntity apiSaveStamp(@RequestBody Map<String, String> json) {
-        Sdpo.mainConfig.getJson().put("selected_stamp", json);
-        Sdpo.mainConfig.saveFile();
+        Sdpo.serviceDataStorage.selectStamp(new JSONObject(json));
+//        Sdpo.mainConfig.getJson().put("selected_stamp", json);
+//        Sdpo.mainConfig.saveFile();
         return  ResponseEntity.status(HttpStatus.OK).body("success");
     }
 }
