@@ -89,6 +89,14 @@ export async function getStamps() {
     });
 }
 
+export async function saveStamp(stamp) {
+    return await axios.post('api/stamp/save', stamp).then(({data}) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 export async function close() {
     axios.post('exit').then(({data}) => {
 
