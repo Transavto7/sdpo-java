@@ -149,7 +149,7 @@ export default {
       <div  class="step-alcometer__items">
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span>1</span>
-          <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
+          <img style="padding-right: 20px" width="60" src="@/assets/images/fast.png">
           <label>Проверьте, что вставлена воронка</label>
         </div>
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-2">
@@ -170,20 +170,21 @@ export default {
         НЕ ПРИКАСАТЬСЯ К АЛКОТЕСТЕРУ ГУБАМИ
       </p>
     </div>
-    <div v-if="showRetry" class="step-alcometer">
+    <div class="step-alcometer">
+<!--    <div v-if="showRetry" class="step-alcometer">-->
       <h3  class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
       <div  class="step-alcometer__items">
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span style="min-height: 30px">3</span>
-          <img style="padding-right: 20px" width="100" src="@/assets/images/alco_guide.png">
+          <img style="padding-right: 20px" width="60" src="@/assets/images/precise.png">
           Снимите воронку , установите мундштук
         </div>
         <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
           Снимите мундштук-воронка<br><br>
           Установите индивидуальный мундштук<br><br>
           Дождитесь ГОТОВ на экране алкометра<br><br>
-          Начните дуть с умеренной силой до окончания<br>
-          звукового сигнала.<br><br>
+          Начните дуть с умеренной силой до<br>
+          окончания звукового сигнала.<br><br>
           Снимите индивидуальный мундштук<br><br>
           Установите мундштук-воронка<br><br>
         </div>

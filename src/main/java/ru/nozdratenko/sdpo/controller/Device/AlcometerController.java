@@ -18,7 +18,7 @@ public class AlcometerController {
 
     @PostMapping(value = "/device/alcometer")
     @ResponseBody
-    public ResponseEntity alcometer() {
+    public ResponseEntity alcometer() throws InterruptedException {
         AlcometerResultTask task = Sdpo.alcometerResultTask;
         SdpoLog.info(task.currentStatus);
         if (task.currentStatus == StatusType.FREE) {
