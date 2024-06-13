@@ -38,8 +38,7 @@ public class DriverStorage extends Storage {
 
         return result;
     }
-
-    public void loadApi() throws IOException {
+    public void load() throws IOException {
         this.loadApi("sdpo/drivers");
     }
 }

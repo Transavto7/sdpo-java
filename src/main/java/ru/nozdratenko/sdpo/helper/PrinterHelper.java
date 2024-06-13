@@ -44,7 +44,7 @@ public class PrinterHelper {
             date = json.getString("created_at");
         }
 
-        if (json.has("user_eds")) {
+        if (json.has("user_eds") && !json.isNull("user_eds")) {
             signature = json.getString("user_eds");
         }
 
@@ -90,6 +90,24 @@ public class PrinterHelper {
 
         aset.add(new Copies(count));
         aset.add(new MediaPrintableArea(0f, 0f, 160 / 72f, 280 / 72f, MediaPrintableArea.INCH));
+
+        JSONObject stamp = Sdpo.mainConfig.getJson().getJSONObject("selected_stamp");
+
+        if (Sdpo.isConnection()) {
+            JSONObject raw = Sdpo.serviceDataStorage.getFromApi();
+            if (!raw.isNull("stamp_head") || !raw.isNull("stamp_licence")) {
+                stamp = Sdpo.serviceDataStorage.getFromApi();
+                Sdpo.serviceDataStorage.selectStamp(stamp);
+            }
+        }
+
+        if (!stamp.isNull("stamp_head")) {
+            head = stamp.getString("stamp_head");
+        }
+
+        if (!stamp.isNull("stamp_licence")) {
+            licence = stamp.getString("stamp_licence");
+        }
 
         pj.setPrintable(new PrintTask(name, result, type, admit, date, signature, medicName, head, licence, validity));
 

@@ -7,7 +7,7 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
-public class InspectionStorage extends FileBase {
+public class InspectionStorage extends FileBase implements StoreInLocalMemory {
     public JSONArray store = new JSONArray();
 
 
@@ -39,6 +39,11 @@ public class InspectionStorage extends FileBase {
     }
 
     public void save() {
+        this.saveToLocalStorage();
+    }
+
+    @Override
+    public void saveToLocalStorage() {
         try {
             create();
             this.writeFile(store.toString(1));
