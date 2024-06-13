@@ -149,7 +149,7 @@ export default {
       <div  class="step-alcometer__items">
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span>1</span>
-          <img style="padding-right: 20px" width="60" src="@/assets/images/fast.png">
+          <img style="padding-right: 20px" width="55" src="@/assets/images/fast.png">
           <label>Проверьте, что вставлена воронка</label>
         </div>
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-2">
@@ -170,13 +170,12 @@ export default {
         НЕ ПРИКАСАТЬСЯ К АЛКОТЕСТЕРУ ГУБАМИ
       </p>
     </div>
-    <div class="step-alcometer">
-<!--    <div v-if="showRetry" class="step-alcometer">-->
+    <div v-if="showRetry" class="step-alcometer">
       <h3  class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
       <div  class="step-alcometer__items">
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span style="min-height: 30px">3</span>
-          <img style="padding-right: 20px" width="60" src="@/assets/images/precise.png">
+          <img style="padding-right: 20px" width="80" src="@/assets/images/precise.png">
           Снимите воронку , установите мундштук
         </div>
         <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
