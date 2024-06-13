@@ -30,6 +30,7 @@ export default {
       }
     },
     stampEquals(stamp) {
+      if (this.selectedStamp === null) return false;
       return stamp.stamp_licence === this.selectedStamp.stamp_licence;
     },
     async save() {
