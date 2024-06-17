@@ -29,21 +29,8 @@ public class AlcometerHelper {
 
         serialPort = new SerialPort(PORT);
         if (!serialPort.isOpened()) {
-            serialPort.openPort();
-            serialPort.setParams(4800,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-            serialPort.setEventsMask(SerialPort.MASK_RXCHAR |
-                    SerialPort.MASK_RXFLAG |
-                    SerialPort.MASK_TXEMPTY |
-                    SerialPort.MASK_CTS |
-                    SerialPort.MASK_DSR |
-                    SerialPort.MASK_RLSD |
-                    SerialPort.MASK_BREAK |
-                    SerialPort.MASK_RING |
-                    SerialPort.MASK_ERR);
-            serialPort.addEventListener(new PortListener(serialPort));
+            SdpoLog.info(String.format("Open SerialPort: %s", PORT));
+            initPort(serialPort);
         }
     }
 
@@ -72,9 +59,9 @@ public class AlcometerHelper {
     }
 
     /**
+     * @return boolean
      * @throws SerialPortException
      * @throws UnsupportedEncodingException
-     * @return boolean
      */
     private static boolean enableSlowMode() throws SerialPortException, UnsupportedEncodingException {
         SdpoLog.info("Alcometer send slow mode");
@@ -82,9 +69,9 @@ public class AlcometerHelper {
     }
 
     /**
+     * @return boolean
      * @throws SerialPortException
      * @throws UnsupportedEncodingException
-     * @return boolean
      */
     private static boolean enableFastMode() throws SerialPortException, UnsupportedEncodingException {
         SdpoLog.info("Alcometer send fast mode");
@@ -104,8 +91,8 @@ public class AlcometerHelper {
 
         result = result.trim();
 
-        if (result.contains("$STANBY")) {
-           return "STATUS_READY";
+        if (result.contains("$STANDBY")) {
+            return "STATUS_READY";
         }
         if (result.contains("$BREATH") || result.contains("$TRIGGER")) {
             return "ANALYSE";
@@ -125,7 +112,7 @@ public class AlcometerHelper {
             String[] split = result.split(",");
 
             try {
-                rs = Double.valueOf(split[0]);
+                rs = Double.parseDouble(split[0]);
             } catch (IllegalArgumentException e) {
                 if (split[0].equals("PASS")) {
                     rs = 0;
@@ -148,22 +135,10 @@ public class AlcometerHelper {
         }
 
         try {
-            serialPort.openPort();
-            serialPort.setParams(4800,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-            serialPort.setEventsMask(SerialPort.MASK_RXCHAR |
-                    SerialPort.MASK_RXFLAG |
-                    SerialPort.MASK_TXEMPTY |
-                    SerialPort.MASK_CTS |
-                    SerialPort.MASK_DSR |
-                    SerialPort.MASK_RLSD |
-                    SerialPort.MASK_BREAK |
-                    SerialPort.MASK_RING |
-                    SerialPort.MASK_ERR);
-            serialPort.addEventListener(new PortListener(serialPort));
-            SdpoLog.info("Reset alcometer");
+            if (!serialPort.isOpened()) {
+                initPort(serialPort);
+            }
+            SdpoLog.info(String.format("Reset alcometer on port %s", PORT));
             serialPort.writeString("$RESET\r\n", "ascii");
         } catch (SerialPortException | UnsupportedEncodingException e) {
             SdpoLog.error(e);
@@ -177,6 +152,25 @@ public class AlcometerHelper {
                 }
             }
         }
+    }
+
+    private static void initPort(SerialPort serialPort) throws SerialPortException {
+        serialPort.openPort();
+        serialPort.setParams(4800,
+                SerialPort.DATABITS_8,
+                SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE);
+
+        serialPort.setEventsMask(SerialPort.MASK_RXCHAR |
+                SerialPort.MASK_RXFLAG |
+                SerialPort.MASK_TXEMPTY |
+                SerialPort.MASK_CTS |
+                SerialPort.MASK_DSR |
+                SerialPort.MASK_RLSD |
+                SerialPort.MASK_BREAK |
+                SerialPort.MASK_RING |
+                SerialPort.MASK_ERR);
+        serialPort.addEventListener(new PortListener(serialPort));
     }
 
     public static void close() throws AlcometerException {
@@ -194,7 +188,8 @@ public class AlcometerHelper {
     public static SerialPort getSerialPort() {
         if (serialPort == null && PORT != null) {
             serialPort = new SerialPort(PORT);
-        } if (PORT == null) {
+        }
+        if (PORT == null) {
             serialPort = null;
         }
 
@@ -208,6 +203,8 @@ public class AlcometerHelper {
             AlcometerHelper.PORT = null;
             SdpoLog.error("Alcometer return error: " + alcometerPort);
         } else if (!alcometerPort.equals(AlcometerHelper.PORT)) {
+            if (AlcometerHelper.PORT != null)
+                SdpoLog.warning(String.format("Alcometer has a different port: %s as opposed to AlcometerHelper.PORT: %s", alcometerPort, AlcometerHelper.PORT));
             AlcometerHelper.PORT = alcometerPort;
             try {
                 AlcometerHelper.reset();
