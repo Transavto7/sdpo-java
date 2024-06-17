@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.controller.Device;
+package ru.nozdratenko.sdpo.controller.temp;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
