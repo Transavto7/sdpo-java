@@ -18,6 +18,9 @@ repositories {
 	maven {
 		url 'https://www.dcm4che.org/maven2/'
 	}
+	gradlePluginPortal()
+	maven { url "https://plugins.gradle.org/m2/" }
+	google()
 }
 
 ext {
