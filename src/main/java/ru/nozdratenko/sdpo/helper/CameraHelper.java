@@ -22,10 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CameraHelper {
@@ -56,11 +54,13 @@ public class CameraHelper {
             List<Webcam> webcams = Webcam.getWebcams();
             SdpoLog.info( String.format("Find %s camers: [ %s ]", webcams.size(), webcams.stream().map(entry -> entry.getName())
                     .collect(Collectors.joining("], ["))));
-            if(isDefaultWebcam){
-                SdpoLog.info("Entered default camera.");
+            if(!isDefaultWebcam && webcams.size() > 1) {
+                SdpoLog.info("Entered SECOND camera.");
+                workWebcam = new OpenCVFrameGrabber(1);
+            } else {
+                SdpoLog.info("Entered DEFAULT camera.");
                 workWebcam = new OpenCVFrameGrabber(0);
-                SdpoLog.info("En");
-            }else if(webcams.size() > 1) workWebcam = new OpenCVFrameGrabber(1);
+            }
 
             if(webcams == null){
                 SdpoLog.info("Camera not selected!");
@@ -213,8 +213,6 @@ public class CameraHelper {
                 frame = workWebcam.grabFrame();
             } catch (FrameGrabber.Exception e) {
                 SdpoLog.error(e);
-                frame.close();
-                throw new IOException("Get capture is fail!");
             }
 
             if (frame != null) {
@@ -224,6 +222,8 @@ public class CameraHelper {
                 return photo;
             } else {
                 SdpoLog.info("Failed to capture image.");
+                closeCam();
+                openCam();
             }
         } else {
             SdpoLog.info("No camera available. Skipping photo capture.");
@@ -234,6 +234,11 @@ public class CameraHelper {
 
     public static void stopMediaIntoTask(){
         MediaMakeTask.mediaLastKill();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            /* ignored */
+        }
     }
 
     public static JSONObject makePhotoAndVideo(){
@@ -285,7 +290,6 @@ public class CameraHelper {
         try {
             workWebcam = findWebcam();
 
-
             FrameRecorder recorder = new FFmpegFrameRecorder(filename,
                     workWebcam.getImageWidth(), workWebcam.getImageHeight());
             recorder.setFrameRate(workWebcam.getFrameRate());
@@ -296,21 +300,21 @@ public class CameraHelper {
 
             long start = System.currentTimeMillis();
 
-            org.bytedeco.javacv.Frame layer;
-            while ((layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L && MediaMakeTask.skip) {
+            org.bytedeco.javacv.Frame layer = null;
+            while (!MediaMakeTask.skip && (layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L) {
                 recorder.record(layer);
             }
 
-            MediaMakeTask.skip = false;
-
             recorder.stop();
-            layer.close();
+            if(Objects.nonNull(layer)) layer.close();
             recorder.release();
         } catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
             SdpoLog.error("Error capturing video:");
             SdpoLog.error(e);
+            closeCam();
+            openCam();
         }
-
+        MediaMakeTask.skip = false;
     }
 
     public static byte[] readVideoByte() throws IOException {

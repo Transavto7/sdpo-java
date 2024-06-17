@@ -5,6 +5,7 @@ import jssc.SerialPortException;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.lib.COMPorts;
+import ru.nozdratenko.sdpo.listener.PortListener;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,16 @@ public class AlcometerHelper {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
+            serialPort.setEventsMask(SerialPort.MASK_RXCHAR |
+                    SerialPort.MASK_RXFLAG |
+                    SerialPort.MASK_TXEMPTY |
+                    SerialPort.MASK_CTS |
+                    SerialPort.MASK_DSR |
+                    SerialPort.MASK_RLSD |
+                    SerialPort.MASK_BREAK |
+                    SerialPort.MASK_RING |
+                    SerialPort.MASK_ERR);
+            serialPort.addEventListener(new PortListener(serialPort));
         }
     }
 
@@ -142,6 +153,16 @@ public class AlcometerHelper {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
+            serialPort.setEventsMask(SerialPort.MASK_RXCHAR |
+                    SerialPort.MASK_RXFLAG |
+                    SerialPort.MASK_TXEMPTY |
+                    SerialPort.MASK_CTS |
+                    SerialPort.MASK_DSR |
+                    SerialPort.MASK_RLSD |
+                    SerialPort.MASK_BREAK |
+                    SerialPort.MASK_RING |
+                    SerialPort.MASK_ERR);
+            serialPort.addEventListener(new PortListener(serialPort));
             SdpoLog.info("Reset alcometer");
             serialPort.writeString("$RESET\r\n", "ascii");
         } catch (SerialPortException | UnsupportedEncodingException e) {

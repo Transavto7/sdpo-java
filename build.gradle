@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.6'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.bytedeco.gradle-javacpp-platform' version "1.5.10"
+
 }
 
 group = 'ru.nozdratenko'
@@ -16,6 +18,10 @@ repositories {
 	maven {
 		url 'https://www.dcm4che.org/maven2/'
 	}
+}
+
+ext {
+	javacppPlatform = 'linux-x86_64,windows-x86_64' // defaults to Loader.getPlatform()
 }
 
 dependencies {
