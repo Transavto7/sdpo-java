@@ -33,7 +33,9 @@ export default {
       this.$store.state.config.main.selected_medic = {
         name: user.name,
         id: user.id,
-        eds: user.eds
+        eds: user.eds,
+        validity_eds_start: user.validity_eds_start ?? null,
+        validity_eds_end: user.validity_eds_end ?? null,
       }
 
       this.status = 'login';

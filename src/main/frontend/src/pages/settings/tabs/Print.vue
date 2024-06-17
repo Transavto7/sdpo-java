@@ -63,6 +63,12 @@ export default {
           this.formatNumeric(date.getHours()) + ':' +
           this.formatNumeric(date.getMinutes()) + ':' +
           this.formatNumeric(date.getSeconds());
+    },
+    validity_period_eds() {
+      if (this.medic.validity_eds_start && this.medic.validity_eds_end) {
+        return "Срок действия с " + this.medic.validity_eds_start + ' по ' + this.medic.validity_eds_end
+      }
+      return '';
     }
   },
 }
@@ -88,6 +94,7 @@ export default {
             <span>{{date}}</span><br>
             <span>{{medic.name || ''}}</span><br>
             <span>ЭЦП {{medic.eds || ''}}</span><br>
+            <span>{{validity_period_eds}}</span><br>
           </div>
           <div v-if="this.isSelectedStamp" class="animate__animated animate__fadeInUp d-7" style="margin-top: 15px; width: 100%;">
             <button @click="save" class="btn blue" style="width: 100%;">Сохранить</button>
