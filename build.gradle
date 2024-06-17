@@ -2,8 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.6'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id 'org.bytedeco.gradle-javacpp-platform' version "1.5.10"
-
 }
 
 group = 'ru.nozdratenko'
@@ -18,9 +16,6 @@ repositories {
 	maven {
 		url 'https://www.dcm4che.org/maven2/'
 	}
-	gradlePluginPortal()
-	maven { url "https://plugins.gradle.org/m2/" }
-	google()
 }
 
 ext {
@@ -28,6 +23,8 @@ ext {
 }
 
 dependencies {
+	implementation("org.bytedeco:javacpp-platform:1.5.10")
+	implementation 'org.bytedeco.gradle-javacpp-platform:org.bytedeco.gradle-javacpp-platform.gradle.plugin:1.5.10'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation group: 'org.json', name: 'json', version: '20210307'
