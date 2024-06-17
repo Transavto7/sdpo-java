@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.controller.temp;
+package ru.nozdratenko.sdpo.controller.devices;
 
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
