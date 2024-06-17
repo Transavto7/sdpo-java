@@ -29,7 +29,6 @@ public class AlcometerHelper {
 
         serialPort = new SerialPort(PORT);
         if (!serialPort.isOpened()) {
-            SdpoLog.info(String.format("Open SerialPort: %s", PORT));
             initPort(serialPort);
         }
     }
@@ -155,6 +154,7 @@ public class AlcometerHelper {
     }
 
     private static void initPort(SerialPort serialPort) throws SerialPortException {
+        SdpoLog.info(String.format("Init SerialPort: %s", PORT));
         serialPort.openPort();
         serialPort.setParams(4800,
                 SerialPort.DATABITS_8,
