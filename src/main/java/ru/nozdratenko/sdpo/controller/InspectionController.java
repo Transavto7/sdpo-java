@@ -178,11 +178,18 @@ public class InspectionController {
         double alcometer = 0.0;
 
         if (Sdpo.mainConfig.getJson().has("selected_medic")) {
+
             try {
                 inspection.put("user_eds", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
                 inspection.put("user_name", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
             } catch (JSONException e) {
                 SdpoLog.error("Error get medic id");
+            }
+            try {
+                String validity = "Срок действия с " + Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_start") + " по " + Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end");
+                inspection.put("validity", validity);
+            } catch (JSONException e) {
+                SdpoLog.error("Error get medic eds validity");
             }
         }
 

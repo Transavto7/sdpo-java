@@ -19,15 +19,15 @@ export default {
   },
   async mounted() {
     this.$data.loading = true;
-      let thisVar = this;
+      let global = this;
       let checker = async function () {
-        if (thisVar.$store.state.waitRecordMedia) {
+        if (global.$store.state.waitRecordMedia) {
           setTimeout(checker, 1000);
         } else {
-          thisVar.loading = false;
-          await thisVar.save();
-          if (thisVar.autoStart) {
-            thisVar.backTimeout = thisVar.setTimeoutAndRedirect();
+          global.loading = false;
+          await global.save();
+          if (global.autoStart) {
+            global.backTimeout = global.setTimeoutAndRedirect();
           }
         }
       }
