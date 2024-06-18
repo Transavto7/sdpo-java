@@ -43,7 +43,7 @@ export default {
     <div class="step-4__outer">
         <div class="step-4">
             <h3 class="animate__animated animate__fadeInUp">Измерение температуры тела</h3>
-            <img class="animate__animated animate__fadeInUp d-1" src="@/assets/images/pirometer.png">
+            <img class="animate__animated animate__fadeInUp d-1" src="@/assets/images/pirometer2.png">
         </div>
 
         <div class="step-buttons">
