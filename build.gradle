@@ -18,7 +18,6 @@ repositories {
 	maven {
 		url 'https://www.dcm4che.org/maven2/'
 	}
-
 }
 
 ext {
@@ -26,7 +25,6 @@ ext {
 }
 
 dependencies {
-	implementation 'org.bytedeco.gradle-javacpp-platform:org.bytedeco.gradle-javacpp-platform.gradle.plugin:1.5.10'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation group: 'org.json', name: 'json', version: '20210307'
