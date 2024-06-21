@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>C:\sdpo\sdpo-java-main\sdpo-java-main\build\libs\sdpo-2.5.13-SNAPSHOT.jar</jar>
+  <outfile>X:\sdpo-release\sdpo-2.5.13-beta.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>%appdata%/sdpo</chdir>
+  <priority>high</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>true</restartOnCrash>
+  <manifest></manifest>
+  <icon>Y:\favicon.ico</icon>
+  <jre>
+    <path>%JAVA_HOME%;%PATH%</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+  <versionInfo>
+    <fileVersion>2.5.8.0</fileVersion>
+    <txtFileVersion>version 2.5.8.0</txtFileVersion>
+    <fileDescription>T7</fileDescription>
+    <copyright>Трансавто-7</copyright>
+    <productVersion>2.5.7.0</productVersion>
+    <txtProductVersion>Система допуска предрейсовых осмотров</txtProductVersion>
+    <productName>ПК автоматизированной системы передачи информации о состоянии здоровья работников и дистанционного контроля состояния их здоровья Трансавто-7</productName>
+    <companyName>Трансавто-7</companyName>
+    <internalName>Трансавто-7</internalName>
+    <originalFilename>sdpo-2.5.8.exe</originalFilename>
+    <trademarks>Трансавто-7</trademarks>
+    <language>RUSSIAN</language>
+  </versionInfo>
+</launch4jConfig>
