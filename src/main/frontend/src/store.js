@@ -18,6 +18,7 @@ const store = createStore({
             selectingMedic: false,
             loseConnect: false,
             waitRecordMedia: false,
+            timerRecordMedia: null,
         }
     },
     getters: {

@@ -8,12 +8,20 @@ export function playAlert() {
 export function startWaitTimerRecordMedia() {
     let seconds = 17;
     store.state.waitRecordMedia = true
-    let timerInterval = setInterval(() => {
+
+    store.state.timerRecordMedia = setInterval(() => {
         seconds--;
         console.log('осталось ' + seconds)
         if (seconds < 1) {
-            store.state.waitRecordMedia = false
-            clearInterval(timerInterval);
+            stopWaitTimerRecordMedia()
         }
     }, 1000);
+}
+
+export function stopWaitTimerRecordMedia() {
+    if (store.state.waitRecordMedia) {
+        store.state.waitRecordMedia = false
+        clearInterval(store.state.timerRecordMedia);
+    }
+
 }
