@@ -6,6 +6,7 @@ export function playAlert() {
 }
 
 export function startWaitTimerRecordMedia() {
+    stopWaitTimerRecordMedia();
     let seconds = 17;
     store.state.waitRecordMedia = true
 
