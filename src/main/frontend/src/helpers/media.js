@@ -12,6 +12,8 @@ export function startWaitTimerRecordMedia() {
     store.state.timerRecordMedia = setInterval(() => {
         seconds--;
         console.log('осталось ' + seconds)
+        console.log('store.state.waitRecordMedia ' + store.state.waitRecordMedia)
+        console.log('store.state.timerRecordMedia ' + store.state.timerRecordMedia)
         if (seconds < 1) {
             stopWaitTimerRecordMedia()
         }
