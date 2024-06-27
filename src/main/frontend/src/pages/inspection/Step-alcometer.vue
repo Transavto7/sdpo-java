@@ -107,6 +107,8 @@ export default {
       }
 
       if (this.checkRetry(result)) {
+        console.log(result)
+        console.log(this.inspection.alcometer_result)
         await this.retry();
         return;
       }
