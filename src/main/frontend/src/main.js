@@ -8,8 +8,8 @@ import { createWebHistory, createRouter } from "vue-router";
 import { routes } from './router'
 import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
-import { loadSettings } from './helpers/settings'
-import { checkConnect } from './helpers/api'
+import {getSettings, loadSettings} from './helpers/settings'
+import {checkConnect, saveInspection} from './helpers/api'
 import { closeAlcometer } from './helpers/alcometer'
 import 'animate.css'
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -36,6 +36,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (from.name === 'step-alcometer') {
     closeAlcometer();
+    if (to.name === 'home' && getSettings('alcometer_fast') && getSettings('alcometer_retry') && Number(store.state.inspection.alcometer_result) > 0) {
+      store.state.inspection.photo = store.state.temp.photo;
+      store.state.inspection.video = store.state.temp.video;
+      return router.push({ name: 'step-result'});
+    }
   }
 
   if (to.name === 'step-retry') {

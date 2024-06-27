@@ -19,6 +19,7 @@ const store = createStore({
             loseConnect: false,
             waitRecordMedia: false,
             timerRecordMedia: null,
+            temp: {},
         }
     },
     getters: {

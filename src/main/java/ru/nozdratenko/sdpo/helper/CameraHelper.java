@@ -382,7 +382,11 @@ public class CameraHelper {
             SdpoLog.error("File is not exists or directory");
             return;
         }
-
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         if (Sdpo.isConnection()) {
             sendVideo(video);
         }else{

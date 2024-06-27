@@ -89,10 +89,11 @@ export default {
       if (!this.hasResult(result)) {
         return;
       }
+
       if (this.needStartMedia(result)) {
         await this.stopWebCam();
         await this.runWebCam();
-        if (this.isReady(result))  {
+        if (this.isReady(result)) {
           this.setStatusAlcometerIsReady();
         } else {
           this.resetStatusAlcometerIsReady()
@@ -107,15 +108,14 @@ export default {
       }
 
       if (this.checkRetry(result)) {
-        console.log(result)
-        console.log(this.inspection.alcometer_result)
+        this.inspection.alcometer_result = result;
         await this.retry();
         return;
       }
       this.inspection.alcometer_result = Number(result) || 0;
       this.inspection.alcometer_mode = getSettings('alcometer_fast') ? '0' : '1';
       this.nextStep();
-    }, 300);
+    }, 700);
   },
   unmounted() {
     enableModeFromSystemConfig(getSettings('alcometer_fast'));

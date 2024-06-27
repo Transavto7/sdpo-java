@@ -7,7 +7,7 @@ export function playAlert() {
 
 export function startWaitTimerRecordMedia() {
     stopWaitTimerRecordMedia();
-    let seconds = 17;
+    let seconds = 20;
     store.state.waitRecordMedia = true
 
     store.state.timerRecordMedia = setInterval(() => {

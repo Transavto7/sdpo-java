@@ -1,5 +1,6 @@
 import {defaultError} from "@/helpers/http-errors";
 import {startWaitTimerRecordMedia} from "@/helpers/media";
+import store from "@/store";
 
 export async function makePhoto() {
     return await axios.post(`device/photo`).then(({ data }) => {
@@ -19,6 +20,8 @@ export async function makeMedia(driver_id) {
         driver_id,
     }).then(({ data }) => {
         startWaitTimerRecordMedia()
+        store.state.temp.photo = data?.photo;
+        store.state.temp.video = data?.video;
         return data;
     }).catch(defaultError);
 }
