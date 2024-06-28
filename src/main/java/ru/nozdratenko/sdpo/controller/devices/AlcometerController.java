@@ -10,7 +10,11 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.task.AlcometerResultTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
+import ru.nozdratenko.sdpo.websocket.AlcometrStatusEndPoint;
+import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
 
+import javax.websocket.Session;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -57,6 +61,18 @@ public class AlcometerController {
         return ResponseEntity.ok().body("");
     }
 
+    @PostMapping("/device/alcometer/status/stop")
+    @ResponseBody
+    public ResponseEntity stopStatusAlcometrStatusTranslation() {
+        for (Session session : AlcometrStatusEndPoint.sessionList) {
+            try {
+                session.close();
+            } catch (IOException e) {
+                SdpoLog.error(e);
+            }
+        }
+        return ResponseEntity.status(200).body("ok");
+    }
 
     @PostMapping(value = "/device/alcometer/change-mode")
     @ResponseBody

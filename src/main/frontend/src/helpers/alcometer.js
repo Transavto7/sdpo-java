@@ -1,4 +1,5 @@
 import {defaultError} from "@/helpers/http-errors";
+import axios from "axios";
 
 
 export async function getAlcometerResult() {
@@ -11,6 +12,12 @@ export async function closeAlcometer() {
     return await axios.post(`device/alcometer/close`).then(({ data }) => {            
         return data;
     }).catch(defaultError);
+}
+
+export async function closeAlcometrSocket() {
+    return await axios.post(`/device/alcometer/status/stop`).then(({data}) => {
+        return data;
+    });
 }
 
 export async function enableFastModeAlcometer() {

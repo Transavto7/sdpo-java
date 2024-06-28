@@ -1,12 +1,13 @@
 <script>
 import {
-  closeAlcometer,
+  closeAlcometer, closeAlcometrSocket,
   enableModeFromSystemConfig,
   enableSlowModeAlcometer,
   getAlcometerResult
 } from '@/helpers/alcometer';
 import {makeMedia, stopMedia} from '@/helpers/camera';
 import {getSettings} from "@/helpers/settings";
+import {closeDriverPhoto} from "@/helpers/api";
 
 export default {
   data() {
@@ -19,6 +20,28 @@ export default {
     }
   },
   methods: {
+
+    connect() {
+      this.connection = new WebSocket("ws://localhost:8080/device/alcometer/status")
+
+      this.connection.onmessage = (event) => {
+        console.log('event ' + event.data)
+      }
+
+      this.connection.onopen = (event) => {
+        console.log("Successfully connected to the echo websocket server...")
+      }
+
+      this.connection.error = (error) => {
+        console.log(error);
+      }
+    },
+    async disconnect() {
+      console.log('Disconnect websoket server');
+      await closeAlcometrSocket();
+    },
+
+
     async runWebCam() {
       if ((getSettings('camera_photo') && !this.inspection.photo)
           || (getSettings('camera_video') && !this.inspection.video)) {
@@ -81,6 +104,7 @@ export default {
     }
   },
   async mounted() {
+    this.connect()
     await this.runWebCam();
     this.runCountdown()
 
@@ -118,6 +142,7 @@ export default {
     }, 700);
   },
   unmounted() {
+    this.disconnect()
     enableModeFromSystemConfig(getSettings('alcometer_fast'));
     clearInterval(this.requestInterval);
     clearInterval(this.timerInterval);
@@ -145,6 +170,8 @@ export default {
 </script>
 <template>
   <div class="step-alcometer__outer">
+    <button @click="connect()" class="btn">start translation</button>
+    <button @click="disconnect()" class="btn">disconnect translation</button>
     <div v-if="!showRetry" class="step-alcometer">
       <h3 class="animate__animated animate__fadeInDown">Проверка на алкоголь</h3>
 
