@@ -18,10 +18,7 @@ export async function getSizes() {
 export async function makeMedia(driver_id) {
     return await axios.post(`device/media`, {
         driver_id,
-    }).then(({ data }) => {
-        startWaitTimerRecordMedia()
-        store.state.temp.photo = data?.photo;
-        store.state.temp.video = data?.video;
+    }).then(({data}) => {
         return data;
     }).catch(defaultError);
 }
@@ -29,7 +26,10 @@ export async function makeMedia(driver_id) {
 export async function stopMedia(driver_id) {
     return await axios.post(`device/media/stop`, {
         driver_id,
-    }).then(({ data }) => {
+    }).then(async ({data}) => {
+        store.state.temp.photo = store.state.inspection.photo;
+        store.state.temp.video = store.state.inspection.video;
+        await startWaitTimerRecordMedia()
         return data;
     }).catch(defaultError);
 }

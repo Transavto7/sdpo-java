@@ -17,15 +17,31 @@ export default {
       needRetry: false,
       showRetry: false,
       statusAlcometer: "",
+      statusPrev: "prew",
+      statusNow: "now",
+      recording: false
+    }
+  },
+  watch:  {
+    statusNow: async function () {
+      if (this.isChangeStatus("WAIT")) {
+        await this.runWebCam()
+
+      }
+      if ((this.isChangeStatus("RESULT") || this.isChangeStatus("ERROR") || this.isChangeStatus("FREE") || this.isChangeStatus("STOP")) && this.recording) {
+        await this.stopWebCam()
+      }
     }
   },
   methods: {
-
+    isChangeStatus(status) {
+       return (this.statusNow === status && this.statusPrev !== status)
+    },
     connect() {
       this.connection = new WebSocket("ws://localhost:8080/device/alcometer/status")
-
-      this.connection.onmessage = (event) => {
-        console.log('event ' + event.data)
+      this.connection.onmessage = async (event) => {
+        this.statusPrev = this.statusNow;
+        this.statusNow = event.data;
       }
 
       this.connection.onopen = (event) => {
@@ -43,17 +59,20 @@ export default {
 
 
     async runWebCam() {
-      if ((getSettings('camera_photo') && !this.inspection.photo)
-          || (getSettings('camera_video') && !this.inspection.video)) {
+      if (!this.recording) {
+        this.recording = true;
         const data = await makeMedia(this.$store.state.inspection.driver_id);
         this.inspection.photo = data?.photo;
         this.inspection.video = data?.video;
+        console.log("start media")
       }
     },
     async stopWebCam() {
-      await stopMedia(this.$store.state.inspection.driver_id);
-      this.inspection.photo = null;
-      this.inspection.video = null;
+      if (this.recording) {
+        this.recording = false;
+        await stopMedia(this.$store.state.inspection.driver_id);
+        console.log("stop media")
+      }
     },
     nextStep() {
       this.$router.push({name: 'step-sleep'});
@@ -66,7 +85,6 @@ export default {
       setTimeout(() => {
         this.showRetry = true;
       }, 3000);
-      await this.stopWebCam();
       await enableSlowModeAlcometer();
       await closeAlcometer();
       this.runCountdown();
@@ -75,14 +93,8 @@ export default {
       return !(result === undefined || result === null || result === 'next');
 
     },
-    needStartMedia(result) {
-      return (result === 'ready' && this.statusAlcometer !== 'ready') || this.hasError(result);
-    },
     hasError(result) {
       return result === "error";
-    },
-    isReady(result) {
-      return result === 'ready';
     },
     checkRetry(result) {
       return getSettings('alcometer_fast') && getSettings('alcometer_retry') && Number(result) > 0 && !this.needRetry;
@@ -96,39 +108,17 @@ export default {
         }
       }, 1000);
     },
-    setStatusAlcometerIsReady() {
-      this.statusAlcometer = 'ready';
-    },
-    resetStatusAlcometerIsReady() {
-      this.statusAlcometer = '';
-    }
   },
   async mounted() {
     this.connect()
-    await this.runWebCam();
+    // await this.runWebCam();
     this.runCountdown()
 
     this.requestInterval = setInterval(async () => {
       const result = await getAlcometerResult();
+
       if (!this.hasResult(result)) {
         return;
-      }
-
-      if (this.needStartMedia(result)) {
-        await this.stopWebCam();
-        await this.runWebCam();
-        if (this.isReady(result)) {
-          this.setStatusAlcometerIsReady();
-        } else {
-          this.resetStatusAlcometerIsReady()
-        }
-        return;
-      }
-      if (this.isReady(result)) {
-        this.setStatusAlcometerIsReady();
-        return;
-      } else {
-        this.resetStatusAlcometerIsReady()
       }
 
       if (this.checkRetry(result)) {
@@ -142,6 +132,9 @@ export default {
     }, 700);
   },
   unmounted() {
+    if (this.recording) {
+      this.stopWebCam();
+    }
     this.disconnect()
     enableModeFromSystemConfig(getSettings('alcometer_fast'));
     clearInterval(this.requestInterval);
@@ -170,8 +163,7 @@ export default {
 </script>
 <template>
   <div class="step-alcometer__outer">
-    <button @click="connect()" class="btn">start translation</button>
-    <button @click="disconnect()" class="btn">disconnect translation</button>
+
     <div v-if="!showRetry" class="step-alcometer">
       <h3 class="animate__animated animate__fadeInDown">Проверка на алкоголь</h3>
 

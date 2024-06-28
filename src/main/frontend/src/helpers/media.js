@@ -5,9 +5,9 @@ export function playAlert() {
     (new Audio(alertPath)).play();
 }
 
-export function startWaitTimerRecordMedia() {
-    stopWaitTimerRecordMedia();
-    let seconds = 20;
+export async function startWaitTimerRecordMedia() {
+    await stopWaitTimerRecordMedia();
+    let seconds = 5;
     store.state.waitRecordMedia = true
 
     store.state.timerRecordMedia = setInterval(() => {
@@ -19,10 +19,10 @@ export function startWaitTimerRecordMedia() {
     }, 1000);
 }
 
-export function stopWaitTimerRecordMedia() {
+export async function stopWaitTimerRecordMedia() {
     if (store.state.waitRecordMedia) {
         store.state.waitRecordMedia = false
-        clearInterval(store.state.timerRecordMedia);
+        await clearInterval(store.state.timerRecordMedia);
     }
 
 }

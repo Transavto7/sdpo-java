@@ -282,7 +282,7 @@ public class CameraHelper {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
         SdpoLog.info("Make video with path: " + path);
         new File(path).getParentFile().mkdirs();
-        recordScreen(path, 15);
+        recordScreen(path, 120);
         return path;
     }
 
@@ -301,10 +301,10 @@ public class CameraHelper {
             long start = System.currentTimeMillis();
 
             org.bytedeco.javacv.Frame layer = null;
-            while (!MediaMakeTask.skip && (layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L) {
+            while (!MediaMakeTask.skip && ((layer = workWebcam.grabFrame()) != null && System.currentTimeMillis() - start < duration * 1000L)) {
                 recorder.record(layer);
             }
-
+            SdpoLog.info("Stop capturing video");
             recorder.stop();
             if(Objects.nonNull(layer)) layer.close();
             recorder.release();

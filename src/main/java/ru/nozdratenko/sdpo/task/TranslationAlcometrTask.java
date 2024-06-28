@@ -22,11 +22,20 @@ public class TranslationAlcometrTask extends Thread {
 
     @Override
     public void run() {
+        String now = "now";
+        String status = "";
         while (session.isOpen()) {
             try {
-                basicRemote.sendObject(Sdpo.alcometerResultTask.currentStatus);
-            } catch (IOException | EncodeException | IllegalArgumentException | IllegalStateException e) {
+                Thread.sleep(300);
+                status = Sdpo.alcometerResultTask.currentStatus.toString();
+                if (!now.equals(status)) {
+                    now = status;
+                    basicRemote.sendText(now);
+                }
+            } catch (IOException | IllegalArgumentException | IllegalStateException e) {
                 SdpoLog.error("Failed send status from alcometr!");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
         SdpoLog.info("Close translation status from alcometr");

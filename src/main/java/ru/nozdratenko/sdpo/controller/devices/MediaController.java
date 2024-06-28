@@ -44,7 +44,12 @@ public class MediaController {
     public ResponseEntity mediaStop(@RequestBody Map<String, String> json) {
             SdpoLog.info("Stop photo and video");
             CameraHelper.stopMediaIntoTask();
-            return ResponseEntity.status(HttpStatus.OK).body("success");
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            /**/
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
     @PostMapping(value = "/device/video/test")
