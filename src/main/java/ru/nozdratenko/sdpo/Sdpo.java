@@ -51,7 +51,7 @@ public class Sdpo {
         alcometerResultTask.start();
         tonometerConnectTask.start();
 
-        runScannerTask();
+//        runScannerTask();
     }
 
     public static void loadData() {
