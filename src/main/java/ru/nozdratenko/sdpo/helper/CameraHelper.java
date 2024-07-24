@@ -248,6 +248,7 @@ public class CameraHelper {
     public static JSONObject makePhotoAndVideo(String driver_id) {
         JSONObject json = new JSONObject();
         if (isCameraAvailable()) {
+            MediaMakeTask.skip = false;
             Date date = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S");
             String name = simpleDateFormat.format(date);
