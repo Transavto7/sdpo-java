@@ -17,6 +17,7 @@ import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 @Controller
@@ -43,7 +44,7 @@ public class IndexController {
     }
 
     @PostMapping("api/check")
-    public ResponseEntity apiCheck(@RequestBody Map<String, String> json) {
+    public ResponseEntity apiCheck(@RequestBody Map<String, String> json) throws InterruptedException {
         try {
             if (json.keySet().contains("address")) {
                 String address = json.get("address");
@@ -61,7 +62,11 @@ public class IndexController {
                     return ResponseEntity.ok().body(timestamp);
                 }
             }
-        } catch (Exception | ApiException e) {
+        }
+        catch (UnknownHostException ignored) {
+            Thread.sleep(5000);
+        }
+        catch (Exception | ApiException e) {
             SdpoLog.error(e);
         }
 

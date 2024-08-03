@@ -24,20 +24,11 @@ public class AlcometerController {
     @ResponseBody
     public ResponseEntity alcometer() {
         AlcometerResultTask task = Sdpo.alcometerResultTask;
-        SdpoLog.info(task.currentStatus);
         if (task.currentStatus == StatusType.FREE) {
             task.currentStatus = StatusType.REQUEST;
 
             return ResponseEntity.ok().body("next");
         }
-
-//        if (task.currentStatus == StatusType.READY) {
-//            return ResponseEntity.ok().body("ready");
-//        }
-//
-//        if (task.currentStatus == StatusType.ERROR) {
-//            return ResponseEntity.ok().body("error");
-//        }
 
         if (!task.currentStatus.skip) {
             return ResponseEntity.ok().body("next");
