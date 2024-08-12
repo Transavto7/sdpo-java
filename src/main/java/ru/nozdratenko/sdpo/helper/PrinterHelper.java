@@ -1,16 +1,21 @@
 package ru.nozdratenko.sdpo.helper;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.task.PrintTask;
+import ru.nozdratenko.sdpo.task.print.PrintQrTask;
+import ru.nozdratenko.sdpo.task.print.PrintTask;
 
-import javax.print.*;
+import javax.print.PrintException;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.*;
-import java.awt.print.*;
-import java.io.*;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.PrinterResolution;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.IOException;
 
 public class PrinterHelper {
     public static JSONObject lastPrint = null;
@@ -117,5 +122,12 @@ public class PrinterHelper {
             ex.printStackTrace();
         }
     }
+
+    public static void printFromPDF (PDDocument document) throws PrinterException {
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.setPageable(new PrintQrTask(document));
+        job.print();
+    }
+
 }
 

@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import ru.nozdratenko.sdpo.commands.Command;
-import ru.nozdratenko.sdpo.helper.BrowserHelper;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

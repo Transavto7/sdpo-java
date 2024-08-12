@@ -1,3 +1,27 @@
+.print-selection {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  padding-top: 5%;
+  font-weight: 500;
+
+  .tab {
+    width: 100%;
+    margin: 1.3rem;
+    height: 330px;
+    text-align: center;
+    padding: 15px 25px 25px 15px;
+    border: 2px solid #244673;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 1000;
+    font-size: 1.6em;
+  }
+}
+
+
 .last-inspection {
   display: flex;
   flex-direction: column;

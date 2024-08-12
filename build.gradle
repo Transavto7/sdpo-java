@@ -42,5 +42,6 @@ dependencies {
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
 	implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
 	implementation group: 'org.springframework', name: 'spring-websocket'
+	implementation group: 'org.apache.pdfbox', name: 'pdfbox', version : '2.0.20'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

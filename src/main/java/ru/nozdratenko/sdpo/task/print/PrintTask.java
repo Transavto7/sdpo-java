@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.task;
+package ru.nozdratenko.sdpo.task.print;
 
 import java.awt.*;
 import java.awt.print.PageFormat;

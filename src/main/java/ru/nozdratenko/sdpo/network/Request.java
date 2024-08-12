@@ -7,9 +7,7 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,31 +93,8 @@ public class Request {
         return sendPost("");
     }
     public String sendPost(String json) throws IOException, ApiException {
-        this.connection = (HttpsURLConnection)  this.url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Content-Length", "1");
-        connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
-        connection.setDoOutput(true);
 
-        try(OutputStream os = connection.getOutputStream()) {
-            byte[] input = json.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        InputStream inputStream;
-        int status = connection.getResponseCode();
-
-        if (status < 400) {
-            inputStream = connection.getInputStream();
-        } else {
-            inputStream = connection.getErrorStream();
-        }
-
-        if (inputStream == null) {
-            throw new ApiException("Ошибка запроса. Неверный ответ");
-        }
+        InputStream inputStream = this.sendPostGetInputStream(json);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
@@ -149,6 +124,36 @@ public class Request {
         }
 
         return response.toString();
+    }
+
+    public InputStream sendPostGetInputStream(String json) throws IOException, ApiException {
+        this.connection = (HttpsURLConnection)  this.url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Content-Length", "1");
+        connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
+        connection.setDoOutput(true);
+
+        try(OutputStream os = connection.getOutputStream()) {
+            byte[] input = json.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        InputStream inputStream;
+        int status = connection.getResponseCode();
+
+        if (status < 400) {
+            inputStream = connection.getInputStream();
+        } else {
+            inputStream = connection.getErrorStream();
+        }
+
+        if (inputStream == null) {
+            throw new ApiException("Ошибка запроса. Неверный ответ");
+        }
+
+        return inputStream;
     }
 
     public URL getUrl() {

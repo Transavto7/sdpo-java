@@ -6,3 +6,12 @@ export async function print() {
         return data;
     }).catch(defaultError);
 }
+
+export async function printQr(driverId, type) {
+    return await axios.post(`/device/printer/test/qr`, {
+        'driver' : driverId,
+        'type' : type
+    }).then(({ data }) => {
+        return data;
+    }).catch(defaultError);
+}

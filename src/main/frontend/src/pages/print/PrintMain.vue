@@ -1,13 +1,15 @@
 <script>
 import PrintLogin from "@/pages/print/PrintLogin";
 import PrintIndex from "@/pages/print/PrintIndex";
+import PrintSelection from "@/pages/print/PrintSelection";
 import Loader from "@/components/common/Loader";
 import {getInspections, printInspection} from '@/helpers/api';
 import {useToast} from "vue-toastification";
+import {printQr} from "@/helpers/printer";
 
 
 export default {
-  components: {Loader, PrintIndex, PrintLogin},
+  components: {PrintSelection, Loader, PrintIndex, PrintLogin},
   data() {
     return {
       driver: null,
@@ -16,6 +18,7 @@ export default {
       print: false,
       errorAuthentication: false,
       loading: false,
+      tab: 'all',
     }
   },
   methods: {
@@ -35,18 +38,31 @@ export default {
       this.loading = false;
 
     },
+    selectTab(type) {
+      if (type === 'inspection'){
+        this.tab = 'inspection';
+        return ;
+      }
+      printQr(this.driver.hash_id, type);
+      this.toast.success('Задание на печать отправлено');
+    }
   },
   computed: {
     login() {
       return this.driver !== null
     },
+    stepInspection() {
+      return this.tab === 'inspection';
+    }
   },
 }
 </script>
 
 <template>
   <print-login v-if="!this.login && !this.loading" @success-auth="(driver) => setDriver(driver)"/>
-  <print-index v-if="this.login && !this.loading"
+  <print-selection v-if="this.login && !this.loading  && !this.stepInspection"
+                  @select="(type) => selectTab(type)"/>
+  <print-index v-if="this.login && !this.loading && this.stepInspection"
                @print="(inspectionAttr) => printQuery(inspectionAttr)"
                v-model:inspections="inspections"
                v-model:driver="driver"/>
