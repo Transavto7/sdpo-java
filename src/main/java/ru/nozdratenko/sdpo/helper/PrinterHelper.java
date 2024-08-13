@@ -123,10 +123,11 @@ public class PrinterHelper {
         }
     }
 
-    public static void printFromPDF (PDDocument document) throws PrinterException {
+    public static void printFromPDF (PDDocument document) throws PrinterException, IOException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PrintQrTask(document));
         job.print();
+        document.close();
     }
 
 }

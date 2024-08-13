@@ -5,18 +5,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
-import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
-import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRemoteRepository;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -25,7 +20,6 @@ import javax.print.PrintException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController

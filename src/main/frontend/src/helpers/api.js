@@ -5,6 +5,14 @@ import {useToast} from "vue-toastification";
 
 const toast = useToast();
 
+export async function getCar(id) {
+    return await axios.get(`api/car/${id}`).then(({data}) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 export async function getDriver(id) {
     return await axios.post(`inspection/${id}`).then(({data}) => {
         return data;

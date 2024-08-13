@@ -27,8 +27,8 @@ public class PrintQrTask extends Book {
 
     private Paper getPaper() {
         Paper paper = new Paper();
-        paper.setSize(200, 140);
-        paper.setImageableArea(10, 0, 160, 110);
+        paper.setSize(160, 84);
+        paper.setImageableArea(10, 0, 155, 80);
         return paper;
     }
 

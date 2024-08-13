@@ -79,6 +79,7 @@ router.beforeEach((to, from, next) => {
 setInterval(async () => {
   if (store.state.config?.main?.url) {
     store.state.connection = await checkConnect(store.state.config.main.url);
+    if (store.state.connection === undefined) store.state.connection = false;
   }
 }, 2000);
 

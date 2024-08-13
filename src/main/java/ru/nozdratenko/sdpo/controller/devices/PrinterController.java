@@ -70,13 +70,16 @@ public class PrinterController {
             jsonObject.put("id", json.get("driver"));
 
             InputStream result =  request.sendPostGetInputStream(jsonObject.toString());
-
-            PrinterHelper.printFromPDF(PDDocument.load(result));
+            PDDocument document = PDDocument.load(result);
+            PrinterHelper.printFromPDF(document);
         } catch (IOException | ApiException e) {
                 SdpoLog.error(e);
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error printer: " + e);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "Ошибка запроса");
+            return ResponseEntity.status(500).body(jsonObject);
         }
 
         return ResponseEntity.ok().body("");

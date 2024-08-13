@@ -119,6 +119,7 @@ export default {
       <login-navigation @select-medic="$store.state.selectingMedic = true"
                         @get-help="$router.push('/help')"
                         @get-last-inspection="$router.push('/print/index')"
+                        @print-qr="$router.push('/print/qr')"
                         @settings="$router.push('/login')" />
     </div>
   </div>

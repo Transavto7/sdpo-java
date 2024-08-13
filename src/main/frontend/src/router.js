@@ -3,6 +3,7 @@ export const routes = [
     { path: '/help', component: () => import('./pages/Help') },
     { path: '/login', component: () => import('./pages/settings/Login') },
     { path: '/print/index', component: () => import('./pages/print/PrintMain') },
+    { path: '/print/qr', component: () => import('./pages/print/QR/PrintQr') },
     { path: '/settings', component: () => import('./pages/settings/Index') },
     { path: '/number-phone/add', component: () => import('./pages/driver/InputAndSavePhone') },
 
