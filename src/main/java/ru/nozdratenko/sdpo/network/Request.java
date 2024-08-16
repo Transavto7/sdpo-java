@@ -132,6 +132,7 @@ public class Request {
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", "1");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
         connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
         connection.setDoOutput(true);
 

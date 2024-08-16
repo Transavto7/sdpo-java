@@ -64,12 +64,14 @@ public class PrinterController {
     @ResponseBody
     public ResponseEntity printQr(@RequestBody Map<String, String> json) {
         try {
-            Request request = new Request("sdpo/get-sticker/");
+            Request request = new Request("sdpo/get-sticker");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("type", json.get("type"));
             jsonObject.put("id", json.get("driver"));
 
             InputStream result =  request.sendPostGetInputStream(jsonObject.toString());
+            SdpoLog.info(result);
+
             PDDocument document = PDDocument.load(result);
             PrinterHelper.printFromPDF(document);
         } catch (IOException | ApiException e) {
