@@ -26,7 +26,7 @@ public class Sdpo {
     public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
     public static final TonometerConnectTask tonometerConnectTask = new TonometerConnectTask();
     public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
-    public static final AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
+    public static AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
@@ -38,10 +38,24 @@ public class Sdpo {
         initSystemConfig();
         runTasks();
         CameraHelper.initDimension();
+        AlcometerHelper.setDeviceInstanceId();
         AlcometerHelper.setComPort();
         ThermometerHelper.setComPort();
     }
 
+
+    public static void reRunAlcometerTask() {
+        alcometerResultTask.interrupt();
+        alcometerResultTask = new AlcometerResultTask();
+        SdpoLog.info("Rerun alcometer task ...");
+        alcometerResultTask.start();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            SdpoLog.error(e);
+        }
+        AlcometerHelper.setComPort();
+    }
 
     public static void runTasks() {
 
