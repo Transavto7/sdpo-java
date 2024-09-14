@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.task;
 
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 
 public class TonometerConnectTask extends Thread {
@@ -21,6 +22,7 @@ public class TonometerConnectTask extends Thread {
             }
 
             String uuid = Sdpo.mainConfig.getString("tonometer_mac");
+            SdpoLog.info("UUID: " + uuid);
             if (uuid == null || uuid.isEmpty()) {
                 continue;
             }
