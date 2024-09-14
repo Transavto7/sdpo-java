@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.controller.devices;
 
+import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,9 @@ public class TonometerController {
     @ResponseBody
     public ResponseEntity tonometer() throws InterruptedException {
         if (Sdpo.tonometerResultTask.currentStatus == StatusType.RESULT) {
-            Map<String, Object> result = new HashMap<>(Sdpo.tonometerResultTask.json.toMap());
+            JSONObject json = Sdpo.tonometerResultTask.json;
+            SdpoLog.info("!!! TonometerController.tonometer.tonometerResultTask.json: " + json);
+            Map<String, Object> result = new HashMap<>(json.toMap());
             Sdpo.tonometerResultTask.currentStatus = StatusType.STOP;
             return ResponseEntity.ok().body(result);
         }
@@ -33,6 +36,7 @@ public class TonometerController {
     @PostMapping(value = "/device/tonometer/connect")
     @ResponseBody
     public ResponseEntity tonometerConnect(@RequestBody Map<String, String> json) throws InterruptedException {
+        SdpoLog.info("!!! TonometerController.tonometerConnect.json: " + json);
         if (json.containsKey("status") && json.get("status").equals("stop")) {
             Sdpo.tonometerConnectTask.currentStatus = StatusType.STOP;
             SdpoLog.info("Stop connecting tonometer");

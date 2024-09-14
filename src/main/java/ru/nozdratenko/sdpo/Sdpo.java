@@ -107,6 +107,7 @@ public class Sdpo {
                 SdpoLog.error(e);
             }
             BrowserHelper.openUrl("http://localhost:8080");
+//            BluetoothHelper bluetoothHelper = new BluetoothHelper();
         }).start();
     }
 

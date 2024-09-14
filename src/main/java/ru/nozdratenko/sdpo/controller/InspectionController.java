@@ -112,11 +112,11 @@ public class InspectionController {
             throws IOException, PrintException, PrinterException, ApiException {
         JSONObject inspection = new JSONObject(json);
         inspection.put("type_anketa", "pak_queue");
-
+        SdpoLog.info("!!! inspectionSavePack.inspection: " + inspection.toString());
         Request response = new Request("sdpo/anketa");
         String result = response.sendPost(inspection.toString());
         JSONObject resultJson = new JSONObject(result);
-        SdpoLog.info("Saved inspection: " + resultJson.toString());
+        SdpoLog.info("2 Saved inspection: " + resultJson.toString());
 
         if (resultJson.has("id")) {
             int timeout = 20;
@@ -241,11 +241,11 @@ public class InspectionController {
             throws IOException, ApiException, PrintException, PrinterException {
         Request response = new Request("sdpo/anketa");
         JSONObject jsonObject = new JSONObject(json);
-        SdpoLog.info(jsonObject.toString(10));
+        SdpoLog.info("!!! inspectionSaveOnline: " + jsonObject.toString(10));
         String result = response.sendPost(jsonObject.toString());
 
         JSONObject resultJson = new JSONObject(result);
-        SdpoLog.info("Saved inspection: " + resultJson.toString());
+        SdpoLog.info("3 Saved inspection: " + resultJson.toString());
 
         if (Sdpo.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(resultJson);

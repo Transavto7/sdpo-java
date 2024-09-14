@@ -39,8 +39,9 @@ public class TonometerResultTask extends Thread {
                        continue;
                    }
 
+
                    String result = Bluetooth.getTonometerResult(uuid);
-                   SdpoLog.info(result);
+                   SdpoLog.info(uuid + " Tonometer Result: " + result);
 
                    if (result == null || result.isEmpty()) {
                        continue;

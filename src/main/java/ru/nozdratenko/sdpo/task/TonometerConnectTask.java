@@ -22,7 +22,7 @@ public class TonometerConnectTask extends Thread {
             }
 
             String uuid = Sdpo.mainConfig.getString("tonometer_mac");
-            SdpoLog.info("UUID: " + uuid);
+            SdpoLog.info("!!! UUID: " + uuid);
             if (uuid == null || uuid.isEmpty()) {
                 continue;
             }
