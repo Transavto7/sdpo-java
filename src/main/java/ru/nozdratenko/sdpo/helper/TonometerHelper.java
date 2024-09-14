@@ -3,6 +3,8 @@ package ru.nozdratenko.sdpo.helper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.util.SdpoLog;
+
 import java.util.HashMap;
 
 public class TonometerHelper {
@@ -10,6 +12,7 @@ public class TonometerHelper {
     public static JSONObject scan() {
         JSONObject json = new JSONObject();
         try {
+            SdpoLog.info("TonometerHelper|Bluetooth.scanBluetoothDevices");
             HashMap<String, String> devicesMap = Bluetooth.scanBluetoothDevices();
 
             JSONArray devices = new JSONArray();
@@ -25,7 +28,7 @@ public class TonometerHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        SdpoLog.info("TonometerHelper|Bluetooth.scanBluetoothDevices: " + json.toString());
         return json;
     }
 }
