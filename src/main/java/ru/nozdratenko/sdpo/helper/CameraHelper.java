@@ -17,10 +17,8 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -334,10 +332,17 @@ public class CameraHelper {
         return bufferedOutputStream.toByteArray();
     }
 
-    public static String savePhoto(Frame image, String name) {
+    public static String savePhoto(Frame image, String name) throws IOException {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
         SdpoLog.info("Save photo with path: " + path);
         File photo = new File(path);
+
+        Writer fstream = null;
+        fstream = new OutputStreamWriter(new FileOutputStream(photo), StandardCharsets.UTF_8);
+        fstream.write(image.toString());
+        fstream.close();
+//todo проверить
+//        FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4")
 
         photo.getParentFile().mkdirs();
 

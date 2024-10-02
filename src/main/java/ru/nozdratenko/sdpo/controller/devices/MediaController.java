@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.nozdratenko.sdpo.file.FileBase;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -19,6 +20,8 @@ public class MediaController {
     @PostMapping(value = "/device/photo")
     @ResponseBody
     public ResponseEntity photo() {
+        String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", "testtesttest.png");
+        SdpoLog.info("test-------------> name: " + path);
         try {
             String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
             SdpoLog.info("Make photo with name: " + name);
