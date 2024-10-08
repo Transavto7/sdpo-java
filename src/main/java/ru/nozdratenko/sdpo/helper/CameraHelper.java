@@ -21,8 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
@@ -337,19 +335,16 @@ public class CameraHelper {
     }
 
     public static String savePhoto(Frame image, String name) {
-        String pathUtf8 = new String(FileBase.getMainFolderUrl().getBytes(Charset.forName("windows-1251")), StandardCharsets.UTF_8);
-        SdpoLog.info("Save photo with pathUtf8: " + pathUtf8);
-        SdpoLog.info("Save photo with origin: " + FileBase.getMainFolderUrl());
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
         SdpoLog.info("Save photo with path: " + path);
+        new File(path).getParentFile().mkdirs();
         File photo = new File(path);
 
-        photo.getParentFile().mkdirs();
+//        photo.getParentFile().mkdirs();
 
         if (!photo.exists() || photo.isDirectory()) {
-            SdpoLog.info("photo.exists(): " + (!photo.exists() ? "true": "false"));
-            SdpoLog.info("photo.isDirectory(): " + (photo.isDirectory() ? "true": "false"));
-            SdpoLog.info("Save photo with pathUtf8: " + pathUtf8);
+            SdpoLog.info("photo.exists(): " + photo.exists());
+            SdpoLog.info("photo.isDirectory(): " + photo.isDirectory());
             SdpoLog.error("Photo exists or directory!");
             return null;
         }
