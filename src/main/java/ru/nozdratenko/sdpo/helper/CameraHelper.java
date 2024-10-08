@@ -343,8 +343,6 @@ public class CameraHelper {
         opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
 
         if (!photo.exists() || photo.isDirectory()) {
-            SdpoLog.info("photo.exists(): " + photo.exists());
-            SdpoLog.info("photo.isDirectory(): " + photo.isDirectory());
             SdpoLog.error("Photo exists or directory!");
             return null;
         }
