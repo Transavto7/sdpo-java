@@ -337,10 +337,10 @@ public class CameraHelper {
     public static String savePhoto(Frame image, String name) {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
         SdpoLog.info("Save photo with path: " + path);
-        new File(path).getParentFile().mkdirs();
         File photo = new File(path);
 
-//        photo.getParentFile().mkdirs();
+        photo.getParentFile().mkdirs();
+        opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
 
         if (!photo.exists() || photo.isDirectory()) {
             SdpoLog.info("photo.exists(): " + photo.exists());
@@ -349,7 +349,6 @@ public class CameraHelper {
             return null;
         }
 
-        opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
 
         if (Sdpo.isConnection()) {
             sendPhoto(photo);
