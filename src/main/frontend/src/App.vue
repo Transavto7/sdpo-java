@@ -31,7 +31,7 @@ export default {
   <div class="footer">
     <div class="footer__point-version">
       {{ point || 'Незвестный пункт выпуска' }}
-      <span>Версия: 2.6.0</span>
+      <span>Версия: 2.6.0-тестирование</span>
     </div>
   </div>
   <div class="footer__serial-number_date-notification">
