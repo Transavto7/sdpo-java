@@ -340,14 +340,14 @@ public class CameraHelper {
         String pathUtf8 = new String(FileBase.getMainFolderUrl().getBytes(Charset.forName("windows-1251")), StandardCharsets.UTF_8);
         SdpoLog.info("Save photo with pathUtf8: " + pathUtf8);
         SdpoLog.info("Save photo with origin: " + FileBase.getMainFolderUrl());
-        String path = FileBase.concatPath(pathUtf8, "image", name + ".png");
+        String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
         SdpoLog.info("Save photo with path: " + path);
         File photo = new File(path);
 
         photo.getParentFile().mkdirs();
 
         if (!photo.exists() || photo.isDirectory()) {
-            SdpoLog.info("photo.exists(): " + (photo.exists() ? "true": "false"));
+            SdpoLog.info("photo.exists(): " + (!photo.exists() ? "true": "false"));
             SdpoLog.info("photo.isDirectory(): " + (photo.isDirectory() ? "true": "false"));
             SdpoLog.info("Save photo with pathUtf8: " + pathUtf8);
             SdpoLog.error("Photo exists or directory!");
