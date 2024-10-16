@@ -340,11 +340,19 @@ public class CameraHelper {
         File photo = new File(path);
 
         photo.getParentFile().mkdirs();
+        try {
+            photo.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
 
+
+        SdpoLog.info("exists " + photo.exists());
+        SdpoLog.info("isDirectory " + photo.isDirectory());
         if (!photo.exists() || photo.isDirectory()) {
             SdpoLog.error("Photo exists or directory!");
-            return null;
+//            return null;
         }
 
 
