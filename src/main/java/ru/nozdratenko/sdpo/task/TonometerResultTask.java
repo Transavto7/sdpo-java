@@ -6,6 +6,7 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.lib.Bluetooth;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
+import ru.nozdratenko.sdpo.util.device.BluetoothDeviceService;
 
 public class TonometerResultTask extends Thread {
     public JSONObject json = new JSONObject();
@@ -13,15 +14,14 @@ public class TonometerResultTask extends Thread {
 
     @Override
     public void run() {
-        SdpoLog.info("TonometerResultTask|Bluetooth.restart");
         Bluetooth.restart();
+        BluetoothDeviceService.start();
 
         while (true) {
             try {
                 Thread.sleep(100);
                 if (currentStatus == StatusType.REQUEST) {
                     SdpoLog.info("Start tonometer");
-                    SdpoLog.info("TonometerResultTask|StatusType.REQUEST|Bluetooth.restart");
                     Bluetooth.restart();
                     this.json.clear();
                     this.currentStatus = StatusType.WAIT;
@@ -29,7 +29,6 @@ public class TonometerResultTask extends Thread {
 
                 if (currentStatus == StatusType.STOP) {
                     SdpoLog.info("Stop tonometer");
-                    SdpoLog.info("TonometerResultTask|StatusType.STOP|Bluetooth.restart");
                     Bluetooth.restart();
                     this.json.clear();
                     this.currentStatus = StatusType.FREE;
@@ -42,18 +41,16 @@ public class TonometerResultTask extends Thread {
                        continue;
                    }
 
-                   SdpoLog.info("TonometerResultTask|StatusType.WAIT|Bluetooth.getTonometerResult: " + uuid);
-                   String result = Bluetooth.getTonometerResult(uuid);
-                   SdpoLog.info(uuid + " Tonometer Result: " + result);
+                    String result = BluetoothDeviceService.getTonometerResult();
 
                    if (result == null || result.isEmpty()) {
                        continue;
                    }
 
                    // Tonometer off
-                   if (result.equals("error_windows")) {
+                   if (result.startsWith("error_windows")) {
+                       SdpoLog.info("result: " + result);
                        SdpoLog.info("set indicated...");
-                       SdpoLog.info("TonometerResultTask|StatusType.WAIT|Bluetooth.setIndicate: " + uuid);
                        Bluetooth.setIndicate(uuid);
                        continue;
                    }

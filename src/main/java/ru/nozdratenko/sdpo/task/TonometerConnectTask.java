@@ -32,11 +32,9 @@ public class TonometerConnectTask extends Thread {
             }
 
             if (currentStatus == StatusType.WAIT) {
-                SdpoLog.info("TonometerConnectTask|StatusType.WAIT|Bluetooth.setIndicate: " + uuid);
                 String result = Bluetooth.setConnection(uuid);
 
                 if (result.equals("set")) {
-                    SdpoLog.info("TonometerConnectTask|StatusType.WAIT|Bluetooth.setIndicate: " + uuid);
                     Bluetooth.setIndicate(uuid);
                     currentStatus = StatusType.RESULT;
 //                    Sdpo.mainConfig.set("tonometer_connect", true);
