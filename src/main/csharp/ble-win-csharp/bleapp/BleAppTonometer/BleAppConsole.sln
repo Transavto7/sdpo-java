@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BleAppConsole", "BleAppConsole\BleAppConsole.csproj", "{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Debug|x64.ActiveCfg = Debug|x64
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Debug|x64.Build.0 = Debug|x64
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Release|x64.ActiveCfg = Release|x64
+		{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {891E357A-29F0-446E-932C-A5AD5445CCC6}
+	EndGlobalSection
+EndGlobal

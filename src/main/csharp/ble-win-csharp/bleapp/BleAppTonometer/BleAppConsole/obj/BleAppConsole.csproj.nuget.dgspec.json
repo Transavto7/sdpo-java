@@ -1,0 +1,73 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj",
+        "projectName": "bleapp",
+        "projectPath": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj",
+        "packagesPath": "C:\\Users\\АННА ФЕТИСОВА\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\АННА ФЕТИСОВА\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "Microsoft.Windows.SDK.Contracts": {
+              "target": "Package",
+              "version": "[10.0.26100.1742, )"
+            },
+            "UnmanagedExports": {
+              "target": "Package",
+              "version": "[1.2.7, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-arm64": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}
