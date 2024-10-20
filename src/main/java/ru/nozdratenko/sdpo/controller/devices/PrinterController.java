@@ -60,7 +60,7 @@ public class PrinterController {
         return ResponseEntity.ok().body("");
     }
 
-    @PostMapping(value = "/device/printer/test/qr")
+    @PostMapping(value = "/device/printer/qr")
     @ResponseBody
     public ResponseEntity printQr(@RequestBody Map<String, String> json) {
         try {
@@ -69,7 +69,7 @@ public class PrinterController {
             jsonObject.put("type", json.get("type"));
             jsonObject.put("id", json.get("driver"));
 
-            InputStream result =  request.sendPostGetInputStream(jsonObject.toString());
+            InputStream result =  request.sendPostInputStream(jsonObject.toString());
             SdpoLog.info(result);
 
             PDDocument document = PDDocument.load(result);
@@ -86,5 +86,6 @@ public class PrinterController {
 
         return ResponseEntity.ok().body("");
     }
+
 
 }

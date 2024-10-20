@@ -1,5 +1,5 @@
 <script>
-import {saveInspection, replayPrint} from '@/helpers/api';
+import {saveInspection, replayPrint, replayPrintQr} from '@/helpers/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
 
@@ -50,6 +50,11 @@ export default {
     },
     async replayPrint() {
       await replayPrint();
+    },
+
+    async replayPrintQr() {
+      //todo добавить проверку внизу кнопки включена или выключена кнопка?
+      await replayPrintQr();
     },
     redirectHome() {
       if (this.$route.name === 'step-result') {
@@ -141,6 +146,10 @@ export default {
         <button v-if="result?.admitted === 'Допущен'"
                 @click="replayPrint()"
                 class="btn opacity animate__animated animate__fadeInUp">Повтор печати
+        </button>
+        <button v-if="result?.admitted === 'Допущен'"
+                @click="replayPrintQr()"
+                class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
         </button>
       </div>
     </div>

@@ -49,6 +49,12 @@ export async function replayPrint() {
     }).catch(defaultError);
 }
 
+export async function replayPrintQr() {
+    return await axios.post(`inspection/print/qr`).then(({data}) => {
+        return data;
+    }).catch(defaultError);
+}
+
 export async function checkConnect(address) {
     return await axios.post(`api/check`, {
         address

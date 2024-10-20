@@ -203,6 +203,13 @@ export default {
         <span>Количество</span>
         <input min="1" class="small" type="number" v-model="system.print_count">
       </div>
+      <div class="admin__system-card__item">
+        <span>Печать маркировки осмотра</span>
+        <label class="switch">
+          <input type="checkbox" v-model="system.print_qr_check">
+          <div class="slider round"></div>
+        </label>
+      </div>
     </div>
 
 

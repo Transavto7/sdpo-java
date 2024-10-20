@@ -159,6 +159,7 @@ public class Sdpo {
                 .setDefault("driver_photo", false)
                 .setDefault("camera_dimension", CameraHelper.getDefaultSize())
                 .setDefault("printer_write", true)
+                .setDefault("print_qr_check", false)
                 .setDefault("print_count", 1)
                 .setDefault("thermometer_skip", true)
                 .setDefault("thermometer_visible", true)

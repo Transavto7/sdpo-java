@@ -8,7 +8,7 @@ export async function print() {
 }
 
 export async function printQr(driverId, type) {
-    return await axios.post(`/device/printer/test/qr`, {
+    return await axios.post(`/device/printer/qr`, {
         'driver' : driverId,
         'type' : type
     }).then(({ data }) => {

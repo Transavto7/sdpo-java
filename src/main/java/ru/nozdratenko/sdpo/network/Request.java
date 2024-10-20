@@ -94,7 +94,7 @@ public class Request {
     }
     public String sendPost(String json) throws IOException, ApiException {
 
-        InputStream inputStream = this.sendPostGetInputStream(json);
+        InputStream inputStream = this.sendPostInputStream(json);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
@@ -126,7 +126,7 @@ public class Request {
         return response.toString();
     }
 
-    public InputStream sendPostGetInputStream(String json) throws IOException, ApiException {
+    public InputStream sendPostInputStream(String json) throws IOException, ApiException {
         this.connection = (HttpsURLConnection)  this.url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept", "application/json");

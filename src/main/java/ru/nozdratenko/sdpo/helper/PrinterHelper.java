@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.task.print.PrintQrRotateTask;
 import ru.nozdratenko.sdpo.task.print.PrintQrTask;
 import ru.nozdratenko.sdpo.task.print.PrintTask;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 public class PrinterHelper {
     public static JSONObject lastPrint = null;
+    public static String lastQRPath = "";
     public static String head = null;
     public static String licence = null;
 
@@ -126,6 +128,13 @@ public class PrinterHelper {
     public static void printFromPDF (PDDocument document) throws PrinterException, IOException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PrintQrTask(document));
+        job.print();
+        document.close();
+    }
+
+    public static void printFromPDFRotate (PDDocument document) throws PrinterException, IOException {
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.setPageable(new PrintQrRotateTask(document));
         job.print();
         document.close();
     }

@@ -1,22 +1,28 @@
 package ru.nozdratenko.sdpo.controller;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -72,6 +78,26 @@ public class InspectionController {
         return ResponseEntity.status(200).body("");
     }
 
+    @PostMapping("inspection/print/qr")
+    public ResponseEntity inspectionPrintQr() {
+        if (PrinterHelper.lastQRPath == null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "Нет прошлой печати");
+            return ResponseEntity.status(500).body(jsonObject);
+        }
+        try {
+            File qrCheck = new File(PrinterHelper.lastQRPath);
+            PrinterHelper.printFromPDFRotate(PDDocument.load(qrCheck));
+        } catch (IOException error) {
+            SdpoLog.warning("Impossible to get qr! File path: " + PrinterHelper.lastQRPath);
+            SdpoLog.warning("ERROR: " + error);
+        } catch (java.awt.print.PrinterException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ResponseEntity.status(200).body("");
+    }
+
     @PostMapping("api/{id}/inspections")
     public ResponseEntity getInspectionsDriver(@PathVariable String id) throws IOException {
         InspectionRepositoryInterface repository;
@@ -109,7 +135,7 @@ public class InspectionController {
     }
 
     public ResponseEntity inspectionSavePack(Map<String, String> json)
-            throws IOException, PrintException, PrinterException, ApiException {
+            throws IOException, PrintException, PrinterException, ApiException, java.awt.print.PrinterException {
         JSONObject inspection = new JSONObject(json);
         inspection.put("type_anketa", "pak_queue");
 
@@ -157,6 +183,19 @@ public class InspectionController {
 
         if (Sdpo.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(resultJson);
+        }
+        if (Sdpo.systemConfig.getBoolean("print_qr_check")) {
+            try {
+                PDDocument document = PrintService.getVerifiedQrInspectionToPDF(resultJson.getInt("id"));
+                String path = PrintService.storeQrToPath(document, Integer.toString(resultJson.getInt("id")));
+                resultJson.put("qr_check_path", path);
+                PrinterHelper.printFromPDFRotate(document);
+
+
+            } catch (ApiException | IOException error) {
+                SdpoLog.warning("Impossible to get qr! Inspection id: " + resultJson.getInt("id"));
+                SdpoLog.warning("ERROR: " + error);
+            }
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
@@ -238,7 +277,7 @@ public class InspectionController {
     }
 
     public ResponseEntity inspectionSaveOnline(Map<String, String> json)
-            throws IOException, ApiException, PrintException, PrinterException {
+            throws IOException, ApiException, PrintException, PrinterException, java.awt.print.PrinterException {
         Request response = new Request("sdpo/anketa");
         JSONObject jsonObject = new JSONObject(json);
         SdpoLog.info(jsonObject.toString(10));
@@ -249,6 +288,20 @@ public class InspectionController {
 
         if (Sdpo.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(resultJson);
+        }
+
+        if (Sdpo.systemConfig.getBoolean("print_qr_check")) {
+            try {
+                PDDocument document = PrintService.getVerifiedQrInspectionToPDF(resultJson.getInt("id"));
+                String path = PrintService.storeQrToPath(document, Integer.toString(resultJson.getInt("id")));
+                resultJson.put("qr_check_path", path);
+                PrinterHelper.printFromPDFRotate(document);
+                PrinterHelper.lastQRPath = path;
+
+            } catch (ApiException | IOException error) {
+                SdpoLog.warning("Impossible to get qr! Inspection id: " + resultJson.getInt("id"));
+                SdpoLog.warning("ERROR: " + error);
+            }
         }
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
     }
