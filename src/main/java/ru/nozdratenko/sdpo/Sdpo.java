@@ -2,13 +2,17 @@ package ru.nozdratenko.sdpo;
 
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
-import ru.nozdratenko.sdpo.helper.*;
+import ru.nozdratenko.sdpo.helper.AlcometerHelper;
+import ru.nozdratenko.sdpo.helper.BrowserHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
 import ru.nozdratenko.sdpo.storage.StampStorage;
 import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.util.port.PortService;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -38,6 +42,9 @@ public class Sdpo {
         initSystemConfig();
         runTasks();
         CameraHelper.initDimension();
+        if (!PortService.isAdmin() && !isAdmin()) {
+            SdpoLog.error("The program has been started without admin role !!!");
+        }
         AlcometerHelper.setDeviceInstanceId();
         AlcometerHelper.setComPort();
         ThermometerHelper.setComPort();
@@ -49,11 +56,6 @@ public class Sdpo {
         alcometerResultTask = new AlcometerResultTask();
         SdpoLog.info("Rerun alcometer task ...");
         alcometerResultTask.start();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            SdpoLog.error(e);
-        }
         AlcometerHelper.setComPort();
     }
 
@@ -168,6 +170,16 @@ public class Sdpo {
                 .setDefault("delay_before_retry_inspection", 5000)
                 .saveFile();
         systemConfig = fileConfiguration;
+    }
+
+    public static boolean isAdmin() {
+        try {
+            Process process = new ProcessBuilder("net", "session").start();
+            process.waitFor();
+            return process.exitValue() == 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static boolean isConnection() {

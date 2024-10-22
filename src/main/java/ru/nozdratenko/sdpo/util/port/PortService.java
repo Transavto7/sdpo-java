@@ -3,10 +3,17 @@ package ru.nozdratenko.sdpo.util.port;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.platform.win32.Advapi32;
+import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinBase;
+import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.ptr.IntByReference;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -58,27 +65,90 @@ public class PortService {
 
     public boolean reinitializePort(String deviceInstanceId) {
         try {
-            String[] pnpCommandDisable = {"cmd.exe", "/c", String.format("PNPUTIL /disable-device \"%s\"", deviceInstanceId)};
-            ProcessBuilder pnpPbDisable = new ProcessBuilder(pnpCommandDisable);
-            Process pnpProcessDisable = pnpPbDisable.start();
-            pnpProcessDisable.waitFor();
+            int exitCodeDisable = 0;
+            int exitCodeEnable = 0;
+            int exitCodeRestart = 0;
+            while (isDeviceInProblemState(deviceInstanceId)) {
+                SdpoLog.info("Alkometer port still has a problem before restarting: " + deviceInstanceId);
+                // Команда для отключения устройства
+                String[] pnpCommandDisable = {"cmd.exe", "/c", String.format("PNPUTIL /disable-device \"%s\"", deviceInstanceId)};
+                ProcessBuilder pnpPbDisable = new ProcessBuilder(pnpCommandDisable);
+                Process pnpProcessDisable = pnpPbDisable.start();
+                logProcessOutput(pnpProcessDisable);
+                exitCodeDisable = pnpProcessDisable.waitFor();
+                if (exitCodeDisable != 0) {
+                    SdpoLog.info("Disable command exit code: " + exitCodeDisable);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
-            String[] pnpCommand = {"cmd.exe", "/c", String.format("PNPUTIL /enable-device \"%s\"", deviceInstanceId)};
-            ProcessBuilder pnpPb = new ProcessBuilder(pnpCommand);
-            Process pnpProcess = pnpPb.start();
-            pnpProcess.waitFor();
+                String[] pnpCommandEnable = {"cmd.exe", "/c", String.format("PNPUTIL /enable-device \"%s\"", deviceInstanceId)};
+                ProcessBuilder pnpPbEnable = new ProcessBuilder(pnpCommandEnable);
+                Process pnpProcessEnable = pnpPbEnable.start();
+                logProcessOutput(pnpProcessEnable);
+                exitCodeEnable = pnpProcessEnable.waitFor();
+                if (exitCodeEnable != 0) {
+                    SdpoLog.info("Enable command exit code: " + exitCodeEnable);
+                }
 
-            String[] pnpCommandRestart = {"cmd.exe", "/c", String.format("PNPUTIL /restart-device \"%s\"", deviceInstanceId)};
-            ProcessBuilder pnpPbRestart = new ProcessBuilder(pnpCommandRestart);
-            Process pnpProcessRestart = pnpPbRestart.start();
-            pnpProcessRestart.waitFor();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
-            return true;
+                String[] pnpCommandRestart = {"cmd.exe", "/c", String.format("PNPUTIL /restart-device \"%s\"", deviceInstanceId)};
+                ProcessBuilder pnpPbRestart = new ProcessBuilder(pnpCommandRestart);
+                Process pnpProcessRestart = pnpPbRestart.start();
+                logProcessOutput(pnpProcessRestart);
+                exitCodeRestart = pnpProcessRestart.waitFor();
+                if (exitCodeRestart != 0) {
+                    SdpoLog.info("Restart command exit code: " + exitCodeRestart);
+                }
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return exitCodeDisable == 0 && exitCodeEnable == 0 && exitCodeRestart == 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
+    private boolean isDeviceInProblemState(String deviceInstanceId) throws IOException, InterruptedException {
+        String[] pnpCommandCheckProblem = {"cmd.exe", "/c", "PNPUTIL /enum-devices /problem"};
+        ProcessBuilder pnpPbCheckProblem = new ProcessBuilder(pnpCommandCheckProblem);
+        Process pnpProcessCheckProblem = pnpPbCheckProblem.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(pnpProcessCheckProblem.getInputStream()));
+        String line;
+        boolean problemDetected = false;
+        while ((line = reader.readLine()) != null) {
+//            SdpoLog.info("isDeviceInProblemState: " + line);
+            if (line.contains(deviceInstanceId)) {
+                problemDetected = true;
+                break;
+            }
+        }
+        pnpProcessCheckProblem.waitFor();
+        return problemDetected;
+    }
+
+    private void logProcessOutput(Process process) throws IOException {
+        String line;
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while ((line = errorReader.readLine()) != null) {
+            SdpoLog.info("ERROR: " + line);
+        }
+    }
+
 
     String getDeviceInstanceId(String guidString, String vendorId) {
         SdpoLog.info("getDeviceInstanceId for vendorId: " + vendorId);
@@ -123,6 +193,24 @@ public class PortService {
             return devId;
         }
         return null;
+    }
+
+    private static final int TOKEN_QUERY = 0x0008;
+    private static final int TokenElevation = 20;
+
+    public static boolean isAdmin() {
+        HANDLE processHandle = Kernel32.INSTANCE.GetCurrentProcess();
+        WinNT.HANDLEByReference tokenHandle = new WinNT.HANDLEByReference();
+
+        if (Advapi32.INSTANCE.OpenProcessToken(processHandle, TOKEN_QUERY, tokenHandle)) {
+            WinNT.TOKEN_ELEVATION elevation = new WinNT.TOKEN_ELEVATION();
+            IntByReference tokenInformationLength = new IntByReference(elevation.size());
+
+            boolean result = Advapi32.INSTANCE.GetTokenInformation(tokenHandle.getValue(), TokenElevation, elevation, elevation.size(), tokenInformationLength);
+            return result && elevation.TokenIsElevated != 0;
+        }
+
+        return false;
     }
 
 }
