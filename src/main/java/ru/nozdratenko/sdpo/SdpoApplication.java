@@ -24,7 +24,7 @@ public class SdpoApplication {
 		}
 
 		Sdpo.loadData();
-//		Sdpo.openBrowser();
+		Sdpo.openBrowser();
 		SpringApplication.run(SdpoApplication.class, args);
 	}
 
