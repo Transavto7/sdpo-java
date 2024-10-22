@@ -93,7 +93,10 @@ export default {
     ,
     system() {
       return this.$store.state.config?.system || {};
-    }
+    },
+    connection() {
+      return this.$store.state.connection || false;
+    },
   }
   ,
 }
@@ -147,7 +150,7 @@ export default {
                 @click="replayPrint()"
                 class="btn opacity animate__animated animate__fadeInUp">Повтор печати
         </button>
-        <button v-if="result?.admitted === 'Допущен'"
+        <button v-if="connection && result?.admitted === 'Допущен'"
                 @click="replayPrintQr()"
                 class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
         </button>

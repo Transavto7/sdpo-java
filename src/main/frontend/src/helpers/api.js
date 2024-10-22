@@ -168,4 +168,12 @@ export async function printInspection(inspection) {
     });
 }
 
+export async function printInspectionQr(inspectionId) {
+    return await axios.post('/device/printer/inspection/verified/qr', inspectionId).then(({data}) => {
+        return data;
+    }).catch((error) => {
+        return error;
+    });
+}
+
 

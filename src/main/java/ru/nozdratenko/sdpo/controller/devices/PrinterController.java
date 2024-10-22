@@ -2,15 +2,18 @@ package ru.nozdratenko.sdpo.controller.devices;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
@@ -40,6 +43,26 @@ public class PrinterController {
         return ResponseEntity.ok().body("");
     }
 
+
+    @PostMapping(value = "/device/printer/inspection/verified/qr")
+    @ResponseBody
+    public ResponseEntity printVerifyInspectionQR(@RequestBody Map<String, String> json) {
+        if (Sdpo.systemConfig.getBoolean("print_qr_check")) {
+            try {
+                PDDocument document = PrintService.getVerifiedQrInspectionToPDF(Integer.parseInt(json.get("id")));
+                PrinterHelper.printFromPDFRotate(document);
+
+            } catch (ApiException | IOException error) {
+                SdpoLog.warning("Impossible to get qr! Inspection id: " + json.get("id"));
+                SdpoLog.warning("ERROR: " + error);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message", "Ошибка запроса");
+            } catch (java.awt.print.PrinterException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("success");
+    }
 
     @PostMapping(value = "/device/printer/inspection")
     @ResponseBody

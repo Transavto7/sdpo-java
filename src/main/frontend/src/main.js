@@ -17,6 +17,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 
 axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
+
 loadSettings();
 
 

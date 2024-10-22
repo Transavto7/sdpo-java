@@ -30,6 +30,9 @@ export default {
     print(inspection) {
       this.$emit('print', inspection)
     },
+    printQr(inspection) {
+      this.$emit('printQr', inspection)
+    },
     initDateRange() {
       if (this.hasInspections) {
         for (const value of (this.inspections)) {
@@ -55,6 +58,9 @@ export default {
     }
   },
   computed: {
+    connection() {
+      return this.$store.state.connection || false;
+    },
     dateNow() {
       return new Date();
     },
@@ -105,13 +111,16 @@ export default {
             <th style="width: 40%;">Дата Время</th>
             <th>Тип осмотра</th>
             <th></th>
+            <th></th>
           </tr>
           </thead>
           <tbody class=" animate__animated animate__fadeInUp">
-          <tr class=" animate__animated animate__fadeInUp" v-for="inspection in this.inspectionsFiltered">
+          <tr class=" animate__animated animate__fadeInUp"
+              v-for="inspection in this.inspectionsFiltered">
             <td class="time">{{ getTimeOnly(inspection.created_at) }}</td>
             <td>{{ inspection.type_view }}</td>
             <td><a class="btn icon" @click="print(inspection)"> <i class="ri-printer-fill"></i> </a></td>
+            <td><a class="btn icon" v-if="connection" @click="printQr(inspection)"> <i class="ri-qr-code-line"></i> </a></td>
           </tr>
           </tbody>
         </table>
