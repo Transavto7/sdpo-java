@@ -1,15 +1,16 @@
 package ru.nozdratenko.sdpo.file;
 
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class FileBase {
 
     protected String name = "unknown";
     protected String path = "";
+    private static final Map<String, String> dirBase = Map.of("dll", "native", "exe", "versions");
 
     public FileBase(String path) {
         this.name = getName(path);
@@ -78,7 +79,7 @@ public class FileBase {
             result += File.separator + path;
         }
 
-        if(System.getProperty("os.name").toLowerCase().contains("win")) {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
             result = result.substring(1);
         }
 
@@ -86,7 +87,7 @@ public class FileBase {
     }
 
     public static String getMainFolderUrl() {
-        if(System.getProperty("os.name").toLowerCase().contains("win")) {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return System.getenv("APPDATA") + File.separator + "sdpo";
         }
 
@@ -106,28 +107,32 @@ public class FileBase {
     public static String exportLibrary(String resourceName) {
         InputStream stream = null;
         OutputStream resStreamOut = null;
-        try {
-            stream = FileBase.class.getClassLoader().getResourceAsStream(resourceName);
-            if (stream == null) {
-                SdpoLog.error("Cannot get resource \"" + resourceName + "\" from Jar file.");
-                return null;
+        String[] split = resourceName.split("\\.");
+        String extension = split[split.length - 1];
+        if (dirBase.containsKey(extension)) {
+            try {
+                stream = FileBase.class.getClassLoader().getResourceAsStream(resourceName);
+                if (stream == null) {
+                    SdpoLog.error("Cannot get resource \"" + dirBase.get(extension) + "\" from Jar file.");
+                    return null;
+                }
+
+                int readBytes;
+                byte[] buffer = new byte[4096];
+                String out = concatPath(getMainFolderUrl(), dirBase.get(extension), resourceName);
+                new File(out).getParentFile().mkdirs();
+                resStreamOut = new FileOutputStream(out);
+                while ((readBytes = stream.read(buffer)) > 0) {
+                    resStreamOut.write(buffer, 0, readBytes);
+                }
+
+                stream.close();
+                resStreamOut.close();
+
+                return out;
+            } catch (Exception ex) {
+                SdpoLog.error(ex);
             }
-
-            int readBytes;
-            byte[] buffer = new byte[4096];
-            String out = concatPath(getMainFolderUrl(), "native", resourceName);
-            new File(out).getParentFile().mkdirs();
-            resStreamOut = new FileOutputStream(out);
-            while ((readBytes = stream.read(buffer)) > 0) {
-                resStreamOut.write(buffer, 0, readBytes);
-            }
-
-            stream.close();
-            resStreamOut.close();
-
-            return out;
-        } catch (Exception ex) {
-            SdpoLog.error(ex);
         }
 
         return null;

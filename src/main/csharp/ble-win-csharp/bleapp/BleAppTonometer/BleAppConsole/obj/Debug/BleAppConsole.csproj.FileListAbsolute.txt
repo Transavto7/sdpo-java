@@ -1,0 +1,11 @@
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\bin\Debug\BleAppConsole.exe.config
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\bin\Debug\BleAppConsole.exe
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\bin\Debug\BleAppConsole.pdb
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\obj\Debug\BleAppConsole.csproj.AssemblyReference.cache
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\obj\Debug\BleAppConsole.csproj.CoreCompileInputs.cache
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\cpp\ble-win-cpp\x64\Debug\bleapp\bleapp.dll.config
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\cpp\ble-win-cpp\x64\Debug\bleapp\bleapp.dll
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\cpp\ble-win-cpp\x64\Debug\bleapp\bleapp.pdb
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\obj\Debug\bleapp.dll
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\obj\Debug\bleapp.pdb
+C:\Users\АННА ФЕТИСОВА\source\repos\BleAppConsole\BleAppConsole\obj\Debug\BleAppCo.C6C33D90.Up2Date

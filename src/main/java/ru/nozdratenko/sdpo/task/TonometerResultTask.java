@@ -6,6 +6,7 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.lib.Bluetooth;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
+import ru.nozdratenko.sdpo.util.device.BluetoothDeviceService;
 
 public class TonometerResultTask extends Thread {
     public JSONObject json = new JSONObject();
@@ -14,6 +15,7 @@ public class TonometerResultTask extends Thread {
     @Override
     public void run() {
         Bluetooth.restart();
+        BluetoothDeviceService.start();
 
         while (true) {
             try {
@@ -39,15 +41,15 @@ public class TonometerResultTask extends Thread {
                        continue;
                    }
 
-                   String result = Bluetooth.getTonometerResult(uuid);
-                   SdpoLog.info(result);
+                    String result = BluetoothDeviceService.getTonometerResult();
 
                    if (result == null || result.isEmpty()) {
                        continue;
                    }
 
                    // Tonometer off
-                   if (result.equals("error_windows")) {
+                   if (result.startsWith("error_windows")) {
+                       SdpoLog.info("result: " + result);
                        SdpoLog.info("set indicated...");
                        Bluetooth.setIndicate(uuid);
                        continue;

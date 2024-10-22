@@ -34,6 +34,7 @@ public class SaveStoreInspectionTask extends Thread {
             while (inspections.length() > 0) {
                 try {
                     JSONObject json = inspections.getJSONObject(0);
+                    SdpoLog.info("!!! SaveStoreInspectionTask.run: " + json.toString());
                     saveInspection(json);
                     saveMedia(json);
                     inspections.remove(0);
@@ -80,6 +81,6 @@ public class SaveStoreInspectionTask extends Thread {
         String result = response.sendPost(json.toString());
 
         JSONObject resultJson = new JSONObject(result);
-        SdpoLog.info("Saved inspection: " + resultJson.toString());
+        SdpoLog.info("1 Saved inspection: " + resultJson.toString());
     }
 }
