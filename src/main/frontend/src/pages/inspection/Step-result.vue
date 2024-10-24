@@ -2,6 +2,7 @@
 import {saveInspection, replayPrint, replayPrintQr} from '@/helpers/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
+import {getSettings} from "@/helpers/settings";
 
 export default {
   components: {Loader, ResultRepeat},
@@ -77,6 +78,9 @@ export default {
   computed: {
     autoStart() {
       return this.system.auto_start;
+    },
+    admitted() {
+      return this.result?.admitted === 'Допущен'
     }
     ,
     showRetryModal() {
@@ -93,6 +97,12 @@ export default {
     ,
     system() {
       return this.$store.state.config?.system || {};
+    },
+    canRetryPrint() {
+      return getSettings('printer_write')
+    },
+    canRetryPrintQR() {
+      return getSettings('print_qr_check')
     },
     connection() {
       return this.$store.state.connection || false;
@@ -146,11 +156,11 @@ export default {
             </span>
       <div class="step-result__buttons">
         <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
-        <button v-if="result?.admitted === 'Допущен'"
+        <button v-if="this.admitted && this.canRetryPrint"
                 @click="replayPrint()"
                 class="btn opacity animate__animated animate__fadeInUp">Повтор печати
         </button>
-        <button v-if="connection && result?.admitted === 'Допущен'"
+        <button v-if="connection && this.admitted && this.canRetryPrintQR"
                 @click="replayPrintQr()"
                 class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
         </button>
