@@ -6,6 +6,7 @@ export const routes = [
     { path: '/print/qr', component: () => import('./pages/print/QR/PrintQr') },
     { path: '/settings', component: () => import('./pages/settings/Index') },
     { path: '/number-phone/add', component: () => import('./pages/driver/InputAndSavePhone') },
+    { path: '/test/result', component: () => import('./pages/inspection/Step-result') },
 
     { 
         path: '/step/driver', component: () => import('./pages/inspection/Step-driver'), name: 'step-driver',

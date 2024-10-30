@@ -20,19 +20,19 @@ export default {
   },
   async mounted() {
     this.$data.loading = true;
-      let global = this;
-      let checker = async function () {
-        if (global.$store.state.waitRecordMedia) {
-          setTimeout(checker, 1000);
-        } else {
-          global.loading = false;
-          await global.save();
-          if (global.autoStart) {
-            global.backTimeout = global.setTimeoutAndRedirect();
-          }
+    let global = this;
+    let checker = async function () {
+      if (global.$store.state.waitRecordMedia) {
+        setTimeout(checker, 1000);
+      } else {
+        global.loading = false;
+        await global.save();
+        if (global.autoStart) {
+          global.backTimeout = global.setTimeoutAndRedirect();
         }
       }
-      setTimeout(checker, 1000);
+    }
+    setTimeout(checker, 1000);
   },
   unmounted() {
     clearTimeout(this.backTimeout);
@@ -118,53 +118,79 @@ export default {
                  v-model:message-content="getComment"
                  @accept="redirectRepeat()"
   ></result-repeat>
-  <div v-if="!loading" class="step-result">
-    <h3 class="animate__animated animate__fadeInDown">Результаты осмотра</h3>
-    <div class="step-result__cards">
-      <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">
-        <span>Давление</span>
-        {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer : 'Неизвестно' }}
-      </div>
-      <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
-        <span>Пульс</span>
-        {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
-      </div>
-      <div v-if="system.alcometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
-        <span>Количество промилле</span>
-        {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
-      </div>
-      <div v-if="system.thermometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
-        <span>Температура тела</span>
-        {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
-      </div>
-      <div v-if="system.question_sleep" class="step-result__card animate__animated animate__fadeInUp d-2">
-        <span>Сонливость</span>
-        {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
-      </div>
-      <div v-if="system.question_helth" class="step-result__card animate__animated animate__fadeInUp d-2">
-        <span>Самочувствие</span>
-        {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
-      </div>
-    </div>
-    <div class="step-result__footer">
-            <span class="step-result__text animate__animated animate__fadeInUp">
+  <div style="display: flex; ">
+    <div v-if="!loading" class="step-result">
+      <!--    <div class="step-result">-->
+      <h3 class="animate__animated animate__fadeInDown">Результаты осмотра:
+        <span class="step-result__text animate__animated animate__fadeInUp">
                 {{ result.admitted || 'ожидание ответа' }}<br>
-                <p v-if="result.admitted === 'Допущен'"
-                   class="animate__animated animate__fadeInUp">
-                        Счастливого пути!
-                </p>
-            </span>
-      <div class="step-result__buttons">
-        <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
-        <button v-if="this.admitted && this.canRetryPrint"
-                @click="replayPrint()"
-                class="btn opacity animate__animated animate__fadeInUp">Повтор печати
-        </button>
-        <button v-if="connection && this.admitted && this.canRetryPrintQR"
-                @click="replayPrintQr()"
-                class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
-        </button>
+            </span></h3>
+      <div class="step-result__cards">
+        <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">
+          <!--        <div class="step-result__card animate__animated animate__fadeInUp d-1">-->
+          <span>Давление</span>
+          {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer : 'Неизвестно' }}
+        </div>
+        <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <!--        <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
+          <span>Пульс</span>
+          {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
+        </div>
+        <div v-if="system.alcometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <!--        <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
+          <span>Количество промилле</span>
+          {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
+        </div>
+        <div v-if="system.thermometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <!--        <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
+          <span>Температура тела</span>
+          {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
+        </div>
+        <div v-if="system.question_sleep" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <!--        <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
+          <span>Сонливость</span>
+          {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
+        </div>
+        <div v-if="system.question_helth" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <!--        <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
+          <span>Самочувствие</span>
+          {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
+        </div>
       </div>
+      <div class="step-result__footer">
+
+        <div class="feedback-after-inspection">
+          <span class="header">Как прошел осмотр?</span>
+          <div class="like-box">
+            <span class="like bad"><img src="@/assets/images/like.svg"></span>
+            <span class="like good"><img src="@/assets/images/like.svg"></span>
+            <span class=" like awesome"><img src="@/assets/images/like.svg"></span>
+          </div>
+        </div>
+
+        <div class="step-result__buttons">
+          <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
+          <button v-if="this.admitted && this.canRetryPrint"
+                  @click="replayPrint()"
+                  class="btn opacity animate__animated animate__fadeInUp">Повтор печати
+          </button>
+          <button v-if="connection && this.admitted && this.canRetryPrintQR"
+                  @click="replayPrintQr()"
+                  class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
+          </button>
+        </div>
+      </div>
+
     </div>
+    <div v-if="!loading" class="madam-t7 animate__fadeInUpBig">
+      <div class="madam-t7-text-box animate__animated animate__fadeInUp">
+        <div class="wish">
+          <span>Удачи во всех начинаниях!</span>
+        </div>
+        <img width="300" src="@/assets/images/madam-t7-say.svg">
+      </div>
+      <img width="300" src="@/assets/images/madam-t7.svg">
+    </div>
+
   </div>
 </template>
