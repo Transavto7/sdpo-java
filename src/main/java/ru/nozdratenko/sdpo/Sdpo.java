@@ -168,6 +168,7 @@ public class Sdpo {
                 .setDefault("manual_mode", false)
                 .setDefault("auto_start", true)
                 .setDefault("delay_before_retry_inspection", 5000)
+                .setDefault("delay_before_redirect_to_main_page", 10000)
                 .saveFile();
         systemConfig = fileConfiguration;
     }

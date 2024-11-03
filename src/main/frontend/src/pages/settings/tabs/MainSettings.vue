@@ -92,68 +92,47 @@ export default {
         </label>
       </div>
       <div class="admin__system-card__item">
-        <span>Задержка перед <br> повторным прохождением <br>(в миллисекундах)</span>
+        <span>Задержка перехода <br> на начальный экран</span>
+        <input min="10000" class="medium" type="number" v-model="system.delay_before_redirect_to_main_page">
+      </div>
+      <div class="admin__system-card__item">
+        <span>Задержка перед <br> повторным прохождением <br>  при статусе "Не идентифицирован" <br>(в миллисекундах)</span>
         <input min="1000" class="medium" type="number" v-model="system.delay_before_retry_inspection">
       </div>
     </div>
-
-
-        <div class="admin__system-card animate__animated animate__fadeInUp d-2">
-            <div class="admin__system-card__title">
-                Алкометр
-            </div>
-            <div class="admin__system-card__item">
-                <span>Пропуск</span>
-                <label class="switch">
-                    <input type="checkbox" v-model="system.alcometer_skip">
-                    <div class="slider round"></div>
-                </label>
-            </div>
-            <div class="admin__system-card__item">
-                <span>включен</span>
-                <label class="switch">
-                    <input type="checkbox" v-model="system.alcometer_visible">
-                    <div class="slider round"></div>
-                </label>
-            </div>
-            <div class="admin__system-card__item">
-                <span>Быстрый режим</span>
-                <label class="switch">
-                    <input type="checkbox" v-model="system.alcometer_fast">
-                    <div class="slider round"></div>
-                </label>
-            </div>
-          <div class="admin__system-card__item">
-            <span>Количественный замер при положительном тесте</span>
-            <label class="switch">
-              <input type="checkbox" v-model="system.alcometer_retry">
-              <div class="slider round"></div>
-            </label>
-          </div>
-        </div>
-
-
-    <div class="admin__system-card animate__animated animate__fadeInUp d-3">
+    <div class="admin__system-card animate__animated animate__fadeInUp d-2">
       <div class="admin__system-card__title">
-        Тонометр
+        Алкометр
       </div>
       <div class="admin__system-card__item">
         <span>Пропуск</span>
         <label class="switch">
-          <input type="checkbox" v-model="system.tonometer_skip">
+          <input type="checkbox" v-model="system.alcometer_skip">
           <div class="slider round"></div>
         </label>
       </div>
       <div class="admin__system-card__item">
         <span>включен</span>
         <label class="switch">
-          <input type="checkbox" v-model="system.tonometer_visible">
+          <input type="checkbox" v-model="system.alcometer_visible">
+          <div class="slider round"></div>
+        </label>
+      </div>
+      <div class="admin__system-card__item">
+        <span>Быстрый режим</span>
+        <label class="switch">
+          <input type="checkbox" v-model="system.alcometer_fast">
+          <div class="slider round"></div>
+        </label>
+      </div>
+      <div class="admin__system-card__item">
+        <span>Количественный замер <br> при положительном тесте</span>
+        <label class="switch">
+          <input type="checkbox" v-model="system.alcometer_retry">
           <div class="slider round"></div>
         </label>
       </div>
     </div>
-
-
     <div class="admin__system-card animate__animated animate__fadeInUp d-4">
       <div class="admin__system-card__title">
         Камера
@@ -186,8 +165,6 @@ export default {
         </label>
       </div>
     </div>
-
-
     <div class="admin__system-card animate__animated animate__fadeInUp d-5">
       <div class="admin__system-card__title">
         Принтер
@@ -211,8 +188,25 @@ export default {
         </label>
       </div>
     </div>
-
-
+    <div class="admin__system-card animate__animated animate__fadeInUp d-3">
+      <div class="admin__system-card__title">
+        Тонометр
+      </div>
+      <div class="admin__system-card__item">
+        <span>Пропуск</span>
+        <label class="switch">
+          <input type="checkbox" v-model="system.tonometer_skip">
+          <div class="slider round"></div>
+        </label>
+      </div>
+      <div class="admin__system-card__item">
+        <span>включен</span>
+        <label class="switch">
+          <input type="checkbox" v-model="system.tonometer_visible">
+          <div class="slider round"></div>
+        </label>
+      </div>
+    </div>
     <div class="admin__system-card animate__animated animate__fadeInUp d-6">
       <div class="admin__system-card__title">
         Термометр

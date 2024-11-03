@@ -140,9 +140,9 @@ export async function saveMedic(medic) {
 }
 
 export async function savePhone(phoneNumber, driverId) {
-    return await axios.post('api/driver/phone/save',  {
-            phone_number: phoneNumber,
-            driver_id : driverId
+    return await axios.post('api/driver/phone/save', {
+        phone_number: phoneNumber,
+        driver_id: driverId
     }).then(({data}) => {
         toast.success("Личный номер телефона сохранен")
         return data;
@@ -170,6 +170,18 @@ export async function printInspection(inspection) {
 
 export async function printInspectionQr(inspectionId) {
     return await axios.post('/device/printer/inspection/verified/qr', inspectionId).then(({data}) => {
+        return data;
+    }).catch((error) => {
+        return error;
+    });
+}
+
+export async function sendFeedbackAfterInspection(feedback, inspectionId) {
+    return await axios.post('/inspection/feedback',
+        {
+            id: inspectionId,
+            feedback: feedback
+        }).then(({data}) => {
         return data;
     }).catch((error) => {
         return error;

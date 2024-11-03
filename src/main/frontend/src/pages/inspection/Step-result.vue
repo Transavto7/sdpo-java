@@ -1,5 +1,5 @@
 <script>
-import {saveInspection, replayPrint, replayPrintQr} from '@/helpers/api';
+import {saveInspection, replayPrint, replayPrintQr, sendFeedbackAfterInspection, getPhrase} from '@/helpers/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
 import {getSettings} from "@/helpers/settings";
@@ -15,7 +15,9 @@ export default {
         comments: '',
       },
       notIdentified: 'Не идентифицирован',
-      loading: false
+      loading: false,
+      feedback: null,
+      phrase: '',
     }
   },
   async mounted() {
@@ -38,6 +40,10 @@ export default {
     clearTimeout(this.backTimeout);
   },
   methods: {
+    sendFeedbackToServer(feedback) {
+      this.feedback = feedback
+      sendFeedbackAfterInspection(feedback, this.result.id);
+    },
     getSleepStatus(status) {
       return status === 'Да' ? 'Выспались' : 'Не выспались';
     },
@@ -46,6 +52,8 @@ export default {
     },
     async save() {
       this.result = await saveInspection();
+      console.log(this.result)
+      this.phrase = this.result.wish_phrase ?? null;
       this.conclusion.admitted = this.result.admitted ?? '';
       this.conclusion.comments = this.result.comments ?? '';
     },
@@ -54,7 +62,6 @@ export default {
     },
 
     async replayPrintQr() {
-      //todo добавить проверку внизу кнопки включена или выключена кнопка?
       await replayPrintQr();
     },
     redirectHome() {
@@ -71,7 +78,7 @@ export default {
       if (this.result.admitted === this.notIdentified) {
         return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
       }
-      return setTimeout(this.redirectHome, 5000);
+      return setTimeout(this.redirectHome, this.system.delay_before_redirect_to_main_page);
     },
   }
   ,
@@ -97,6 +104,19 @@ export default {
     ,
     system() {
       return this.$store.state.config?.system || {};
+    },
+    drawReaction() {
+      if (!this.hasReaction) {
+        return "Пожалуйста оцените осмотр"
+      }
+      return this.phrase || "Хорошего дня!";
+    },
+    hasReaction() {
+      return this.feedback !== null
+    },
+    hasPhrase() {
+      console.log(this.phrase !== null)
+      return this.phrase !== null
     },
     canRetryPrint() {
       return getSettings('printer_write')
@@ -158,39 +178,37 @@ export default {
         </div>
       </div>
       <div class="step-result__footer">
-
-        <div class="feedback-after-inspection">
-          <span class="header">Как прошел осмотр?</span>
-          <div class="like-box">
-            <span class="like bad"><img src="@/assets/images/like.svg"></span>
-            <span class="like good"><img src="@/assets/images/like.svg"></span>
-            <span class=" like awesome"><img src="@/assets/images/like.svg"></span>
+        <div>
+          <div v-if="!hasReaction" class="feedback-after-inspection">
+            <span class="header">Как прошел осмотр?</span>
+            <div class="like-box">
+              <span class="like bad" @click="sendFeedbackToServer('negative')"><img
+                  src="@/assets/images/like.svg"></span>
+              <span class=" like awesome" @click="sendFeedbackToServer('positive')"><img src="@/assets/images/like.svg"></span>
+            </div>
+          </div>
+          <div v-else class="step-result__buttons">
+            <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
+            <button v-if="this.admitted && this.canRetryPrint"
+                    @click="replayPrint()"
+                    class="btn opacity animate__animated animate__fadeInUp">Повтор печати
+            </button>
+            <button v-if="connection && this.admitted && this.canRetryPrintQR"
+                    @click="replayPrintQr()"
+                    class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
+            </button>
           </div>
         </div>
-
-        <div class="step-result__buttons">
-          <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
-          <button v-if="this.admitted && this.canRetryPrint"
-                  @click="replayPrint()"
-                  class="btn opacity animate__animated animate__fadeInUp">Повтор печати
-          </button>
-          <button v-if="connection && this.admitted && this.canRetryPrintQR"
-                  @click="replayPrintQr()"
-                  class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
-          </button>
-        </div>
       </div>
-
     </div>
     <div v-if="!loading" class="madam-t7 animate__fadeInUpBig">
       <div class="madam-t7-text-box animate__animated animate__fadeInUp">
         <div class="wish">
-          <span>Удачи во всех начинаниях!</span>
+          <span class="animate__fadeInUp"> {{ drawReaction }}</span>
         </div>
         <img width="300" src="@/assets/images/madam-t7-say.svg">
       </div>
-      <img width="300" src="@/assets/images/madam-t7.svg">
+      <img width="300" height="500" src="@/assets/images/madam-t7.svg" style="margin-top: 20%">
     </div>
-
   </div>
 </template>

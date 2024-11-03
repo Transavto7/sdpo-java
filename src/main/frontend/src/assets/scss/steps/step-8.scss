@@ -2,7 +2,7 @@
   margin-top: 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   flex-direction: column;
   min-width: 65%;
 
@@ -64,7 +64,7 @@
   }
 
   &__footer {
-    margin-top: 50px;
+    margin-top: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -121,11 +121,7 @@
         }
       }
     }
-
-
   }
-
-
 }
 
 .madam-t7 {
@@ -137,6 +133,7 @@
 
   .madam-t7-text-box {
     margin-top: 25%;
+    width: 200px;
 
     .wish {
       text-align: center;

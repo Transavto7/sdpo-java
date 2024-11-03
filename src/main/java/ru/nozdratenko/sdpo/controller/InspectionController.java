@@ -6,10 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
@@ -172,7 +169,7 @@ public class InspectionController {
             }
 
             if (timing) {
-                 String rs = new Request("sdpo/anketa/" + resultJson.getInt("id"))
+                String rs = new Request("sdpo/anketa/" + resultJson.getInt("id"))
                         .sendPost();
             }
 
@@ -304,5 +301,23 @@ public class InspectionController {
             }
         }
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
+    }
+
+    @PostMapping("/inspection/feedback")
+    public ResponseEntity sendFeedback(@RequestBody Map<String, String> json) throws IOException {
+        String id = json.get("id");
+        String feedback = json.get("feedback");
+        try {
+            Request response = new Request("sdpo/forms/" + id + "/feedback/");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("feedback", feedback);
+            String result = response.sendPost(jsonObject.toString());
+            JSONArray resultArray = new JSONArray(result);
+            SdpoLog.info("send feedback");
+            return ResponseEntity.status(HttpStatus.OK).body(resultArray.toString());
+        } catch (ApiException e) {
+            SdpoLog.info("error feedback : " + e);
+            return ResponseEntity.status(303).body(e.getResponse().toMap());
+        }
     }
 }
