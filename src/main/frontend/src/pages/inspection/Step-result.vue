@@ -53,7 +53,7 @@ export default {
     async save() {
       this.result = await saveInspection();
       console.log(this.result)
-      this.phrase = this.result.wish_phrase ?? null;
+      this.phrase = this.result.wish_message ?? null;
       this.conclusion.admitted = this.result.admitted ?? '';
       this.conclusion.comments = this.result.comments ?? '';
     },
@@ -107,7 +107,7 @@ export default {
     },
     drawReaction() {
       if (!this.hasReaction) {
-        return "Пожалуйста оцените осмотр"
+        return "Пожалуйста, оцените осмотр"
       }
       return this.phrase || "Хорошего дня!";
     },
