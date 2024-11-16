@@ -2,9 +2,9 @@
   margin-top: 20px;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: space-between;
   flex-direction: column;
-  min-width: 65%;
+  min-width: 60%;
 
   &__cards {
     display: flex;
@@ -13,7 +13,7 @@
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: 50px;
+    gap: 25px;
   }
 
   &__card {
@@ -60,11 +60,13 @@
 
   &__buttons {
     display: flex;
+    justify-content: center;
+    margin-top: 10px;
     gap: 20px;
   }
 
   &__footer {
-    margin-top: 30px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -76,7 +78,11 @@
       box-shadow: 0 0 10px #E2E3E5;
       border-radius: 7px;
       text-align: center;
-      width: 100%;
+      width: fit-content;
+      min-height: 221px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
 
       .header {
         font-size: 30px;
