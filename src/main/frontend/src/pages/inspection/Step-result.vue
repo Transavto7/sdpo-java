@@ -158,38 +158,37 @@ export default {
     <div v-if="!loading" class="step-result">
       <div style="text-align: center;">
         <!--    <div class="step-result">-->
-        <h3 class="animate__animated animate__fadeInDown">Результаты осмотра:
+        <h3 class="step-result__header_with_result animate__animated animate__fadeInDown">Результаты осмотра:
           <span class="step-result__text animate__animated animate__fadeInUp">
                 {{ result.admitted || 'ожидание ответа' }}<br>
             </span></h3>
         <div class="step-result__cards">
-          <!--        <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-1">-->
-          <div class="step-result__card animate__animated animate__fadeInUp d-1">
+          <div v-if="system.tonometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-1">
             <span>Давление</span>
             {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer : 'Неизвестно' }}
           </div>
-          <!--        <div v-if="system.tonometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">-->
-          <div class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="system.tonometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
+            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Пульс</span>
             {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
           </div>
-          <!--        <div v-if="system.alcometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">-->
-          <div class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="system.alcometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
+            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Количество промилле</span>
             {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
           </div>
-          <!--        <div v-if="system.thermometer_visible" class="step-result__card animate__animated animate__fadeInUp d-2">-->
-          <div class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="system.thermometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
+            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Температура тела</span>
             {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
           </div>
-          <!--        <div v-if="system.question_sleep" class="step-result__card animate__animated animate__fadeInUp d-2">-->
-          <div class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="system.question_sleep === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
+            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Сонливость</span>
             {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
           </div>
-          <!--        <div v-if="system.question_helth" class="step-result__card animate__animated animate__fadeInUp d-2">-->
-          <div class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="system.question_helth === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
+            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Самочувствие</span>
             {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
           </div>
@@ -234,7 +233,7 @@ export default {
         </div>
         <img width="300" src="@/assets/images/madam-t7-say.svg">
       </div>
-      <img width="300" height="500" src="@/assets/images/madam-t7.svg" style="margin-top: 20%">
+      <img width="300" height="500" src="@/assets/images/madam-t7.svg">
     </div>
   </div>
 </template>

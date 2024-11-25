@@ -5,6 +5,7 @@
   justify-content: space-between;
   flex-direction: column;
   min-width: 60%;
+  height: 100%;
 
   &__cards {
     display: flex;
@@ -14,6 +15,10 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 25px;
+  }
+  &__header_with_result {
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   &__card {
@@ -71,7 +76,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 10px;
+    //gap: 10px;
     width: 90%;
 
     .feedback-after-inspection {
@@ -103,7 +108,7 @@
           height: 110px;
           border-radius: 50%;
           margin: 19px;
-          padding: 15px 0px 0px 15px;
+          padding: 15px 0 0 15px;
         }
       }
 
@@ -138,7 +143,7 @@
   margin-right: 25px;
 
   .madam-t7-text-box {
-    margin-top: 25%;
+    margin-top: 15%;
     width: 200px;
 
     .wish {
@@ -147,7 +152,7 @@
       border-radius: 40px;
       padding: 20px;
       height: fit-content;
-      box-shadow: inset 0px 0px 15px #e5efff;
+      box-shadow: inset 0 0 15px #e5efff;
       background: white;
       z-index: 2;
       position: relative;
