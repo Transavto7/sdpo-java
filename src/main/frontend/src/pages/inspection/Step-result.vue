@@ -1,5 +1,12 @@
 <script>
-import {saveInspection, replayPrint, replayPrintQr, sendFeedbackAfterInspection, getPhrase} from '@/helpers/api';
+import {
+  saveInspection,
+  replayPrint,
+  replayPrintQr,
+  sendFeedbackAfterInspection,
+  getPhrase,
+  getWishMessage
+} from '@/helpers/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
 import {getSettings} from "@/helpers/settings";
@@ -22,6 +29,8 @@ export default {
   },
   async mounted() {
     this.$data.loading = true;
+    await this.getWishMessage();
+
     let global = this;
     let checker = async function () {
       if (global.$store.state.waitRecordMedia) {
@@ -54,9 +63,11 @@ export default {
     getPeopleStatus(status) {
       return status === 'Да' ? 'Хорошее' : 'Плохое';
     },
+    async getWishMessage() {
+      this.phrase = (await getWishMessage()).wish_message ?? null;
+    },
     async save() {
       this.result = await saveInspection();
-      this.phrase = this.result.wish_message ?? null;
       this.conclusion.admitted = this.result.admitted ?? '';
       this.conclusion.comments = this.result.comments ?? '';
     },
@@ -87,11 +98,9 @@ export default {
   ,
   watch: {
     feedback: function (val) {
-      console.log(this.hasResult)
       this.sendFeedbackToServer();
     },
     result: function (val) {
-      console.log(this.hasResult)
       this.sendFeedbackToServer();
     }
   },

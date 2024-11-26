@@ -312,9 +312,9 @@ public class InspectionController {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("feedback", feedback);
             String result = response.sendPost(jsonObject.toString());
-            JSONArray resultArray = new JSONArray(result);
+            JSONObject resultObject = new JSONObject(result);
             SdpoLog.info("send feedback");
-            return ResponseEntity.status(HttpStatus.OK).body(resultArray.toString());
+            return ResponseEntity.status(HttpStatus.OK).body(resultObject.toString());
         } catch (ApiException e) {
             SdpoLog.info("error feedback : " + e);
             return ResponseEntity.status(303).body(e.getResponse().toMap());

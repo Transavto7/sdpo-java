@@ -188,4 +188,11 @@ export async function sendFeedbackAfterInspection(feedback, inspectionId) {
     });
 }
 
+export async function getWishMessage() {
+    return await axios.get(`api/wish-message`).then(({data}) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
 
