@@ -339,14 +339,12 @@ public class CameraHelper {
         SdpoLog.info("Save photo with path: " + path);
         File photo = new File(path);
 
-        photo.getParentFile().mkdirs();
-
-        opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
-
-        if (!photo.exists() || photo.isDirectory()) {
-            SdpoLog.error("Photo exists or directory!");
+        if (photo.isDirectory()) {
+            SdpoLog.error("Photo is directory!");
             return null;
         }
+        photo.getParentFile().mkdirs();
+        opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
 
         if (Sdpo.isConnection()) {
             sendPhoto(photo);
