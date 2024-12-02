@@ -177,27 +177,22 @@ export default {
             {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer : 'Неизвестно' }}
           </div>
           <div v-if="system.tonometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Пульс</span>
             {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
           </div>
           <div v-if="system.alcometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Количество промилле</span>
             {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
           </div>
           <div v-if="system.thermometer_visible === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Температура тела</span>
             {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
           </div>
           <div v-if="system.question_sleep === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Сонливость</span>
             {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
           </div>
           <div v-if="system.question_helth === 'true'" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <!--          <div class="step-result__card animate__animated animate__fadeInUp d-2">-->
             <span>Самочувствие</span>
             {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
           </div>
@@ -209,9 +204,6 @@ export default {
             <span class="header">Спасибо за оценку! <br> Ваше мнение важно для нас!</span>
           </div>
           <div v-else>
-
-            <!--          <div v-if="!hasReaction" class="feedback-after-inspection">-->
-            <!--          <div v-if="!hasReaction" class="feedback-after-inspection">-->
             <span class="header">Как прошел осмотр?</span>
             <div class="like-box">
               <span class="like bad" @click="saveFeedback('negative')"><img

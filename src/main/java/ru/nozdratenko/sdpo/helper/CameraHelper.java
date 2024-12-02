@@ -7,6 +7,7 @@ import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.*;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.IplImage;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.file.FileBase;
@@ -15,6 +16,9 @@ import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -335,16 +339,71 @@ public class CameraHelper {
     }
 
     public static String savePhoto(Frame image, String name) {
-        String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name + ".png");
-        SdpoLog.info("Save photo with path: " + path);
+        String mainFolderUrl = FileBase.getMainFolderUrl();
+        boolean isCyrillic = mainFolderUrl.matches(".*[\\u0400-\\u04FF].*");
+        String path = FileBase.concatPath(mainFolderUrl, "image", name + ".png");
         File photo = new File(path);
 
-        if (photo.isDirectory()) {
-            SdpoLog.error("Photo is directory!");
+        photo.getParentFile().mkdirs();
+
+        try {
+            photo.createNewFile();
+        } catch (IOException e) {
+            SdpoLog.error(e.getMessage());
+        }
+        if (!photo.exists() || photo.isDirectory()) {
+            SdpoLog.error(!photo.exists() ? "Photo is not exists" : "Photo is directory!");
             return null;
         }
-        photo.getParentFile().mkdirs();
-        opencv_imgcodecs.cvSaveImage(path, new OpenCVFrameConverter.ToIplImage().convert(image));
+
+        if (image != null && image.image != null) {
+            if (isCyrillic) {
+                SdpoLog.info("Save photo with Cyrillic path: " + path);
+                try (Java2DFrameConverter converter = new Java2DFrameConverter()) {
+                    BufferedImage bufferedImage = converter.convert(image);
+
+                    if (bufferedImage != null) {
+                        try {
+                            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("png");
+                            if (!writers.hasNext()) {
+                                SdpoLog.error("No PNG writer found");
+                                return null;
+                            }
+                            ImageWriter writer = writers.next();
+                            ImageOutputStream ios = ImageIO.createImageOutputStream(photo);
+                            writer.setOutput(ios);
+
+                            ImageWriteParam param = writer.getDefaultWriteParam();
+                            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                            param.setCompressionQuality(0.1f);
+
+                            writer.write(null, new javax.imageio.IIOImage(bufferedImage, null, null), param);
+                            ios.close();
+                            writer.dispose();
+                        } catch (IOException e) {
+                            SdpoLog.error("Failed to save photo: " + e.getMessage());
+                            return null;
+                        }
+
+                    } else {
+                        SdpoLog.error("BufferedImage conversion failed");
+                        return null;
+                    }
+
+                }
+            } else {
+                SdpoLog.info("Save photo with Latin path: " + path);
+                try (OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage()) {
+                    IplImage mat = converter.convert(image);
+                    opencv_imgcodecs.cvSaveImage(path, mat);
+                } catch (Exception e) {
+                    SdpoLog.error("Failed to save photo: " + e.getMessage());
+                    return null;
+                }
+            }
+        } else {
+            SdpoLog.error("Frame or Image is empty");
+        }
 
         if (Sdpo.isConnection()) {
             sendPhoto(photo);
@@ -374,7 +433,7 @@ public class CameraHelper {
     public static void saveVideo(String name) {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
 
-        SdpoLog.info( "Save video with path: " + path);
+        SdpoLog.info("Save video with path: " + path);
         File video = new File(path);
 
         if (!video.exists() || video.isDirectory()) {
