@@ -308,7 +308,7 @@ public class InspectionController {
         String id = json.get("id");
         String feedback = json.get("feedback");
         try {
-            Request response = new Request("sdpo/forms/" + id + "/feedback/");
+            Request response = new Request("sdpo/forms/" + id + "/feedback");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("feedback", feedback);
             String result = response.sendPost(jsonObject.toString());
