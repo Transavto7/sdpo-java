@@ -104,7 +104,7 @@ public class Sdpo {
     public static void openBrowser() {
         new Thread(() -> {
             try {
-                Thread.sleep(20000);
+                Thread.sleep(40000);
             } catch (InterruptedException e) {
                 SdpoLog.error(e);
             }
