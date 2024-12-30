@@ -7,7 +7,10 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
+import ru.nozdratenko.sdpo.InspectionManager.Exception.InternalServerError;
 import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
+import ru.nozdratenko.sdpo.InspectionManager.Service.InspectionSenderService;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
@@ -15,6 +18,8 @@ import ru.nozdratenko.sdpo.helper.PrinterHelper;
 import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorage;
+import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -323,6 +328,23 @@ public class InspectionController {
         } catch (ApiException e) {
             SdpoLog.info("error feedback : " + e);
             return ResponseEntity.status(303).body(e.getResponse().toMap());
+        }
+    }
+
+    @PostMapping("/inspection/send-to-crm")
+    public ResponseEntity sendToCRM(@RequestBody Map<String, String> json) throws IOException {
+        String driverId = json.get("driver_id");
+        String createdAt = json.get("created_at");
+        InspectionLocalStorage storage = new InspectionLocalStorageRepository();
+        try {
+            JSONObject resultObject = InspectionSenderService.sendInspectionItem(storage.getInspectionsByDriverIdAndCreatedDate(driverId, createdAt));
+            return ResponseEntity.status(HttpStatus.OK).body(resultObject.toString());
+        } catch (ApiException e) {
+            SdpoLog.error("error feedback : " + e);
+            return ResponseEntity.status(500).body(e.getResponse().toMap());
+        } catch (InspectionNotFound | InternalServerError e) {
+            SdpoLog.error("error feedback : " + e);
+            return ResponseEntity.status(500).body(e);
         }
     }
 }

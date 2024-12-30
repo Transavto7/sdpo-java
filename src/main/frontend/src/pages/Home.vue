@@ -1,5 +1,5 @@
 <script>
-import {getDriver, savePhone} from '@/helpers/api';
+import {getDriver, savePhone} from '@/helpers/api/api';
 import {useToast} from "vue-toastification";
 import MedicSelect from '@/components/MedicSelect.vue';
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";

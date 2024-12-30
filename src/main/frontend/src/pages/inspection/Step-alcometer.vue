@@ -7,7 +7,7 @@ import {
 } from '@/helpers/alcometer';
 import {makeMedia, stopMedia} from '@/helpers/camera';
 import {getSettings} from "@/helpers/settings";
-import {closeDriverPhoto} from "@/helpers/api";
+import {closeDriverPhoto} from "@/helpers/api/api";
 
 export default {
   data() {

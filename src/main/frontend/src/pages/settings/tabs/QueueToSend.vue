@@ -1,21 +1,23 @@
 <script>
 
 import {useToast} from "vue-toastification";
+import {getInspectionFromLocalStorage} from "@/helpers/api/inspection/inspections";
 
 export default {
   name: "QueueToSend",
   async mounted() {
+    this.inspections = await getInspectionFromLocalStorage();
   },
   data() {
     return {
       toast: useToast(),
       inspections: [
-        {
-          driver_fio: "Иванов Иван Иванович",
+        /*{
+          driver_fio: "Иванов Иван Ив анович",
           driver_id: '12333123',
           status_send: 'UNSENT',
           created_at: '2024-12-01 11:11:11'
-        },
+        },*/
       ],
     }
   },

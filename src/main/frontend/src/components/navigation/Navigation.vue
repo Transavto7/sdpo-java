@@ -1,5 +1,5 @@
 <script>
-import {close} from '@/helpers/api';
+import {close} from '@/helpers/api/api';
 import AdminNavigation from "@/components/navigation/common/AdminNavigation";
 import LoginNavigation from "@/components/navigation/common/LoginNavigation";
 import InspectionProgressLine from "@/components/navigation/common/InspectionProgressLine";
