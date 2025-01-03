@@ -47,4 +47,18 @@ public class InspectionLocalStorageRepository implements InspectionRepositoryInt
 
         throw new InspectionNotFound();
     }
+
+    public int getInspectionsIndexByDriverIdAndCreatedDate(String driverHashId, String createdAt) throws InspectionNotFound {
+
+        JSONArray allInspections = this.getAll();
+
+        for (int i = 0; i < allInspections.length(); i++) {
+                    JSONObject object = (JSONObject) allInspections.get(i);
+                    if (object.has("driver_id") && object.getString("driver_id").equals(driverHashId)
+                            && object.has("created_at") && object.getString("created_at").equals(createdAt) ) {
+                        return i;
+                    }
+                }
+                throw new InspectionNotFound();
+            }
 }

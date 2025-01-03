@@ -47,7 +47,7 @@ public class SaveStoreInspectionTask extends Thread {
                 }
                 catch (InternalServerError e) {
                     SdpoLog.error("resultJson - InternalServerError: " + json + " >>> error >>> " + e.toString() + " " + Arrays.toString(e.getStackTrace()));
-                    //todo добавить статус записи и сохранить в стораж
+                    //todo добавить статус записи (несохраненно или не отправленно) и сохранить в стораж
                     break;
                 }
                 catch (UnknownHostException e) {
