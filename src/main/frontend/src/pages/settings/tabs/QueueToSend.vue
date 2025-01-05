@@ -1,7 +1,7 @@
 <script>
 
 import {useToast} from "vue-toastification";
-import {getInspectionFromLocalStorage} from "@/helpers/api/inspection/inspections";
+import {getInspectionFromLocalStorage, sendInspectionToCrm} from "@/helpers/api/inspection/inspections";
 
 export default {
   name: "QueueToSend",
@@ -21,7 +21,13 @@ export default {
       ],
     }
   },
-  methods: {},
+  methods: {
+    async sendToCrm(inspection, index) {
+      let success = await sendInspectionToCrm(inspection);
+      if (success) this.inspections.splice(index, 1);
+
+    }
+  },
   computed: {}
 }
 </script>
@@ -36,13 +42,13 @@ export default {
           </div>
           <div class="queue-to-send-box__content">
             <div class="queue-item"
-                 v-for="inspection in this.inspections"
+                 v-for="(inspection, index) in this.inspections"
                  :class="{selected : false}">
               <p class="header">{{ inspection.driver_fio }}</p>
               <p class="">{{ inspection.driver_id }}</p>
               <p class="">{{ inspection.created_at }}</p>
               <div class="btn-control-group">
-                <button class="license btn opacity blue animate__animated animate__fadeInDown">
+                <button @click="sendToCrm(inspection, index)" class="license btn opacity blue animate__animated animate__fadeInDown">
                   <span v-if="inspection.status_send === 'UNSENT'">
                     <i  class="ri-send-plane-fill"></i>
                   Отправить

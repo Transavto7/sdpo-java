@@ -2,14 +2,16 @@ package ru.nozdratenko.sdpo.task;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
 import ru.nozdratenko.sdpo.InspectionManager.Exception.InternalServerError;
+import ru.nozdratenko.sdpo.InspectionManager.Offline.Action.ChangeStatusUploadInspectionFromLocalStorageAction;
+import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
 import ru.nozdratenko.sdpo.InspectionManager.Service.InspectionSenderService;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 public class SaveStoreInspectionTask extends Thread {
 
@@ -29,8 +31,8 @@ public class SaveStoreInspectionTask extends Thread {
             if (inspections.length() < 1) {
                 continue;
             }
-
-            while (inspections.length() > 0) {
+            int index = 0;
+            while (inspections.length() > 0 && index <= inspections.length()) {
 
                 if (!Sdpo.isConnection()) {
                     try {
@@ -39,16 +41,25 @@ public class SaveStoreInspectionTask extends Thread {
                     continue;
                 }
 
-                JSONObject json = inspections.getJSONObject(0);
+                JSONObject json = inspections.getJSONObject(index);
                 SdpoLog.info("!!! SaveStoreInspectionTask.run: " + json.toString());
                 try {
                     JSONObject resultJson = InspectionSenderService.sendInspectionItem(json);
                     SdpoLog.info("resultJson: " + resultJson.toString());
+                    inspections.remove(index);
+                    index = 0;
+                    Sdpo.inspectionStorage.save();
                 }
                 catch (InternalServerError e) {
-                    SdpoLog.error("resultJson - InternalServerError: " + json + " >>> error >>> " + e.toString() + " " + Arrays.toString(e.getStackTrace()));
-                    //todo добавить статус записи (несохраненно или не отправленно) и сохранить в стораж
-                    break;
+                    try {
+                        ChangeStatusUploadInspectionFromLocalStorageAction.changeStatusByDriverIdAndCreateDate(
+                                (String) json.get("driver_id"), (String) json.get("created_at"), ResendStatusEnum.NO_CONFIRMATION
+                        );
+                    } catch (InspectionNotFound ex) {
+                        SdpoLog.error("!!!!!! INSPECTION NOT FOUND !!!!!!!: \n" + json);
+                    }
+                    SdpoLog.error("resultJson - InternalServerError: " + json);
+                    index++;
                 }
                 catch (UnknownHostException e) {
                     SdpoLog.error("resultJson - error - Unknown Host: " + e.toString());
@@ -56,10 +67,8 @@ public class SaveStoreInspectionTask extends Thread {
                 } catch (Exception | ApiException e) {
                     SdpoLog.error("resultJson - error: " + e.toString());
                     break;
-                } finally {
-                    inspections.remove(0);
-                    Sdpo.inspectionStorage.save();
                 }
+
             }
         }
     }
