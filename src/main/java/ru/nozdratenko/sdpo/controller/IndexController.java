@@ -1,6 +1,5 @@
 package ru.nozdratenko.sdpo.controller;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,8 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Controller
@@ -58,6 +59,14 @@ public class IndexController {
                 String response = request.sendGet();
                 if (response.equals("true")) {
                     Sdpo.setConnection(true);
+
+                    Date date = new Date();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String currentDate = dateFormat.format(date);
+                    Sdpo.systemConfig.set("last_online", currentDate);
+                    Sdpo.systemConfig.set("count_inspections", 0);
+                    Sdpo.systemConfig.saveFile();
+
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);
                 }
