@@ -112,6 +112,8 @@ public class InspectionController {
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
+        Sdpo.systemConfig.set("count_inspections", Sdpo.systemConfig.getInt("count_inspections") + 1);
+        Sdpo.systemConfig.saveFile();
         try {
             if (!Sdpo.isConnection()) {
                 return this.inspectionSaveOffline(json);
@@ -123,14 +125,20 @@ public class InspectionController {
                 }
             }
         } catch (ApiException e) {
+            Sdpo.systemConfig.set("count_inspections", Sdpo.systemConfig.getInt("count_inspections") - 1);
+            Sdpo.systemConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error create inspection: " + e);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Ошибка запроса");
+            Sdpo.systemConfig.set("count_inspections", Sdpo.systemConfig.getInt("count_inspections") - 1);
+            Sdpo.systemConfig.saveFile();
             return ResponseEntity.status(500).body(jsonObject);
         } catch (PrinterException e) {
+            Sdpo.systemConfig.set("count_inspections", Sdpo.systemConfig.getInt("count_inspections") - 1);
+            Sdpo.systemConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse());
         }
     }
@@ -198,7 +206,6 @@ public class InspectionController {
                 SdpoLog.warning("ERROR: " + error);
             }
         }
-
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
     }
 

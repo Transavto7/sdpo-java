@@ -13,6 +13,9 @@ export default {
   mounted() {
     loadSettings()
   },
+  unmounted() {
+    loadSettings()
+  },
   data() {
     return {
       selected: 'main',
