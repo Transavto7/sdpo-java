@@ -26,6 +26,13 @@ public class SaveStoreInspectionTask extends Thread {
                 continue;
             }
 
+            if (!Sdpo.systemConfig.getBoolean("auto_send_to_crm")) {
+                try {
+                    Thread.sleep(10000);
+                    continue;
+                } catch (InterruptedException ignored) { }
+            }
+
             JSONArray inspections = Sdpo.inspectionStorage.getStore();
 
             if (inspections.length() < 1) {
@@ -63,6 +70,11 @@ public class SaveStoreInspectionTask extends Thread {
                 }
                 catch (UnknownHostException e) {
                     SdpoLog.error("resultJson - error - Unknown Host: " + e.toString());
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     break;
                 } catch (Exception | ApiException e) {
                     SdpoLog.error("resultJson - error: " + e.toString());

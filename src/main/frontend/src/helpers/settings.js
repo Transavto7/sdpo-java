@@ -31,6 +31,12 @@ export async function saveSystem(system) {
     });
 }
 
+export async function saveAutoSendToCrmFlag(flag) {
+    await axios.post(`/setting/system/auto-send-to-crm/${flag}`).catch(error => {
+        console.log(error);
+    });
+}
+
 export async function saveApi(address, token) {
     await axios.post('/setting/api', {
         address,

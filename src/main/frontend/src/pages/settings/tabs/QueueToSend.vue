@@ -2,6 +2,7 @@
 
 import {useToast} from "vue-toastification";
 import {getInspectionFromLocalStorage, sendInspectionToCrm} from "@/helpers/api/inspection/inspections";
+import {saveAutoSendToCrmFlag} from "@/helpers/settings";
 
 export default {
   name: "QueueToSend",
@@ -11,29 +12,42 @@ export default {
   data() {
     return {
       toast: useToast(),
+      autoSave: this.$store.state.config?.system.auto_send_to_crm || false,
       inspections: [
-        /*{
-          driver_fio: "Иванов Иван Ив анович",
-          driver_id: '12333123',
-          status_send: 'UNSENT',
-          created_at: '2024-12-01 11:11:11'
-        },*/
       ],
     }
   },
   methods: {
+    async changeSendStatus() {
+      this.system.auto_send_to_crm = !this.autoSave;
+      await saveAutoSendToCrmFlag(this.system.auto_send_to_crm);
+    },
     async sendToCrm(inspection, index) {
       let success = await sendInspectionToCrm(inspection);
+      console.log(success)
       if (success) this.inspections.splice(index, 1);
 
     }
   },
-  computed: {}
+  computed: {
+    system() {
+      return this.$store.state.config?.system || {};
+    },
+  }
 }
 </script>
 
 <template>
   <div>
+    <div>
+      <div class="admin__system-card__item" style="justify-content: center">
+        <h2>Автоматическая отправка на сервер</h2>
+        <label class="switch">
+          <input type="checkbox" @click="changeSendStatus()" v-model="autoSave">
+          <div class="slider round"></div>
+        </label>
+      </div>
+    </div>
     <div class="stamp animate__animated animate__fadeInUp">
       <div class="stamp__body">
         <div class="queue-to-send-box">

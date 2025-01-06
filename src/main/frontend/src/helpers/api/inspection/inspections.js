@@ -13,7 +13,7 @@ export async function getInspectionFromLocalStorage() {
 }
 
 export async function sendInspectionToCrm(inspection) {
-    return await axios.get('api/inspection/local/send/crm').then(({data}) => {
+    return await axios.post('api/inspection/local/send/crm', inspection).then(({data}) => {
         return data;
     }).catch((error) => {
         toast.error('Ошибка отправки записи')
