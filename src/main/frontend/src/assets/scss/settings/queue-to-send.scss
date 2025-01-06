@@ -1,0 +1,42 @@
+.queue-to-send-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  &__header {
+    text-align: center;
+  }
+
+  &__content {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+
+  .queue-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 11px;
+    text-align: center;
+    padding: 0 1em;
+    margin: 1em 0;
+    background: rgba(36, 70, 115, .2);
+
+    div.btn-control-group {
+      margin: 1em 0;
+    }
+    p {
+      font-size: 25px;
+    }
+    p.header {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  }
+
+  .selected {
+    background: #244673;
+    color: white;
+  }
+}

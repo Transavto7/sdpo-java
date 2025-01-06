@@ -1,5 +1,5 @@
 <script>
-import { setDriverPhoto, closeDriverPhoto } from '@/helpers/api';
+import { setDriverPhoto, closeDriverPhoto } from '@/helpers/api/api';
 
 export default {
     data() {

@@ -1,6 +1,6 @@
 import store from '@/store';
 import axios from 'axios';
-import {getPoint, getVerification} from './api';
+import {getPoint, getVerification} from './api/api';
 
 export async function loadSettings() {
     await axios.post('/setting/load').then(({ data }) => {
@@ -27,6 +27,12 @@ export async function savePassword(password) {
 
 export async function saveSystem(system) {
     await axios.post('/setting/system', system).catch(error => {
+        console.log(error);
+    });
+}
+
+export async function saveAutoSendToCrmFlag(flag) {
+    await axios.post(`/setting/system/auto-send-to-crm/${flag}`).catch(error => {
         console.log(error);
     });
 }

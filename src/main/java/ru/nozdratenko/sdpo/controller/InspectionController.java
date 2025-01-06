@@ -6,7 +6,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
@@ -198,6 +202,7 @@ public class InspectionController {
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
     }
 
+    //todo inspectionManager
     public ResponseEntity inspectionSaveOffline(Map<String, String> json)
             throws PrintException, IOException, PrinterException {
         JSONObject inspection = new JSONObject(json);
@@ -209,6 +214,7 @@ public class InspectionController {
 
         if (Sdpo.mainConfig.getJson().has("selected_medic")) {
 
+            //todo selectMedic(inspection) : inspection
             try {
                 inspection.put("user_eds", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
                 inspection.put("user_name", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
@@ -264,6 +270,8 @@ public class InspectionController {
         String currentDate = dateFormat.format(date);
 
         inspection.put("created_at", currentDate);
+        inspection.put("status_send", ResendStatusEnum.UNSENT);
+
         Sdpo.inspectionStorage.saveInspection(inspection);
         if (Sdpo.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(inspection);

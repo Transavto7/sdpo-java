@@ -2,7 +2,7 @@
 import {saveSystem, saveApi} from '@/helpers/settings';
 import {useToast} from "vue-toastification";
 import {getSizes} from '@/helpers/camera';
-import {getPoint} from '@/helpers/api';
+import {getPoint} from '@/helpers/api/api';
 
 export default {
   data() {

@@ -1,5 +1,5 @@
 <script>
-import {getMedics, saveMedic} from '@/helpers/api';
+import {getMedics, saveMedic} from '@/helpers/api/api';
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
 
 export default {
