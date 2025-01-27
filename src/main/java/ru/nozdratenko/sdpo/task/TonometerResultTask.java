@@ -8,6 +8,8 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 import ru.nozdratenko.sdpo.util.device.BluetoothDeviceService;
 
+import java.util.List;
+
 public class TonometerResultTask extends Thread {
     public JSONObject json = new JSONObject();
     public StatusType currentStatus = StatusType.FREE;
@@ -15,7 +17,6 @@ public class TonometerResultTask extends Thread {
     @Override
     public void run() {
         Bluetooth.restart();
-        BluetoothDeviceService.start();
 
         while (true) {
             try {
@@ -23,6 +24,7 @@ public class TonometerResultTask extends Thread {
                 if (currentStatus == StatusType.REQUEST) {
                     SdpoLog.info("Start tonometer");
                     Bluetooth.restart();
+                    BluetoothDeviceService.start();
                     this.json.clear();
                     this.currentStatus = StatusType.WAIT;
                 }
@@ -41,15 +43,17 @@ public class TonometerResultTask extends Thread {
                        continue;
                    }
 
-                    String result = BluetoothDeviceService.getTonometerResult();
-
-                   if (result == null || result.isEmpty()) {
+                   List<String> bleappResult = BluetoothDeviceService.getTonometerResult();
+                   if (bleappResult == null || bleappResult.isEmpty()) {
+                       SdpoLog.info("Tonometer Result is null or empty");
                        continue;
                    }
 
+                   String bleappLogs = bleappResult.get(0);
+
                    // Tonometer off
-                   if (result.startsWith("error_windows")) {
-                       SdpoLog.info("result: " + result);
+                   if (bleappLogs.startsWith("error_windows")) {
+                       SdpoLog.info("Tonometer off: " + bleappLogs);
                        SdpoLog.info("set indicated...");
                        Bluetooth.setIndicate(uuid);
                        continue;
@@ -57,8 +61,17 @@ public class TonometerResultTask extends Thread {
 
                    SdpoLog.info("Tonometer indicated");
 
-                   if (result.startsWith("error_")) {
-                       SdpoLog.error("Tonometer error code: " + result);
+                   if (bleappLogs.startsWith("error_")) {
+                       SdpoLog.error("Tonometer error: " + bleappLogs);
+                       continue;
+                   }
+
+                   SdpoLog.info("Tonometer Logs:\n" + bleappLogs);
+
+                   String result = null;
+                   if (bleappResult.size() > 1) result = bleappResult.get(1);
+
+                   if (result == null || result.isEmpty()) {
                        continue;
                    }
 
