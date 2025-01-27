@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
@@ -7,7 +7,6 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 using System.Globalization;
-using System.Linq;
 
 namespace BleAppConsole
 {
@@ -81,49 +80,6 @@ namespace BleAppConsole
                                 {
                                     GattCharacteristicsResult characteristicResult = await service.GetCharacteristicsAsync();
 
-                                    if (characteristicResult.Status != GattCommunicationStatus.Success)
-                                    {
-                                        // Логувати помилку
-                                        Console.WriteLine($"Failed to get characteristics. Status: {characteristicResult.Status}. Attempting to reconnect...");
-
-                                        // Перепідключення до пристрою
-                                        bluetoothLeDevice.Dispose(); // Звільняємо ресурси
-                                        bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.Id);
-
-                                        if (bluetoothLeDevice == null)
-                                        {
-                                            Console.WriteLine("Reconnection failed: BluetoothLEDevice is null.");
-                                            return "error_reconnect_failed";
-                                        }
-
-                                        // Повторне отримання сервісу
-                                        GattDeviceServicesResult gattDeviceRetry = await bluetoothLeDevice.GetGattServicesAsync();
-                                        if (gattDeviceRetry.Status != GattCommunicationStatus.Success)
-                                        {
-                                            Console.WriteLine($"Failed to retrieve GATT services after reconnect. Status: {gattDeviceRetry.Status}");
-                                            return "error_read_services_after_reconnect";
-                                        }
-
-                                        // Пошук потрібного сервісу
-                                        var retryServices = gattDeviceRetry.Services;
-                                        //var bloodPressureService = retryServices.FirstOrDefault(s => s.Uuid.ToString() == BloodPressureUUID);
-                                        var bloodPressureService = retryServices.FirstOrDefault(s => s.Uuid == GattCharacteristicUuids.BloodPressureMeasurement);
-
-                                        if (bloodPressureService == null)
-                                        {
-                                            Console.WriteLine("Blood Pressure Service not found after reconnect.");
-                                            return "error_service_not_found";
-                                        }
-
-                                        // Повторна спроба отримати характеристики
-                                        characteristicResult = await bloodPressureService.GetCharacteristicsAsync();
-                                        if (characteristicResult.Status != GattCommunicationStatus.Success)
-                                        {
-                                            Console.WriteLine($"Failed to get characteristics after reconnect. Status: {characteristicResult.Status}");
-                                            return "error_characteristics_read_failed_after_reconnect";
-                                        }
-                                    }
-
                                     if (characteristicResult.Status == GattCommunicationStatus.Success)
                                     {
                                         var characteristics = characteristicResult.Characteristics;
@@ -147,7 +103,7 @@ namespace BleAppConsole
                                                             }
                                                             catch (Exception ex)
                                                             {
-                                                                Console.WriteLine($"error_reconnect : {ex.Message}");
+                                                                Console.WriteLine($"Reconnect error: {ex.Message}");
                                                             }
                                                         });
 
@@ -162,12 +118,12 @@ namespace BleAppConsole
                                                     string[] hexValues = hexString.Split('-');
                                                     byte[] byteArray = new byte[hexValues.Length];
 
-//                                                    bool pulsePresent = (byteArray[0] & (1 << 5)) != 0;
-//
-//                                                    if (!pulsePresent)
-//                                                    {
-//                                                        Console.WriteLine("Pulse data may be incorrect");
-//                                                    }
+                                                    bool pulsePresent = (byteArray[0] & (1 << 5)) != 0;
+
+                                                    if (!pulsePresent)
+                                                    {
+                                                        Console.WriteLine("Pulse data may be incorrect");
+                                                    }
 
 
                                                     for (int i = 0; i < hexValues.Length; i++)
@@ -177,12 +133,7 @@ namespace BleAppConsole
 
                                                     int systolicPressure = byteArray[1];  
                                                     int diastolicPressure = byteArray[3]; 
-                                                    int pulse = byteArray[14];
-
-                                                    if (pulse <= 0)
-                                                    {
-                                                        Console.WriteLine("Pulse data may be incorrect");
-                                                    }
+                                                    int pulse = byteArray[14];            
 
                                                     result = ("#" + $"{systolicPressure}||{diastolicPressure}||{pulse}");
 
@@ -205,8 +156,6 @@ namespace BleAppConsole
                                             }
                                         }
                                     }
-                                    Console.WriteLine("Characteristic not found");
-                                    //return "error_characteristic_not_found";
                                     break;
                                 }
                             }
@@ -287,7 +236,7 @@ namespace BleAppConsole
         private async void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
             Console.WriteLine("DeviceWatcher stopped. Restarting...");
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            await Task.Delay(TimeSpan.FromSeconds(3)); // Затримка перед повторним запуском
             StartWatchingDevices();
         }
 
@@ -323,11 +272,11 @@ namespace BleAppConsole
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"error_connection_failed: {ex.Message}");
+                    Console.WriteLine($"Connection failed: {ex.Message}");
                 }
 
                 retryCount++;
-                await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, retryCount))); // Delay grows exponentionally
+                await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, retryCount))); // Затримка зростає експоненційно
             }
 
             Console.WriteLine("Failed to connect to device after multiple attempts.");
@@ -350,7 +299,7 @@ namespace BleAppConsole
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"error_while_reconnecting: {ex.Message}");
+                Console.WriteLine($"Error while reconnecting: {ex.Message}");
             }
         }
 

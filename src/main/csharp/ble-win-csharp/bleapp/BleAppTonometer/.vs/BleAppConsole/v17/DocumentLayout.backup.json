@@ -1,16 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\",
+  "WorkspaceRootPath": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppTonometer\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}|BleAppConsole\\BleAppConsole.csproj|c:\\users\\\u0430\u043D\u043D\u0430 \u0444\u0435\u0442\u0438\u0441\u043E\u0432\u0430\\ideaprojects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\bleappconsole\\bleappconsole\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}|BleAppConsole\\BleAppConsole.csproj|c:\\users\\\u0430\u043D\u043D\u0430 \u0444\u0435\u0442\u0438\u0441\u043E\u0432\u0430\\ideaprojects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\bleapptonometer\\bleappconsole\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}|BleAppConsole\\BleAppConsole.csproj|solutionrelative:bleappconsole\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|BleAppConsole||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CF9DE9A6-AAC3-4AAA-827F-5894B46E666C}|BleAppConsole\\BleAppConsole.csproj|c:\\users\\\u0430\u043D\u043D\u0430 \u0444\u0435\u0442\u0438\u0441\u043E\u0432\u0430\\ideaprojects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\bleappconsole\\bleappconsole\\||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|a54ad834-9219-4aa6-b589-607af21c3e26"
     }
   ],
   "DocumentGroupContainers": [
@@ -20,7 +14,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -28,25 +22,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "BleAppConsole",
-              "DocumentMoniker": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj",
-              "RelativeDocumentMoniker": "BleAppConsole\\BleAppConsole.csproj",
-              "ToolTip": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj*",
-              "RelativeToolTip": "BleAppConsole\\BleAppConsole.csproj*",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-10-20T14:56:36.39Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppTonometer\\BleAppConsole\\Program.cs",
               "RelativeDocumentMoniker": "BleAppConsole\\Program.cs",
-              "ToolTip": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\Program.cs",
-              "RelativeToolTip": "BleAppConsole\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMIAAABQAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\\u0410\u041D\u041D\u0410 \u0424\u0415\u0422\u0418\u0421\u041E\u0412\u0410\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppTonometer\\BleAppConsole\\Program.cs*",
+              "RelativeToolTip": "BleAppConsole\\Program.cs*",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAuwBQAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-29T23:25:06.078Z",
               "EditorCaption": ""
