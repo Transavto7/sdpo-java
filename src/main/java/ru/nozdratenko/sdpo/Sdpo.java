@@ -50,15 +50,6 @@ public class Sdpo {
         ThermometerHelper.setComPort();
     }
 
-
-    public static void reRunAlcometerTask() {
-        alcometerResultTask.interrupt();
-        alcometerResultTask = new AlcometerResultTask();
-        SdpoLog.info("Rerun alcometer task ...");
-        alcometerResultTask.start();
-        AlcometerHelper.setComPort();
-    }
-
     public static void runTasks() {
 
         tonometerResultTask.start();

@@ -1,12 +1,7 @@
 package ru.nozdratenko.sdpo.task;
 
-import org.springframework.http.ResponseEntity;
-import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-import ru.nozdratenko.sdpo.util.StatusType;
 
-import javax.websocket.EncodeException;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import java.io.IOException;
@@ -27,7 +22,7 @@ public class TranslationAlcometrTask extends Thread {
         while (session.isOpen()) {
             try {
                 Thread.sleep(300);
-                status = Sdpo.alcometerResultTask.currentStatus.toString();
+                status = AlcometerResultTask.currentStatus.toString();
                 if (!now.equals(status)) {
                     now = status;
                     basicRemote.sendText(now);

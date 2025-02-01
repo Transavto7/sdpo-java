@@ -14,26 +14,26 @@ public class AlcometerResultTask extends Thread {
     public String result = "0";
     public JSONObject error;
     private boolean flow = false;
-    public StatusType currentStatus = StatusType.FREE;
+    public static StatusType currentStatus = StatusType.FREE;
 
     @Override
     public void run() {
-        SdpoLog.info("Alcometer run task: " + this.currentStatus.toString());
+        SdpoLog.info("Alcometer run task: " + currentStatus.toString());
         while (true) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {}
 
-            if (this.currentStatus == StatusType.FREE) {
+            if (currentStatus == StatusType.FREE) {
                 continue;
             }
 
             if (AlcometerHelper.PORT == null) {
                 AlcometerHelper.setComPort();
-                this.currentStatus = StatusType.FREE;
+                currentStatus = StatusType.FREE;
             }
 
-            if (this.currentStatus == StatusType.STOP) {
+            if (currentStatus == StatusType.STOP) {
                 try {
                     AlcometerHelper.open();
                     AlcometerHelper.stop();
@@ -41,9 +41,9 @@ public class AlcometerResultTask extends Thread {
                     SdpoLog.error(e);
                 } catch (AlcometerException ignored) { }
 
-                this.currentStatus = StatusType.FREE;
+                currentStatus = StatusType.FREE;
 
-            } else if (this.currentStatus == StatusType.REQUEST) {
+            } else if (currentStatus == StatusType.REQUEST) {
                 try {
                     AlcometerHelper.open();
                     AlcometerHelper.start();
@@ -58,19 +58,19 @@ public class AlcometerResultTask extends Thread {
                     continue;
                 }
 
-                this.currentStatus = StatusType.WAIT;
+                currentStatus = StatusType.WAIT;
 
-            } else if (this.currentStatus == StatusType.WAIT
-                    || this.currentStatus == StatusType.READY
-                    || this.currentStatus == StatusType.ANALYSE ) {
+            } else if (currentStatus == StatusType.WAIT
+                    || currentStatus == StatusType.READY
+                    || currentStatus == StatusType.ANALYSE ) {
                 try {
                     String result = AlcometerHelper.result();
                     if (Objects.equals(result, "STATUS_READY")) {
-                        this.currentStatus = StatusType.READY;
+                        currentStatus = StatusType.READY;
                         continue;
                     }
                     if (Objects.equals(result, "ANALYSE")) {
-                        this.currentStatus = StatusType.ANALYSE;
+                        currentStatus = StatusType.ANALYSE;
                         continue;
                     }
                     if (result == null) {
@@ -102,21 +102,21 @@ public class AlcometerResultTask extends Thread {
                     flow = true;
                     setError(e.getResponse());
                 }
-            } else if (this.currentStatus == StatusType.ERROR) {
+            } else if (currentStatus == StatusType.ERROR) {
                 AlcometerHelper.setComPort();
-                this.currentStatus = StatusType.FREE;
+                currentStatus = StatusType.FREE;
             }
         }
     }
 
     public void setResult(String result) {
         this.result = result;
-        this.currentStatus = StatusType.RESULT;
+        currentStatus = StatusType.RESULT;
     }
 
     public void setError(JSONObject message) {
         this.error = message;
-        this.currentStatus = StatusType.ERROR;
+        currentStatus = StatusType.ERROR;
     }
 
     public void setError(String message) {
@@ -126,6 +126,6 @@ public class AlcometerResultTask extends Thread {
     }
 
     public void close() {
-        this.currentStatus = StatusType.STOP;
+        currentStatus = StatusType.STOP;
     }
 }

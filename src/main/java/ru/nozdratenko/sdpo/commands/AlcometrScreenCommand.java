@@ -16,6 +16,7 @@ public class AlcometrScreenCommand extends Command {
 
     @Override
     void run(String[] args) {
+        //TODO: REGEXP instead if()
         int count = 1;
         int sleep = 2000;
         boolean fast = true;
