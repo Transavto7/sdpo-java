@@ -2,17 +2,25 @@ package ru.nozdratenko.sdpo.helper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.lib.Bluetooth;
-import ru.nozdratenko.sdpo.util.SdpoLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.nozdratenko.sdpo.lib.Bluetooth.Bluetooth;
 
 import java.util.HashMap;
 
+@Service
 public class TonometerHelper {
+    private final Bluetooth bluetooth;
 
-    public static JSONObject scan() {
+    @Autowired
+    public TonometerHelper(Bluetooth bluetooth) {
+        this.bluetooth = bluetooth;
+    }
+
+    public JSONObject scan() {
         JSONObject json = new JSONObject();
         try {
-            HashMap<String, String> devicesMap = Bluetooth.scanBluetoothDevices();
+            HashMap<String, String> devicesMap = this.bluetooth.scanBluetoothDevices();
 
             JSONArray devices = new JSONArray();
             for (String address : devicesMap.keySet()) {

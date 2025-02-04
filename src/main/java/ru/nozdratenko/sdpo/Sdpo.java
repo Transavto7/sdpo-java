@@ -27,8 +27,6 @@ public class Sdpo {
     public static StampStorage serviceDataStorage;
     public static InspectionStorage inspectionStorage;
 
-    public static final TonometerResultTask tonometerResultTask = new TonometerResultTask();
-    public static final TonometerConnectTask tonometerConnectTask = new TonometerConnectTask();
     public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
     public static AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
@@ -61,11 +59,11 @@ public class Sdpo {
 
     public static void runTasks() {
 
-        tonometerResultTask.start();
+//        tonometerResultTask.start();
         thermometerResultTask.start();
         mediaMakeTask.start();
         alcometerResultTask.start();
-        tonometerConnectTask.start();
+//        tonometerConnectTask.start();
 
 //        runScannerTask();
     }

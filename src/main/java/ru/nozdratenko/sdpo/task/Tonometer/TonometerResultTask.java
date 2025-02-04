@@ -1,20 +1,30 @@
-package ru.nozdratenko.sdpo.task;
+package ru.nozdratenko.sdpo.task.Tonometer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.lib.Bluetooth.Bluetooth;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 import ru.nozdratenko.sdpo.util.device.BluetoothDeviceService;
 
-public class TonometerResultTask extends Thread {
-    public JSONObject json = new JSONObject();
-    public StatusType currentStatus = StatusType.FREE;
+@Component
+public class TonometerResultTask implements Runnable {
+    private final JSONObject json = new JSONObject();
+    private StatusType currentStatus = StatusType.FREE;
+    private final Bluetooth bluetooth;
+
+    @Autowired
+    public TonometerResultTask(Bluetooth bluetooth) {
+        this.bluetooth = bluetooth;
+    }
+
 
     @Override
     public void run() {
-        Bluetooth.restart();
+        this.bluetooth.restart();
         BluetoothDeviceService.start();
 
         while (true) {
@@ -22,14 +32,14 @@ public class TonometerResultTask extends Thread {
                 Thread.sleep(100);
                 if (currentStatus == StatusType.REQUEST) {
                     SdpoLog.info("Start tonometer");
-                    Bluetooth.restart();
+                    this.bluetooth.restart();
                     this.json.clear();
                     this.currentStatus = StatusType.WAIT;
                 }
 
                 if (currentStatus == StatusType.STOP) {
                     SdpoLog.info("Stop tonometer");
-                    Bluetooth.restart();
+                    this.bluetooth.restart();
                     this.json.clear();
                     this.currentStatus = StatusType.FREE;
                     continue;
@@ -51,7 +61,7 @@ public class TonometerResultTask extends Thread {
                    if (result.startsWith("error_windows")) {
                        SdpoLog.info("result: " + result);
                        SdpoLog.info("set indicated...");
-                       Bluetooth.setIndicate(uuid);
+                       this.bluetooth.setIndicate(uuid);
                        continue;
                    }
 
@@ -87,6 +97,18 @@ public class TonometerResultTask extends Thread {
 
     public void clear() {
         json.clear();
+    }
+
+    public JSONObject getJson() {
+        return this.json;
+    }
+
+    public StatusType getCurrentStatus() {
+        return this.currentStatus;
+    }
+
+    public void setCurrentStatus(StatusType status) {
+        this.currentStatus = status;
     }
 
     public int getSystolic() {

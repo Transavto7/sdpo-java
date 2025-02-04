@@ -1,16 +1,26 @@
-package ru.nozdratenko.sdpo.task;
+package ru.nozdratenko.sdpo.task.Tonometer;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.lib.Bluetooth;
+import ru.nozdratenko.sdpo.lib.Bluetooth.Bluetooth;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 
-public class TonometerConnectTask extends Thread {
+@Component
+public class TonometerConnectTask implements Runnable {
+    private final Bluetooth bluetooth;
+
     public StatusType currentStatus = StatusType.FREE;
+
+    @Autowired
+    public TonometerConnectTask(Bluetooth bluetooth) {
+        this.bluetooth = bluetooth;
+    }
 
     @Override
     public void run() {
-        while(true) {
+        while (true) {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
@@ -32,10 +42,10 @@ public class TonometerConnectTask extends Thread {
             }
 
             if (currentStatus == StatusType.WAIT) {
-                String result = Bluetooth.setConnection(uuid);
+                String result = bluetooth.setConnection(uuid);
 
                 if (result.equals("set")) {
-                    Bluetooth.setIndicate(uuid);
+                    bluetooth.setIndicate(uuid);
                     currentStatus = StatusType.RESULT;
 //                    Sdpo.mainConfig.set("tonometer_connect", true);
 //                    Sdpo.mainConfig.saveFile();
