@@ -1,13 +1,19 @@
 package ru.nozdratenko.sdpo.commands;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
-import ru.nozdratenko.sdpo.task.AlcometerResultTask;
+import ru.nozdratenko.sdpo.task.Alcometer.AlcometerResultTask;
+import ru.nozdratenko.sdpo.task.Alcometer.AlcometerTaskRunner;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 
+@Component
 public class AlcometrScreenCommand extends Command {
+    @Autowired
+    private AlcometerTaskRunner alcometerTaskRunner;
 
     @Override
     String getCommand() {
@@ -58,7 +64,7 @@ public class AlcometrScreenCommand extends Command {
         CameraHelper.makePhotoAndVideo();
 
         SdpoLog.info("Run alcometr...");
-        AlcometerResultTask task = Sdpo.alcometerResultTask;
+        AlcometerResultTask task = this.alcometerTaskRunner.getAlcometerResultTask();
 
         while (true) {
             if (task.currentStatus == StatusType.FREE) {

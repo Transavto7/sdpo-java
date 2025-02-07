@@ -1,23 +1,28 @@
-package ru.nozdratenko.sdpo.task;
+package ru.nozdratenko.sdpo.task.Alcometer;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-import ru.nozdratenko.sdpo.util.StatusType;
 
-import javax.websocket.EncodeException;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import java.io.IOException;
 
-public class TranslationAlcometrTask extends Thread {
-    private final RemoteEndpoint.Basic basicRemote;
-    private final Session session;
+@Component
+public class TranslationAlcometrTask implements Runnable {
+    private RemoteEndpoint.Basic basicRemote;
+    private Session session;
 
-    public TranslationAlcometrTask(Session session) {
-        this.basicRemote = session.getBasicRemote();
+    @Autowired
+    private AlcometerTaskRunner alcometerTaskRunner;
+
+    public TranslationAlcometrTask setSession(Session session) {
         this.session = session;
+        this.basicRemote = session.getBasicRemote();
+
+        return this;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class TranslationAlcometrTask extends Thread {
         while (session.isOpen()) {
             try {
                 Thread.sleep(300);
-                status = Sdpo.alcometerResultTask.currentStatus.toString();
+                status = alcometerTaskRunner.getAlcometerResultTask().currentStatus.toString();
                 if (!now.equals(status)) {
                     now = status;
                     basicRemote.sendText(now);
@@ -39,6 +44,5 @@ public class TranslationAlcometrTask extends Thread {
             }
         }
         SdpoLog.info("Close translation status from alcometr");
-
     }
 }

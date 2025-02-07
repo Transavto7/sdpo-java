@@ -5,12 +5,14 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
+import ru.nozdratenko.sdpo.util.port.PortService.GUID;
+import ru.nozdratenko.sdpo.util.port.PortService.SpDevinfoData;
 
 public interface SetupApi extends StdCallLibrary {
     SetupApi INSTANCE = Native.load("setupapi", SetupApi.class, W32APIOptions.DEFAULT_OPTIONS);
 
     WinNT.HANDLE SetupDiGetClassDevs(
-            PortService.GUID guid,
+            GUID guid,
             String enumerator,
             WinDef.HWND hwndParent,
             int flags
@@ -21,7 +23,7 @@ public interface SetupApi extends StdCallLibrary {
     boolean SetupDiEnumDeviceInfo(
             WinNT.HANDLE deviceInfoSet,
             int memberIndex,
-            PortService.SP_DEVINFO_DATA deviceInfoData
+            SpDevinfoData deviceInfoData
     );
 
 }

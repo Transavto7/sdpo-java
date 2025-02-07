@@ -1,7 +1,10 @@
-package ru.nozdratenko.sdpo.task;
+package ru.nozdratenko.sdpo.task.Alcometer;
 
 import jssc.SerialPortException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -10,16 +13,21 @@ import ru.nozdratenko.sdpo.util.StatusType;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 
-public class AlcometerResultTask extends Thread {
+@Component
+public class AlcometerResultTask implements Runnable {
     public String result = "0";
     public JSONObject error;
     private boolean flow = false;
     public StatusType currentStatus = StatusType.FREE;
+    private volatile boolean stopFlag = false;
+
+    @Autowired
+    private AlcometerHelper alcometerHelper;
 
     @Override
     public void run() {
         SdpoLog.info("Alcometer run task: " + this.currentStatus.toString());
-        while (true) {
+        while (stopFlag) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {}
@@ -29,14 +37,14 @@ public class AlcometerResultTask extends Thread {
             }
 
             if (AlcometerHelper.PORT == null) {
-                AlcometerHelper.setComPort();
+                this.alcometerHelper.setComPort();
                 this.currentStatus = StatusType.FREE;
             }
 
             if (this.currentStatus == StatusType.STOP) {
                 try {
-                    AlcometerHelper.open();
-                    AlcometerHelper.stop();
+                    this.alcometerHelper.open();
+                    this.alcometerHelper.stop();
                 } catch (UnsupportedEncodingException | SerialPortException e) {
                     SdpoLog.error(e);
                 } catch (AlcometerException ignored) { }
@@ -45,8 +53,8 @@ public class AlcometerResultTask extends Thread {
 
             } else if (this.currentStatus == StatusType.REQUEST) {
                 try {
-                    AlcometerHelper.open();
-                    AlcometerHelper.start();
+                    this.alcometerHelper.open();
+                    this.alcometerHelper.start();
                 } catch (SerialPortException e) {
                     setError("Ошибка открытия порта Алкометра");
                     continue;
@@ -64,7 +72,7 @@ public class AlcometerResultTask extends Thread {
                     || this.currentStatus == StatusType.READY
                     || this.currentStatus == StatusType.ANALYSE ) {
                 try {
-                    String result = AlcometerHelper.result();
+                    String result = this.alcometerHelper.result();
                     if (Objects.equals(result, "STATUS_READY")) {
                         this.currentStatus = StatusType.READY;
                         continue;
@@ -84,7 +92,7 @@ public class AlcometerResultTask extends Thread {
                     if (e.restart) {
                         if (flow)  {
                             try {
-                                AlcometerHelper.start();
+                                this.alcometerHelper.start();
                             } catch (SerialPortException ex) {
                                 setError("Ошибка открытия порта Алкометра");
                                 continue;
@@ -103,7 +111,7 @@ public class AlcometerResultTask extends Thread {
                     setError(e.getResponse());
                 }
             } else if (this.currentStatus == StatusType.ERROR) {
-                AlcometerHelper.setComPort();
+                this.alcometerHelper.setComPort();
                 this.currentStatus = StatusType.FREE;
             }
         }
@@ -127,5 +135,10 @@ public class AlcometerResultTask extends Thread {
 
     public void close() {
         this.currentStatus = StatusType.STOP;
+    }
+
+    public void stop() {
+        this.stopFlag = true;
+        Thread.currentThread().interrupt();
     }
 }

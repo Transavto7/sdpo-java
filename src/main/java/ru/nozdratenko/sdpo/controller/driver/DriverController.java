@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.controller.driver;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,12 @@ import java.util.Map;
 
 @Controller
 public class DriverController {
+    private final Sdpo sdpo;
+
+    @Autowired
+    public DriverController(Sdpo sdpo) {
+        this.sdpo = sdpo;
+    }
 
     @PostMapping("api/driver/phone/save")
     public ResponseEntity apiCheck(@RequestBody Map<String, String> json) {
@@ -35,7 +42,7 @@ public class DriverController {
             SdpoLog.error(e);
         }
 
-        Sdpo.setConnection(false);
+        sdpo.setConnection(false);
         return ResponseEntity.status(403).body("error");
     }
 

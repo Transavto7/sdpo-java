@@ -1,7 +1,7 @@
 package ru.nozdratenko.sdpo.websocket;
 
 import org.springframework.stereotype.Component;
-import ru.nozdratenko.sdpo.task.TranslationAlcometrTask;
+import ru.nozdratenko.sdpo.task.Alcometer.TranslationAlcometrTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.websocket.MessageHandler;
@@ -16,14 +16,14 @@ import java.util.List;
 @ServerEndpoint(value = "/device/alcometer/status")
 @Component
 public class AlcometrStatusEndPoint implements MessageHandler {
-    private TranslationAlcometrTask translationTask;
+    private Thread translationTask;
     public static List<Session> sessionList = new ArrayList<>();
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
         sessionList.add(session);
         if (translationTask == null || !translationTask.isAlive()) {
-            translationTask = new TranslationAlcometrTask(session);
+            translationTask = new Thread(new TranslationAlcometrTask().setSession(session));
             translationTask.start();
             SdpoLog.info("Translation status from alcometr run");
         } else {

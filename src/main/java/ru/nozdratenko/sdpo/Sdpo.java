@@ -1,9 +1,10 @@
 package ru.nozdratenko.sdpo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
-import ru.nozdratenko.sdpo.helper.BrowserHelper;
+import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
@@ -12,13 +13,23 @@ import ru.nozdratenko.sdpo.storage.MedicStorage;
 import ru.nozdratenko.sdpo.storage.StampStorage;
 import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-import ru.nozdratenko.sdpo.util.port.PortService;
+import ru.nozdratenko.sdpo.util.port.PortService.PortService;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 @Component
 public class Sdpo {
+    private final AlcometerHelper alcometerHelper;
+    private final PortService portService;
+    private final BrowserHelper browserHelper;
+
+    @Autowired
+    public Sdpo(AlcometerHelper alcometerHelper, PortService portService, BrowserHelper browserHelper) {
+        this.alcometerHelper = alcometerHelper;
+        this.portService = portService;
+        this.browserHelper = browserHelper;
+    }
+
     public static FileConfiguration mainConfig;
     public static FileConfiguration systemConfig;
     public static DriverStorage driverStorage;
@@ -28,47 +39,38 @@ public class Sdpo {
     public static InspectionStorage inspectionStorage;
 
     public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
-    public static AlcometerResultTask alcometerResultTask = new AlcometerResultTask();
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
     private static boolean connection = true;
 
-    public static void init() {
+    public void init() {
         SdpoLog.info("Run project");
         initMainConfig();
         initSystemConfig();
         runTasks();
         CameraHelper.initDimension();
-        if (!PortService.isAdmin() && !isAdmin()) {
+        if (!this.portService.isAdmin() && !isAdmin()) {
             SdpoLog.error("The program has been started without admin role !!!");
         }
-        AlcometerHelper.setDeviceInstanceId();
-        AlcometerHelper.setComPort();
+        alcometerHelper.init();
+        alcometerHelper.setDeviceInstanceId();
+        alcometerHelper.setComPort();
         ThermometerHelper.setComPort();
     }
 
-
-    public static void reRunAlcometerTask() {
-        alcometerResultTask.interrupt();
-        alcometerResultTask = new AlcometerResultTask();
-        SdpoLog.info("Rerun alcometer task ...");
-        alcometerResultTask.start();
-        AlcometerHelper.setComPort();
-    }
-
-    public static void runTasks() {
+    public void runTasks() {
 
 //        tonometerResultTask.start();
         thermometerResultTask.start();
         mediaMakeTask.start();
-        alcometerResultTask.start();
+//        alcometerResultTask.start();
 //        tonometerConnectTask.start();
 
 //        runScannerTask();
     }
 
-    public static void loadData() {
+    public void loadData() {
         saveStoreInspectionTask.start();
 
         driverStorage = new DriverStorage();
@@ -99,33 +101,18 @@ public class Sdpo {
         }).start();
     }
 
-    public static void openBrowser() {
+    public void openBrowser() {
         new Thread(() -> {
             try {
                 Thread.sleep(40000);
             } catch (InterruptedException e) {
                 SdpoLog.error(e);
             }
-            BrowserHelper.openUrl("http://localhost:8080");
+            this.browserHelper.openUrl("http://localhost:8080");
         }).start();
     }
 
-    /**
-     * Временная заглшука, чтобы убрать зависание консоли
-     */
-    private static void runScannerTask() {
-        new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
-
-            while (true) {
-                if (scanner.hasNextLine()) {
-                    String input = scanner.nextLine();
-                }
-            }
-        }).start();
-    }
-
-    private static void initMainConfig() {
+    private void initMainConfig() {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/main.json");
         fileConfiguration.setDefault("password", "7344946")
                 .setDefault("medic_password", "0000000")
@@ -141,7 +128,7 @@ public class Sdpo {
         mainConfig = fileConfiguration;
     }
 
-    private static void initSystemConfig() {
+    private void initSystemConfig() {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/system.json");
         fileConfiguration.setDefault("driver_info", false)
                 .setDefault("type_ride", true)
@@ -171,7 +158,7 @@ public class Sdpo {
         systemConfig = fileConfiguration;
     }
 
-    public static boolean isAdmin() {
+    public boolean isAdmin() {
         try {
             Process process = new ProcessBuilder("net", "session").start();
             process.waitFor();
@@ -185,7 +172,7 @@ public class Sdpo {
         return connection;
     }
 
-    public static void setConnection(boolean connection) {
+    public void setConnection(boolean connection) {
         Sdpo.connection = connection;
     }
 }

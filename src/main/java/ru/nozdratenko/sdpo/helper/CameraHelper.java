@@ -36,12 +36,13 @@ public class CameraHelper {
     private static transient boolean isCameraWorked = false;
 
     public static boolean isCameraAvailable() {
-        try {
-            return !Webcam.getWebcams().isEmpty();
-        } catch (WebcamException e) {
-            SdpoLog.warning("No webcam has been detected!" + e);
-            return false;
-        }
+        return false;
+//        try {
+//            return !Webcam.getWebcams().isEmpty();
+//        } catch (WebcamException e) {
+//            SdpoLog.warning("No webcam has been detected!" + e);
+//            return false;
+//        }
     }
 
     private static FrameGrabber findWebcam(){
@@ -77,10 +78,10 @@ public class CameraHelper {
 
     public static void initDimension() {
         try {
-            Webcam webcam = Webcam.getDefault();
-            double with = Double.parseDouble(Sdpo.systemConfig.getString("camera_dimension"));
-            Dimension dim = getSize(with);
-            webcam.setViewSize(dim);
+//            Webcam webcam = Webcam.getDefault();
+//            double with = Double.parseDouble(Sdpo.systemConfig.getString("camera_dimension"));
+//            Dimension dim = getSize(with);
+//            webcam.setViewSize(dim);
         } catch (IllegalArgumentException e) {
             SdpoLog.warning(e);
         } finally {

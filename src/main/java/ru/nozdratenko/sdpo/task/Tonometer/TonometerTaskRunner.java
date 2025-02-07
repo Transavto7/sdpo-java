@@ -1,19 +1,20 @@
 package ru.nozdratenko.sdpo.task.Tonometer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Component
 public class TonometerTaskRunner implements CommandLineRunner {
-
     private final ThreadPoolTaskExecutor taskExecutor;
     private final TonometerConnectTask tonometerConnectTask;
     private final TonometerResultTask tonometerResultTask;
 
     @Autowired
     public TonometerTaskRunner(
+            @Qualifier("tonometerTaskExecutor")
             ThreadPoolTaskExecutor taskExecutor,
             TonometerConnectTask tonometerConnectTask,
             TonometerResultTask tonometerResultTask

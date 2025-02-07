@@ -1,7 +1,7 @@
 package ru.nozdratenko.sdpo.controller;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +22,12 @@ import java.util.Map;
 
 @Controller
 public class IndexController {
+    private final Sdpo sdpo;
+
+    @Autowired
+    public IndexController(Sdpo sdpo) {
+        this.sdpo = sdpo;
+    }
 
     /**
      * Return main frontend file on start application
@@ -57,7 +63,7 @@ public class IndexController {
                 Request request = new Request(new URL(address + "sdpo/check"));
                 String response = request.sendGet();
                 if (response.equals("true")) {
-                    Sdpo.setConnection(true);
+                    this.sdpo.setConnection(true);
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);
                 }
@@ -70,7 +76,7 @@ public class IndexController {
             SdpoLog.error(e);
         }
 
-        Sdpo.setConnection(false);
+        this.sdpo.setConnection(false);
         return ResponseEntity.status(403).body("error");
     }
 

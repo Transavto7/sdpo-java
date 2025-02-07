@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.task.AlcometerResultTask;
+import ru.nozdratenko.sdpo.task.Alcometer.AlcometerResultTask;
+import ru.nozdratenko.sdpo.task.Alcometer.AlcometerTaskRunner;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
 import ru.nozdratenko.sdpo.websocket.AlcometrStatusEndPoint;
-import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
 
 import javax.websocket.Session;
 import java.io.IOException;
@@ -19,11 +19,16 @@ import java.util.Map;
 
 @RestController
 public class AlcometerController {
+    private  final AlcometerTaskRunner alcometerTaskRunner;
+
+    public AlcometerController(AlcometerTaskRunner alcometerTaskRunner) {
+        this.alcometerTaskRunner = alcometerTaskRunner;
+    }
 
     @PostMapping(value = "/device/alcometer")
     @ResponseBody
     public ResponseEntity alcometer() {
-        AlcometerResultTask task = Sdpo.alcometerResultTask;
+        AlcometerResultTask task = this.alcometerTaskRunner.getAlcometerResultTask();
         if (task.currentStatus == StatusType.FREE) {
             task.currentStatus = StatusType.REQUEST;
 
@@ -47,7 +52,7 @@ public class AlcometerController {
     @PostMapping(value = "/device/alcometer/close")
     @ResponseBody
     public ResponseEntity alcometerClose() {
-        AlcometerResultTask task = Sdpo.alcometerResultTask;
+        AlcometerResultTask task = this.alcometerTaskRunner.getAlcometerResultTask();
         task.close();
         return ResponseEntity.ok().body("");
     }

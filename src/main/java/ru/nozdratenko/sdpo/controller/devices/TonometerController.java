@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.controller.devices;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @RestController
 public class TonometerController {
+    @Qualifier("tonometerTaskExecutor")
     private final TonometerTaskRunner tonometerTaskRunner;
 
     @Autowired

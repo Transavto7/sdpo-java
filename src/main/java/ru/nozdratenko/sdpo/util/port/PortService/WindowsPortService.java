@@ -1,67 +1,29 @@
-package ru.nozdratenko.sdpo.util.port;
+package ru.nozdratenko.sdpo.util.port.PortService;
 
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.ptr.IntByReference;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.util.port.Cfgmgr32;
+import ru.nozdratenko.sdpo.util.port.SetupApi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 
-
-public class PortService {
-
-    public static class GUID extends Structure {
-        public int Data1;
-        public short Data2;
-        public short Data3;
-        public byte[] Data4 = new byte[8];
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return Arrays.asList("Data1", "Data2", "Data3", "Data4");
-        }
-
-        public GUID() {
-        }
-
-        public GUID(String guidStr) {
-            UUID uuid = UUID.fromString(guidStr);
-            long msb = uuid.getMostSignificantBits();
-            long lsb = uuid.getLeastSignificantBits();
-            Data1 = (int) (msb >> 32);
-            Data2 = (short) (msb >> 16);
-            Data3 = (short) msb;
-            for (int i = 0; i < 8; i++) {
-                Data4[i] = (byte) (lsb >> (8 * (7 - i)));
-            }
-        }
-    }
-
-    public static class SP_DEVINFO_DATA extends Structure {
-        public int cbSize = size();
-        public GUID ClassGuid = new GUID();
-        public int DevInst;
-        public Pointer Reserved;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return Arrays.asList("cbSize", "ClassGuid", "DevInst", "Reserved");
-        }
-    }
-
+@Service
+@Profile("production")
+public class WindowsPortService implements PortService {
     public static final int DIGCF_PRESENT = 0x00000002;
     public static final int DIGCF_DEVICEINTERFACE = 0x00000010;
+    private static final int TOKEN_QUERY = 0x0008;
+    private static final int TokenElevation = 20;
 
     public boolean reinitializePort(String deviceInstanceId) {
         try {
@@ -150,7 +112,7 @@ public class PortService {
     }
 
 
-    String getDeviceInstanceId(String guidString, String vendorId) {
+    public String getDeviceInstanceId(String guidString, String vendorId) {
         SdpoLog.info("getDeviceInstanceId for vendorId: " + vendorId);
         GUID guid = new GUID(guidString);
         HANDLE deviceInfoSet = ru.nozdratenko.sdpo.util.port.SetupApi.INSTANCE.SetupDiGetClassDevs(guid, null, null, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
@@ -161,7 +123,7 @@ public class PortService {
         }
 
         try {
-            PortService.SP_DEVINFO_DATA deviceInfoData = new SP_DEVINFO_DATA();
+            SpDevinfoData deviceInfoData = new SpDevinfoData();
             deviceInfoData.cbSize = deviceInfoData.size();
 
             int index = 0;
@@ -185,7 +147,7 @@ public class PortService {
         return null;
     }
 
-    private String getDeviceInstanceId(SP_DEVINFO_DATA deviceInfoData) {
+    private String getDeviceInstanceId(SpDevinfoData deviceInfoData) {
         char[] buffer = new char[1024];
         int result = ru.nozdratenko.sdpo.util.port.Cfgmgr32.INSTANCE.CM_Get_Device_ID(deviceInfoData.DevInst, buffer, buffer.length, 0);
         if (result == Cfgmgr32.CR_SUCCESS) {
@@ -195,10 +157,7 @@ public class PortService {
         return null;
     }
 
-    private static final int TOKEN_QUERY = 0x0008;
-    private static final int TokenElevation = 20;
-
-    public static boolean isAdmin() {
+    public boolean isAdmin() {
         HANDLE processHandle = Kernel32.INSTANCE.GetCurrentProcess();
         WinNT.HANDLEByReference tokenHandle = new WinNT.HANDLEByReference();
 

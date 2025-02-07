@@ -1,5 +1,7 @@
-package ru.nozdratenko.sdpo.helper;
+package ru.nozdratenko.sdpo.helper.BrowserHelpers;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -8,9 +10,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class BrowserHelper {
+@Component
+@Profile("production")
+public class WindowsBrowserHelper implements BrowserHelper {
 
-    public static void openUrl(String url) {
+    public void openUrl(String url) {
         String cmd = Sdpo.mainConfig.getString("run_browser_cmd");
         if (cmd != null && !cmd.isEmpty()) {
             Runtime runtime = Runtime.getRuntime();
