@@ -207,6 +207,8 @@ public class Sdpo {
                 .setDefault("last_online", currentDate)
                 .setDefault("count_inspections", 0)
                 .setDefault("delay_before_retry_inspection", 5000)
+                .setDefault("date_verification", null)
+                .setDefault("serial_number", null)
                 .setDefault("delay_before_redirect_to_main_page", 10000)
                 .saveFile();
         systemConfig = fileConfiguration;

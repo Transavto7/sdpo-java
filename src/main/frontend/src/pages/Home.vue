@@ -113,7 +113,9 @@ export default {
   <medic-select/>
   <div class="home">
     <div v-if="terminalIsLocked" style="width: 100%; justify-content: center; display: flex">
-      <div class="driver-form__not-found animate__animated animate__fadeInUp">Терминал заблокирован
+      <div class="driver-form__not-found animate__animated animate__fadeInUp">
+        Работа терминала приостановлена.
+        Проверьте подключение к интернету
       </div>
     </div>
     <div v-else class="driver-form">
