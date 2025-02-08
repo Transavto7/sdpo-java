@@ -23,7 +23,7 @@ public class VideoEndpoint implements MessageHandler {
     public void onOpen(Session session) throws IOException {
         sessionList.add(session);
         if (translationTask == null || !translationTask.isAlive()) {
-            translationTask = new TranslationVideoTask(session);
+            translationTask = new TranslationVideoTask().setSession(session);
             translationTask.start();
             SdpoLog.info("Translation video run");
         } else {

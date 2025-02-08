@@ -1,6 +1,8 @@
 package ru.nozdratenko.sdpo.task;
 
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.websocket.EncodeException;
@@ -9,20 +11,25 @@ import javax.websocket.Session;
 import java.io.IOException;
 
 public class TranslationVideoTask extends Thread {
-    private final RemoteEndpoint.Basic basicRemote;
-    private final Session session;
+    @Autowired
+    private CameraHelper cameraHelper;
 
-    public TranslationVideoTask(Session session) {
+    private RemoteEndpoint.Basic basicRemote;
+    private Session session;
+
+    public TranslationVideoTask setSession(Session session) {
         this.basicRemote = session.getBasicRemote();
         this.session = session;
+
+        return this;
     }
 
     @Override
     public void run() {
-        CameraHelper.openCam();
+        cameraHelper.openCam();
         while (session.isOpen()) {
             try {
-                basicRemote.sendObject(CameraHelper.makePhotoBytes());
+                basicRemote.sendObject(cameraHelper.makePhotoBytes());
             } catch (IOException | EncodeException | IllegalArgumentException | IllegalStateException e) {
                 SdpoLog.error("Failed serializable foto!");
             }

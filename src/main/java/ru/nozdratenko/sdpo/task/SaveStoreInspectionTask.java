@@ -2,17 +2,23 @@ package ru.nozdratenko.sdpo.task;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.file.FileBase;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.File;
 import java.io.IOException;
 
+@Component
 public class SaveStoreInspectionTask extends Thread {
+    @Autowired
+    private CameraHelper cameraHelper;
 
     @Override
     public void run() {
@@ -55,7 +61,7 @@ public class SaveStoreInspectionTask extends Thread {
 
             File file = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name));
             if (file.exists())  {
-                CameraHelper.sendPhoto(file);
+                cameraHelper.sendPhoto(file);
             } else {
                 SdpoLog.error("Image " + name + " not found!");
             }
@@ -69,7 +75,7 @@ public class SaveStoreInspectionTask extends Thread {
 
             File file = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name));
             if (file.exists())  {
-                CameraHelper.sendVideo(file);
+                cameraHelper.sendVideo(file);
             } else {
                 SdpoLog.error("Video " + name + " not found!");
             }

@@ -4,7 +4,8 @@ package ru.nozdratenko.sdpo.commands;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.task.Alcometer.AlcometerResultTask;
 import ru.nozdratenko.sdpo.task.Alcometer.AlcometerTaskRunner;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -14,6 +15,8 @@ import ru.nozdratenko.sdpo.util.StatusType;
 public class AlcometrScreenCommand extends Command {
     @Autowired
     private AlcometerTaskRunner alcometerTaskRunner;
+    @Autowired
+    private CameraHelper cameraHelper;
 
     @Override
     String getCommand() {
@@ -61,21 +64,20 @@ public class AlcometrScreenCommand extends Command {
 
     private void testAlcometr() throws InterruptedException {
         SdpoLog.info("Make media...");
-        CameraHelper.makePhotoAndVideo();
+        cameraHelper.makePhotoAndVideo();
 
         SdpoLog.info("Run alcometr...");
-        AlcometerResultTask task = this.alcometerTaskRunner.getAlcometerResultTask();
 
         while (true) {
-            if (task.currentStatus == StatusType.FREE) {
-                task.currentStatus = StatusType.REQUEST;
-            } else if (task.currentStatus == StatusType.ERROR) {
-                SdpoLog.error(task.error.toString());
-                task.currentStatus = StatusType.STOP;
+            if (AlcometerResultTask.currentStatus == StatusType.FREE) {
+                AlcometerResultTask.currentStatus = StatusType.REQUEST;
+            } else if (AlcometerResultTask.currentStatus == StatusType.ERROR) {
+                SdpoLog.error(AlcometerResultTask.error.toString());
+                AlcometerResultTask.currentStatus = StatusType.STOP;
                 break;
-            } else if (task.currentStatus == StatusType.RESULT) {
-                task.currentStatus = StatusType.STOP;
-                SdpoLog.info("Alcometr result " + task.result);
+            } else if (AlcometerResultTask.currentStatus == StatusType.RESULT) {
+                AlcometerResultTask.currentStatus = StatusType.STOP;
+                SdpoLog.info("Alcometr result " + AlcometerResultTask.result);
                 break;
             }
 

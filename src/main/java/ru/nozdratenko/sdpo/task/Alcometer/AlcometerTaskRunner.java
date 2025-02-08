@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 @Component
 public class AlcometerTaskRunner implements CommandLineRunner {
@@ -27,10 +28,14 @@ public class AlcometerTaskRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        SdpoLog.info("!!!!!!! Alcometer run task: ");
+
         taskExecutor.execute(alcometerResultTask);
     }
 
     public void startAlcometerResultTask(){
+        SdpoLog.info("!!!!!!! Alcometer startAlcometerResultTask task: ");
+
         taskExecutor.execute(alcometerResultTask);
     }
 }

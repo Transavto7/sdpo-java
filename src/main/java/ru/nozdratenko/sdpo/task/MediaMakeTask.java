@@ -1,7 +1,10 @@
 package ru.nozdratenko.sdpo.task;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.PriorityQueue;
@@ -9,10 +12,13 @@ import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Component
 public class MediaMakeTask extends Thread {
     private transient static final Queue<String> medias = new PriorityQueue<>();
     private static final Lock cameraLock = new ReentrantLock();
     public static transient boolean skip = false;
+    @Autowired
+    private CameraHelper cameraHelper;
 
     public static void record(String name) {
         medias.offer(name);
@@ -39,18 +45,18 @@ public class MediaMakeTask extends Thread {
                 }
             }else {
                 SdpoLog.info("Start media task");
-                CameraHelper.openCam();
+                cameraHelper.openCam();
             }
 
             cameraLock.lock();
             String name = MediaMakeTask.medias.element();
             try {
                 if (Sdpo.systemConfig.getBoolean("camera_photo")) {
-                    CameraHelper.makePhoto(name);
+                    cameraHelper.makePhoto(name);
                 }
 
                 if (Sdpo.systemConfig.getBoolean("camera_video")) {
-                    CameraHelper.makeVideo(name);
+                    cameraHelper.makeVideo(name);
                 }
 
                 MediaMakeTask.medias.remove();

@@ -1,13 +1,21 @@
 package ru.nozdratenko.sdpo.commands;
 
 
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
+import ru.nozdratenko.sdpo.task.Alcometer.AlcometerTaskRunner;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+@Component
 public class PhotoCommand extends Command {
+    @Autowired
+    private CameraHelper cameraHelper;
 
     @Override
     String getCommand() {
@@ -27,7 +35,7 @@ public class PhotoCommand extends Command {
             sleep = Integer.parseInt(args[1]);
         }
 
-        CameraHelper.openCam();
+        cameraHelper.openCam();
 
         for (int i = 1; i <= count; i++) {
             SdpoLog.info("------ Test " + i);
@@ -49,7 +57,7 @@ public class PhotoCommand extends Command {
         String name = "test_" + number + "_" + simpleDateFormat.format(new Date()) + ".png";
         SdpoLog.info("name: " + name);
         try {
-            CameraHelper.makePhoto(name);
+            cameraHelper.makePhoto(name);
         } catch (Exception e) {
             SdpoLog.error("Error record media " + name);
             SdpoLog.error(e);

@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.lib.Bluetooth;
+package ru.nozdratenko.sdpo.lib.BluetoothServices;
 
 import java.util.HashMap;
 

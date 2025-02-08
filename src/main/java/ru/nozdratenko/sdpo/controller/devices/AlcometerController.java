@@ -28,20 +28,19 @@ public class AlcometerController {
     @PostMapping(value = "/device/alcometer")
     @ResponseBody
     public ResponseEntity alcometer() {
-        AlcometerResultTask task = this.alcometerTaskRunner.getAlcometerResultTask();
-        if (task.currentStatus == StatusType.FREE) {
-            task.currentStatus = StatusType.REQUEST;
+        if (AlcometerResultTask.currentStatus == StatusType.FREE) {
+            AlcometerResultTask.currentStatus = StatusType.REQUEST;
 
             return ResponseEntity.ok().body("next");
         }
 
-        if (!task.currentStatus.skip) {
+        if (!AlcometerResultTask.currentStatus.skip) {
             return ResponseEntity.ok().body("next");
         }
 
-        if (task.currentStatus == StatusType.RESULT) {
-            task.currentStatus = StatusType.FREE;
-            return ResponseEntity.ok().body(task.result);
+        if (AlcometerResultTask.currentStatus == StatusType.RESULT) {
+            AlcometerResultTask.currentStatus = StatusType.FREE;
+            return ResponseEntity.ok().body(AlcometerResultTask.result);
         }
 
         JSONObject json = new JSONObject();

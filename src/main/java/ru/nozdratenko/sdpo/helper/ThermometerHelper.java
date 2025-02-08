@@ -1,12 +1,22 @@
 package ru.nozdratenko.sdpo.helper;
 
 import jssc.*;
-import ru.nozdratenko.sdpo.lib.COMPorts;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.nozdratenko.sdpo.lib.COMPortsServices.COMPorts;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
+@Service
 public class ThermometerHelper {
     public static String PORT = null;
-    public static double getTemp() {
+    private final COMPorts comPorts;
+
+    @Autowired
+    public ThermometerHelper(COMPorts comPorts) {
+        this.comPorts = comPorts;
+    }
+
+    public double getTemp() {
         if (PORT == null) {
             return 0.0;
         }
@@ -49,9 +59,9 @@ public class ThermometerHelper {
         return 0.0;
     }
 
-    public static void setComPort() {
+    public void setComPort() {
         SdpoLog.info("Request com port thermometer...");
-        String thermometerPort = COMPorts.getComPort("VID_10C4");
+        String thermometerPort = this.comPorts.getComPort("VID_10C4");
 
         if (thermometerPort.contains("error")) {
             ThermometerHelper.PORT = null;

@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.file.FileBase;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
@@ -23,10 +24,12 @@ import java.util.Map;
 @Controller
 public class IndexController {
     private final Sdpo sdpo;
+    private final CameraHelper cameraHelper;
 
     @Autowired
-    public IndexController(Sdpo sdpo) {
+    public IndexController(Sdpo sdpo, CameraHelper cameraHelper) {
         this.sdpo = sdpo;
+        this.cameraHelper = cameraHelper;
     }
 
     /**
@@ -42,7 +45,7 @@ public class IndexController {
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .header("Content-Type", "video/mp4")
-                    .body(CameraHelper.readVideoByte());
+                    .body(this.cameraHelper.readVideoByte());
         } catch (IOException e) {
             SdpoLog.error("Error open video: " + e);
             return ResponseEntity.status(503).body(FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4"));

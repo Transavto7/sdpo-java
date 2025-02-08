@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
-import ru.nozdratenko.sdpo.lib.COMPorts;
+import ru.nozdratenko.sdpo.lib.COMPortsServices.COMPorts;
 import ru.nozdratenko.sdpo.listener.PortListener;
 import ru.nozdratenko.sdpo.task.Alcometer.RerunTask.RerunEventPublisher;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -24,11 +24,17 @@ public class AlcometerHelper {
     private static int reinitPortCount = 0;
     private final PortManager portManager;
     private final RerunEventPublisher rerunEventPublisher;
+    private final COMPorts comPorts;
 
     @Autowired
-    public AlcometerHelper(PortManager portManager, RerunEventPublisher rerunEventPublisher) {
+    public AlcometerHelper(
+            PortManager portManager,
+            RerunEventPublisher rerunEventPublisher,
+            COMPorts comPorts
+    ) {
         this.portManager = portManager;
         this.rerunEventPublisher = rerunEventPublisher;
+        this.comPorts = comPorts;
     }
 
     public void init() {
@@ -272,7 +278,7 @@ public class AlcometerHelper {
 
     public synchronized void setComPort() {
         SdpoLog.info("Request com port alcometer...");
-        String alcometerPort = COMPorts.getComPort(VENDOR_ID);
+        String alcometerPort = this.comPorts.getComPort(VENDOR_ID);
         if (alcometerPort.contains("error")) {
             AlcometerHelper.PORT = null;
             SdpoLog.error("Alcometer return error: " + alcometerPort);

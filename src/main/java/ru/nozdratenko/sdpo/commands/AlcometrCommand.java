@@ -60,18 +60,17 @@ public class AlcometrCommand extends Command {
 
     private void testAlcometr() throws InterruptedException {
         SdpoLog.info("Run alcometr...");
-        AlcometerResultTask task = this.alcometerTaskRunner.getAlcometerResultTask();
 
         while (true) {
-            if (task.currentStatus == StatusType.FREE) {
-                task.currentStatus = StatusType.REQUEST;
-            } else if (task.currentStatus == StatusType.ERROR) {
-                SdpoLog.error(task.error.toString());
-                task.currentStatus = StatusType.STOP;
+            if (AlcometerResultTask.currentStatus == StatusType.FREE) {
+                AlcometerResultTask.currentStatus = StatusType.REQUEST;
+            } else if (AlcometerResultTask.currentStatus == StatusType.ERROR) {
+                SdpoLog.error(AlcometerResultTask.error.toString());
+                AlcometerResultTask.currentStatus = StatusType.STOP;
                 break;
-            } else if (task.currentStatus == StatusType.RESULT) {
-                task.currentStatus = StatusType.STOP;
-                SdpoLog.info("Alcometr result " + task.result);
+            } else if (AlcometerResultTask.currentStatus == StatusType.RESULT) {
+                AlcometerResultTask.currentStatus = StatusType.STOP;
+                SdpoLog.info("Alcometr result " + AlcometerResultTask.result);
                 break;
             }
 

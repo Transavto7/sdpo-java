@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.lib.Bluetooth;
+package ru.nozdratenko.sdpo.lib.BluetoothServices;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

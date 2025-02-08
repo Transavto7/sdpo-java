@@ -1,10 +1,12 @@
 package ru.nozdratenko.sdpo.controller.devices;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.network.MultipartUtility;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -15,6 +17,12 @@ import java.util.Map;
 
 @RestController
 public class MediaController {
+    private final CameraHelper cameraHelper;
+
+    @Autowired
+    public MediaController(CameraHelper cameraHelper) {
+        this.cameraHelper = cameraHelper;
+    }
 
     @PostMapping(value = "/device/photo")
     @ResponseBody
@@ -22,7 +30,7 @@ public class MediaController {
         try {
             String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
             SdpoLog.info("Make photo with name: " + name);
-            CameraHelper.makePhoto(name);
+            cameraHelper.makePhoto(name);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png");
         } catch (IOException e) {
@@ -35,7 +43,7 @@ public class MediaController {
     @ResponseBody
     public ResponseEntity media(@RequestBody Map<String, String> json) {
         SdpoLog.info("Make photo and video");
-        JSONObject result = CameraHelper.makePhotoAndVideo(json.get("driver_id"));
+        JSONObject result = cameraHelper.makePhotoAndVideo(json.get("driver_id"));
         return ResponseEntity.status(HttpStatus.OK).body(result.toMap());
     }
 
@@ -43,7 +51,7 @@ public class MediaController {
     @ResponseBody
     public ResponseEntity mediaStop(@RequestBody Map<String, String> json) {
             SdpoLog.info("Stop photo and video");
-            CameraHelper.stopMediaIntoTask();
+        cameraHelper.stopMediaIntoTask();
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -57,7 +65,7 @@ public class MediaController {
     public ResponseEntity videoTest() {
         String name = new SimpleDateFormat("dd-MM-yyyy_k-m-s-S").format(new Date());
         SdpoLog.info("Make photo test with name: " + name);
-        CameraHelper.makeVideo(name);
+        cameraHelper.makeVideo(name);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(MultipartUtility.BACKEND_URL + "/get_file/video/" + name + ".mp4");
     }
@@ -65,7 +73,7 @@ public class MediaController {
     @GetMapping(value = "/device/video/size")
     @ResponseBody
     public ResponseEntity videoSize() {
-        return ResponseEntity.status(HttpStatus.OK).body(CameraHelper.getSizes().keySet());
+        return ResponseEntity.status(HttpStatus.OK).body(cameraHelper.getSizes().keySet());
     }
 
 }

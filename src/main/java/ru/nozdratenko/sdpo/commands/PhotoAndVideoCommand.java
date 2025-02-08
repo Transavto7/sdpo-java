@@ -1,11 +1,18 @@
 package ru.nozdratenko.sdpo.commands;
 
 
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
+@Component
 public class PhotoAndVideoCommand extends Command {
+    @Autowired
+    private CameraHelper cameraHelper;
+
 
     @Override
     String getCommand() {
@@ -51,6 +58,6 @@ public class PhotoAndVideoCommand extends Command {
 
     private void testMedia(int number) throws InterruptedException {
         SdpoLog.info("Make media " + number + "...");
-        CameraHelper.makePhotoAndVideo();
+        cameraHelper.makePhotoAndVideo();
     }
 }

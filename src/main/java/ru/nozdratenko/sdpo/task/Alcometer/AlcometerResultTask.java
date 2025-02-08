@@ -15,33 +15,34 @@ import java.util.Objects;
 
 @Component
 public class AlcometerResultTask implements Runnable {
-    public String result = "0";
-    public JSONObject error;
+    public static String result = "0";
+    public static JSONObject error;
     private boolean flow = false;
-    public StatusType currentStatus = StatusType.FREE;
-    private volatile boolean stopFlag = false;
+    public static StatusType currentStatus = StatusType.FREE;
+    private volatile boolean stopFlag = true;
 
     @Autowired
     private AlcometerHelper alcometerHelper;
 
     @Override
     public void run() {
-        SdpoLog.info("Alcometer run task: " + this.currentStatus.toString());
+        SdpoLog.info("Alcometer run task: " + AlcometerResultTask.currentStatus.toString());
         while (stopFlag) {
+//            SdpoLog.info("!!!!!!! Alcometer run task: " + AlcometerResultTask.currentStatus.toString());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {}
 
-            if (this.currentStatus == StatusType.FREE) {
+            if (AlcometerResultTask.currentStatus == StatusType.FREE) {
                 continue;
             }
 
             if (AlcometerHelper.PORT == null) {
                 this.alcometerHelper.setComPort();
-                this.currentStatus = StatusType.FREE;
+                AlcometerResultTask.currentStatus = StatusType.FREE;
             }
 
-            if (this.currentStatus == StatusType.STOP) {
+            if (AlcometerResultTask.currentStatus == StatusType.STOP) {
                 try {
                     this.alcometerHelper.open();
                     this.alcometerHelper.stop();
@@ -49,9 +50,9 @@ public class AlcometerResultTask implements Runnable {
                     SdpoLog.error(e);
                 } catch (AlcometerException ignored) { }
 
-                this.currentStatus = StatusType.FREE;
+                AlcometerResultTask.currentStatus = StatusType.FREE;
 
-            } else if (this.currentStatus == StatusType.REQUEST) {
+            } else if (AlcometerResultTask.currentStatus == StatusType.REQUEST) {
                 try {
                     this.alcometerHelper.open();
                     this.alcometerHelper.start();
@@ -66,19 +67,19 @@ public class AlcometerResultTask implements Runnable {
                     continue;
                 }
 
-                this.currentStatus = StatusType.WAIT;
+                AlcometerResultTask.currentStatus = StatusType.WAIT;
 
-            } else if (this.currentStatus == StatusType.WAIT
-                    || this.currentStatus == StatusType.READY
-                    || this.currentStatus == StatusType.ANALYSE ) {
+            } else if (AlcometerResultTask.currentStatus == StatusType.WAIT
+                    || AlcometerResultTask.currentStatus == StatusType.READY
+                    || AlcometerResultTask.currentStatus == StatusType.ANALYSE ) {
                 try {
                     String result = this.alcometerHelper.result();
                     if (Objects.equals(result, "STATUS_READY")) {
-                        this.currentStatus = StatusType.READY;
+                        AlcometerResultTask.currentStatus = StatusType.READY;
                         continue;
                     }
                     if (Objects.equals(result, "ANALYSE")) {
-                        this.currentStatus = StatusType.ANALYSE;
+                        AlcometerResultTask.currentStatus = StatusType.ANALYSE;
                         continue;
                     }
                     if (result == null) {
@@ -110,21 +111,21 @@ public class AlcometerResultTask implements Runnable {
                     flow = true;
                     setError(e.getResponse());
                 }
-            } else if (this.currentStatus == StatusType.ERROR) {
+            } else if (AlcometerResultTask.currentStatus == StatusType.ERROR) {
                 this.alcometerHelper.setComPort();
-                this.currentStatus = StatusType.FREE;
+                AlcometerResultTask.currentStatus = StatusType.FREE;
             }
         }
     }
 
     public void setResult(String result) {
-        this.result = result;
-        this.currentStatus = StatusType.RESULT;
+        AlcometerResultTask.result = result;
+        AlcometerResultTask.currentStatus = StatusType.RESULT;
     }
 
     public void setError(JSONObject message) {
-        this.error = message;
-        this.currentStatus = StatusType.ERROR;
+        AlcometerResultTask.error = message;
+        AlcometerResultTask.currentStatus = StatusType.ERROR;
     }
 
     public void setError(String message) {
@@ -134,11 +135,13 @@ public class AlcometerResultTask implements Runnable {
     }
 
     public void close() {
-        this.currentStatus = StatusType.STOP;
+        AlcometerResultTask.currentStatus = StatusType.STOP;
     }
 
     public void stop() {
-        this.stopFlag = true;
+        SdpoLog.info("!!!!!!! Alcometer stop task: " + AlcometerResultTask.currentStatus.toString());
+
+        this.stopFlag = false;
         Thread.currentThread().interrupt();
     }
 }

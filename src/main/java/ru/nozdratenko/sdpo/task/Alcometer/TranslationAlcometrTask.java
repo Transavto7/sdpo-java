@@ -32,7 +32,7 @@ public class TranslationAlcometrTask implements Runnable {
         while (session.isOpen()) {
             try {
                 Thread.sleep(300);
-                status = alcometerTaskRunner.getAlcometerResultTask().currentStatus.toString();
+                status = AlcometerResultTask.currentStatus.toString();
                 if (!now.equals(status)) {
                     now = status;
                     basicRemote.sendText(now);

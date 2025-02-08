@@ -3,8 +3,7 @@ package ru.nozdratenko.sdpo.task.Tonometer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.lib.Bluetooth.Bluetooth;
-import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.lib.BluetoothServices.Bluetooth;
 import ru.nozdratenko.sdpo.util.StatusType;
 
 @Component

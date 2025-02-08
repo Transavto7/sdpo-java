@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
@@ -22,12 +23,22 @@ public class Sdpo {
     private final AlcometerHelper alcometerHelper;
     private final PortService portService;
     private final BrowserHelper browserHelper;
+    private final ThermometerHelper thermometerHelper;
+    private final CameraHelper cameraHelper;
 
     @Autowired
-    public Sdpo(AlcometerHelper alcometerHelper, PortService portService, BrowserHelper browserHelper) {
+    public Sdpo(
+            AlcometerHelper alcometerHelper,
+            PortService portService,
+            BrowserHelper browserHelper,
+            ThermometerHelper thermometerHelper,
+            CameraHelper cameraHelper
+    ) {
         this.alcometerHelper = alcometerHelper;
         this.portService = portService;
         this.browserHelper = browserHelper;
+        this.thermometerHelper = thermometerHelper;
+        this.cameraHelper = cameraHelper;
     }
 
     public static FileConfiguration mainConfig;
@@ -38,7 +49,6 @@ public class Sdpo {
     public static StampStorage serviceDataStorage;
     public static InspectionStorage inspectionStorage;
 
-    public static final ThermometerResultTask thermometerResultTask = new ThermometerResultTask();
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
@@ -49,24 +59,18 @@ public class Sdpo {
         initMainConfig();
         initSystemConfig();
         runTasks();
-        CameraHelper.initDimension();
+        cameraHelper.initDimension();
         if (!this.portService.isAdmin() && !isAdmin()) {
             SdpoLog.error("The program has been started without admin role !!!");
         }
         alcometerHelper.init();
         alcometerHelper.setDeviceInstanceId();
         alcometerHelper.setComPort();
-        ThermometerHelper.setComPort();
+        thermometerHelper.setComPort();
     }
 
     public void runTasks() {
-
-//        tonometerResultTask.start();
-        thermometerResultTask.start();
         mediaMakeTask.start();
-//        alcometerResultTask.start();
-//        tonometerConnectTask.start();
-
 //        runScannerTask();
     }
 
@@ -144,7 +148,7 @@ public class Sdpo {
                 .setDefault("check_phone_number", true)
                 .setDefault("camera_photo", true)
                 .setDefault("driver_photo", false)
-                .setDefault("camera_dimension", CameraHelper.getDefaultSize())
+                .setDefault("camera_dimension", this.cameraHelper.getDefaultSize())
                 .setDefault("printer_write", true)
                 .setDefault("print_qr_check", false)
                 .setDefault("print_count", 1)

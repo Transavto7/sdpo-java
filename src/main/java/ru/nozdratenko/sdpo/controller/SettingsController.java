@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.controller;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,13 +10,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.helper.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.Map;
 
 @RestController
 public class SettingsController {
+    private final CameraHelper cameraHelper;
+
+    @Autowired
+    public SettingsController(CameraHelper cameraHelper) {
+        this.cameraHelper = cameraHelper;
+    }
+
     @PostMapping("/setting/load")
     @ResponseBody
     public ResponseEntity loadSettings() {
@@ -88,7 +97,7 @@ public class SettingsController {
             //
         }
 
-        CameraHelper.initDimension();
+        this.cameraHelper.initDimension();
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 }

@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.nozdratenko.sdpo.lib.Bluetooth.Bluetooth;
+import ru.nozdratenko.sdpo.lib.BluetoothServices.Bluetooth;
 
 import java.util.HashMap;
 
