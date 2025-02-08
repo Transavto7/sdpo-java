@@ -90,7 +90,7 @@ public class PrinterHelper {
 
         int count = 1;
         try {
-            count = Sdpo.systemConfig.getInt("print_count");
+            count = Sdpo.settings.systemConfig.getInt("print_count");
         } catch (IllegalArgumentException | IllegalStateException | JSONException e) {
             //
         }
@@ -98,7 +98,7 @@ public class PrinterHelper {
         aset.add(new Copies(count));
         aset.add(new MediaPrintableArea(0f, 0f, 160 / 72f, 280 / 72f, MediaPrintableArea.INCH));
 
-        JSONObject stamp = Sdpo.mainConfig.getJson().getJSONObject("selected_stamp");
+        JSONObject stamp = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_stamp");
 
         if (Sdpo.isConnection()) {
             JSONObject raw = Sdpo.serviceDataStorage.getFromApi();

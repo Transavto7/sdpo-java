@@ -15,6 +15,7 @@ public class WebSocketConfig {
     public VideoEndpoint videoWebSocket() {
         return new VideoEndpoint();
     }
+
     @Bean
     public AlcometrStatusEndPoint alcometrWebSocket() {
         return new AlcometrStatusEndPoint();

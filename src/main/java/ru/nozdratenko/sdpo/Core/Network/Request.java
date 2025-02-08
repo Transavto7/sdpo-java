@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.network;
+package ru.nozdratenko.sdpo.Core.Network;
 
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
@@ -8,6 +8,7 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class Request {
     public boolean success = true;
 
     public Request(String url) throws IOException {
-        String baseURL = Sdpo.mainConfig.getString("url");
+        String baseURL = Sdpo.settings.ehzpoConnectConfig.getString("url");
 
         if (!baseURL.endsWith("/") && !url.startsWith("/")) {
             baseURL += "/";
@@ -34,6 +35,7 @@ public class Request {
     public String sendGet() throws IOException, ApiException {
         return sendGet(new HashMap<>());
     }
+
     public String sendGet(Map<String, String> parameters) throws IOException, ApiException {
         this.url = new URL(this.url.toString() + ParameterStringBuilder.getParamsString(parameters));
 
@@ -41,7 +43,7 @@ public class Request {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
         connection.setRequestProperty("Content-Length", "1");
-        connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
+        connection.setRequestProperty("Authorization", "Bearer " + Sdpo.settings.ehzpoConnectConfig.getString("token"));
         connection.setDoOutput(true);
 
         InputStream inputStream;
@@ -57,10 +59,10 @@ public class Request {
             throw new ApiException("Ошибка запроса. Неверный ответ");
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -92,6 +94,7 @@ public class Request {
     public String sendPost() throws IOException, ApiException {
         return sendPost("");
     }
+
     public String sendPost(String json) throws IOException, ApiException {
 
         InputStream inputStream = this.sendPostInputStream(json);
@@ -133,7 +136,7 @@ public class Request {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Content-Length", "1");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-        connection.setRequestProperty("Authorization", "Bearer " + Sdpo.mainConfig.getString("token"));
+        connection.setRequestProperty("Authorization", "Bearer " + Sdpo.settings.ehzpoConnectConfig.getString("token"));
         connection.setDoOutput(true);
 
         try(OutputStream os = connection.getOutputStream()) {

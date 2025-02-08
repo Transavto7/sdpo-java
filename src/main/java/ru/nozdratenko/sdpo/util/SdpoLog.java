@@ -3,7 +3,7 @@ package ru.nozdratenko.sdpo.util;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import ru.nozdratenko.sdpo.exception.SdpoException;
-import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 
 import java.io.File;
 import java.io.PrintWriter;

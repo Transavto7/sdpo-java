@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.controller;
+package ru.nozdratenko.sdpo.Settings.Http;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
-import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.Map;
@@ -29,8 +28,9 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity loadSettings() {
         JSONObject json = new JSONObject();
-        json.put("main", Sdpo.mainConfig.getJson());
-        json.put("system", Sdpo.systemConfig.getJson());
+        json.put("main", Sdpo.settings.mainConfig.getJson());
+        json.put("connection", Sdpo.settings.ehzpoConnectConfig.getJson());
+        json.put("system", Sdpo.settings.systemConfig.getJson());
         return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
     }
 
@@ -41,8 +41,8 @@ public class SettingsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password error");
         }
 
-        Sdpo.mainConfig.set("password", json.get("password"));
-        Sdpo.mainConfig.saveFile();
+        Sdpo.settings.mainConfig.set("password", json.get("password"));
+        Sdpo.settings.mainConfig.saveFile();
         SdpoLog.info("Save new password: " + json.get("password"));
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
@@ -55,8 +55,8 @@ public class SettingsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("address error");
         }
 
-        Sdpo.mainConfig.set("tonometer_mac", json.get("address").trim());
-        Sdpo.mainConfig.saveFile();
+        Sdpo.settings.mainConfig.set("tonometer_mac", json.get("address").trim());
+        Sdpo.settings.mainConfig.saveFile();
         SdpoLog.info("Save new tonometer address: " + json.get("address"));
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
@@ -66,16 +66,16 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity saveApi(@RequestBody Map<String, String> json) {
         if (json.get("address") != null && !json.get("address").isEmpty()) {
-            Sdpo.mainConfig.set("url", json.get("address"));
+            Sdpo.settings.ehzpoConnectConfig.set("url", json.get("address"));
             SdpoLog.info("Save new url: " + json.get("address"));
         }
 
         if (json.get("token") != null && !json.get("token").isEmpty()) {
-            Sdpo.mainConfig.set("token", json.get("token"));
+            Sdpo.settings.ehzpoConnectConfig.set("token", json.get("token"));
             SdpoLog.info("Save new token: " + json.get("token"));
         }
 
-        Sdpo.mainConfig.saveFile();
+        Sdpo.settings.ehzpoConnectConfig.saveFile();
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
@@ -84,10 +84,10 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity saveSystem(@RequestBody Map<String,  String> json) {
         for (String key : json.keySet()) {
-            Sdpo.systemConfig.set(key, json.get(key));
+            Sdpo.settings.systemConfig.set(key, json.get(key));
         }
 
-        Sdpo.systemConfig.saveFile();
+        Sdpo.settings.systemConfig.saveFile();
         try {
             SdpoLog.info("Save new settings system");
             SdpoLog.info("-----[settings]------");

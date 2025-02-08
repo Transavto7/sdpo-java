@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -10,7 +11,8 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import java.io.IOException;
 
-public class TranslationVideoTask extends Thread {
+@Component
+public class TranslationVideoTask implements Runnable {
     @Autowired
     private CameraHelper cameraHelper;
 
@@ -35,6 +37,5 @@ public class TranslationVideoTask extends Thread {
             }
         }
         SdpoLog.info("Close translation video");
-
     }
 }

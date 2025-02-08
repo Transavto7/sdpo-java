@@ -2,7 +2,7 @@ package ru.nozdratenko.sdpo.storage.repository.medic;
 
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.storage.repository.GetRequest;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 

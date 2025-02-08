@@ -38,8 +38,8 @@ public class AlcometerHelper {
     }
 
     public void init() {
-        DEVICE_INSTANCE_ID = Sdpo.systemConfig.getString("alcometer_instance_id");
-        ALCOMETER_REINIT_PORT_COUNT = Sdpo.systemConfig.getInt("alcometer_reinit_port_count");
+        DEVICE_INSTANCE_ID = Sdpo.settings.systemConfig.getString("alcometer_instance_id");
+        ALCOMETER_REINIT_PORT_COUNT = Sdpo.settings.systemConfig.getInt("alcometer_reinit_port_count");
     }
 
     public void open() throws SerialPortException, AlcometerException, UnsupportedEncodingException {
@@ -87,7 +87,7 @@ public class AlcometerHelper {
 
         boolean currentMod;
         SdpoLog.info("Start alcometer");
-        if (Sdpo.systemConfig.getBoolean("alcometer_fast")) {
+        if (Sdpo.settings.systemConfig.getBoolean("alcometer_fast")) {
             currentMod = this.enableFastMode();
         } else {
             currentMod = this.enableSlowMode();
@@ -240,7 +240,7 @@ public class AlcometerHelper {
                         this.getSerialPort();
                         this.close();
                         ALCOMETER_REINIT_PORT_COUNT++;
-                        Sdpo.systemConfig.set("alcometer_reinit_port_count", ALCOMETER_REINIT_PORT_COUNT).saveFile();
+                        Sdpo.settings.systemConfig.set("alcometer_reinit_port_count", ALCOMETER_REINIT_PORT_COUNT).saveFile();
                         SdpoLog.info("Succeed reinitialize SerialPort");
                         this.rerunEventPublisher.publish();
                         this.setComPort();
@@ -300,7 +300,7 @@ public class AlcometerHelper {
         if (deviceInstanceId != null) {
             if (DEVICE_INSTANCE_ID == null || !DEVICE_INSTANCE_ID.equals(deviceInstanceId)) {
                 DEVICE_INSTANCE_ID = deviceInstanceId;
-                Sdpo.systemConfig.set("alcometer_instance_id", deviceInstanceId).saveFile();
+                Sdpo.settings.systemConfig.set("alcometer_instance_id", deviceInstanceId).saveFile();
                 SdpoLog.info("Alcometer set Instance Id: " + deviceInstanceId);
             }
         } else if (DEVICE_INSTANCE_ID == null) {

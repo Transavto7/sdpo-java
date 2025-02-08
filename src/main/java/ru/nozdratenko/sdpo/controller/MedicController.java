@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
@@ -42,8 +42,8 @@ public class MedicController {
     @PostMapping(value = "api/medic", produces = "application/json; charset=utf-8")
     @ResponseBody
     public ResponseEntity apiSaveMedic(@RequestBody Map<String, String> json) {
-        Sdpo.mainConfig.getJson().put("selected_medic", json);
-        Sdpo.mainConfig.saveFile();
+        Sdpo.settings.mainConfig.getJson().put("selected_medic", json);
+        Sdpo.settings.mainConfig.saveFile();
         return ResponseEntity.ok().body("ok");
     }
 

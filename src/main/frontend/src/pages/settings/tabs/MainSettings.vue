@@ -17,7 +17,7 @@ export default {
   methods: {
     async save() {
       await saveSystem(this.system);
-      await saveApi(this.config.url, this.config.token);
+      await saveApi(this.connectionConfig.url, this.connectionConfig.token);
       this.$store.state.point = await getPoint();
       this.toast.success('Настройки сохранены');
     },
@@ -28,6 +28,9 @@ export default {
     },
     config() {
       return this.$store.state.config?.main || {};
+    },
+    connectionConfig() {
+      return this.$store.state.config?.connection || {};
     },
     connection() {
       return this.$store.state.connection || false;
@@ -237,11 +240,11 @@ export default {
       </div>
       <div class="admin__system-card__item">
         <span>Адрес</span>
-        <input v-model="config.url">
+        <input v-model="connectionConfig.url">
       </div>
       <div class="admin__system-card__item">
         <span>Токен</span>
-        <input v-model="config.token">
+        <input v-model="connectionConfig.token">
       </div>
     </div>
 

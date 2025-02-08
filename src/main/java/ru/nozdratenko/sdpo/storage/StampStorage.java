@@ -36,8 +36,8 @@ public class StampStorage implements RemoteServerRequest, StoreInLocalMemory {
     }
 
     public void selectStamp(JSONObject stamp) {
-        Sdpo.mainConfig.getJson().put("selected_stamp", stamp);
-        Sdpo.mainConfig.saveFile();
+        Sdpo.settings.mainConfig.getJson().put("selected_stamp", stamp);
+        Sdpo.settings.mainConfig.saveFile();
     }
 
 }

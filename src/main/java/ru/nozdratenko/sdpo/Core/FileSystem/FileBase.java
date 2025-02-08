@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.file;
+package ru.nozdratenko.sdpo.Core.FileSystem;
 
 import ru.nozdratenko.sdpo.util.SdpoLog;
 

@@ -12,8 +12,8 @@ import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.file.FileBase;
-import ru.nozdratenko.sdpo.network.MultipartUtility;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
+import ru.nozdratenko.sdpo.Core.Network.MultipartUtility;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -82,7 +82,7 @@ public class WindowsCameraHelper implements CameraHelper {
     public void initDimension() {
         try {
             Webcam webcam = Webcam.getDefault();
-            double with = Double.parseDouble(Sdpo.systemConfig.getString("camera_dimension"));
+            double with = Double.parseDouble(Sdpo.settings.systemConfig.getString("camera_dimension"));
             Dimension dim = getSize(with);
             webcam.setViewSize(dim);
         } catch (IllegalArgumentException e) {

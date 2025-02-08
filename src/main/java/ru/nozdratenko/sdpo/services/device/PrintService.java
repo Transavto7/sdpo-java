@@ -3,8 +3,8 @@ package ru.nozdratenko.sdpo.services.device;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.file.FileBase;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.File;

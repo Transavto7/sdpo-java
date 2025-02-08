@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.Map;

@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 public class WindowsBrowserHelper implements BrowserHelper {
 
     public void openUrl(String url) {
-        String cmd = Sdpo.mainConfig.getString("run_browser_cmd");
+        String cmd = Sdpo.settings.mainConfig.getString("run_browser_cmd");
         if (cmd != null && !cmd.isEmpty()) {
             Runtime runtime = Runtime.getRuntime();
             try {

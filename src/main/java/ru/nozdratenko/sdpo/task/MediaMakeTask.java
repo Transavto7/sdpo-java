@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
@@ -17,8 +18,6 @@ public class MediaMakeTask extends Thread {
     private transient static final Queue<String> medias = new PriorityQueue<>();
     private static final Lock cameraLock = new ReentrantLock();
     public static transient boolean skip = false;
-    @Autowired
-    private CameraHelper cameraHelper;
 
     public static void record(String name) {
         medias.offer(name);
@@ -32,7 +31,7 @@ public class MediaMakeTask extends Thread {
 
     @Override
     public void run() {
-
+        CameraHelper cameraHelper = SpringContext.getBean(CameraHelper.class);
         while (true) {
 
             if (MediaMakeTask.medias.isEmpty()) {
@@ -51,11 +50,11 @@ public class MediaMakeTask extends Thread {
             cameraLock.lock();
             String name = MediaMakeTask.medias.element();
             try {
-                if (Sdpo.systemConfig.getBoolean("camera_photo")) {
+                if (Sdpo.settings.systemConfig.getBoolean("camera_photo")) {
                     cameraHelper.makePhoto(name);
                 }
 
-                if (Sdpo.systemConfig.getBoolean("camera_video")) {
+                if (Sdpo.settings.systemConfig.getBoolean("camera_video")) {
                     cameraHelper.makeVideo(name);
                 }
 

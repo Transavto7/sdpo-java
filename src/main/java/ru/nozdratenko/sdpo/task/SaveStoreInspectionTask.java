@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
-import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.File;

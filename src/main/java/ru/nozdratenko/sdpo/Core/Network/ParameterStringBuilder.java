@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.network;
+package ru.nozdratenko.sdpo.Core.Network;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

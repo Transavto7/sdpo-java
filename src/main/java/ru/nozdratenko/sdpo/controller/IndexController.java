@@ -8,10 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
-import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.websocket.VideoEndpoint;
 
@@ -125,7 +124,7 @@ public class IndexController {
             return ResponseEntity.status(403).body("logo not found");
         }
 
-        Sdpo.mainConfig.set("logo", json.get("logo")).saveFile();
+        Sdpo.settings.mainConfig.set("logo", json.get("logo")).saveFile();
         return ResponseEntity.ok().body("ok");
     }
 

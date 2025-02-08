@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.websocket;
 
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.task.TranslationVideoTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -16,14 +17,16 @@ import java.util.List;
 @ServerEndpoint(value = "/video")
 @Component
 public class VideoEndpoint implements MessageHandler {
-    private TranslationVideoTask translationTask;
+    private Thread translationTask;
     public static List<Session> sessionList = new ArrayList<>();
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
+        TranslationVideoTask translationTaskRunnable = SpringContext.getBean(TranslationVideoTask.class);
+
         sessionList.add(session);
         if (translationTask == null || !translationTask.isAlive()) {
-            translationTask = new TranslationVideoTask().setSession(session);
+            translationTask = new Thread(translationTaskRunnable.setSession(session));
             translationTask.start();
             SdpoLog.info("Translation video run");
         } else {

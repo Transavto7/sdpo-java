@@ -1,7 +1,6 @@
-package ru.nozdratenko.sdpo.network;
+package ru.nozdratenko.sdpo.Core.Network;
 
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.BufferedReader;
@@ -16,8 +15,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This utility class provides an abstraction layer for sending multipart HTTP

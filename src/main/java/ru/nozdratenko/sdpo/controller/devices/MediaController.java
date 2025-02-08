@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
-import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
-import ru.nozdratenko.sdpo.network.MultipartUtility;
+import ru.nozdratenko.sdpo.Core.Network.MultipartUtility;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;

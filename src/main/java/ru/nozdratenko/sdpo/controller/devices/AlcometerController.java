@@ -75,8 +75,8 @@ public class AlcometerController {
         String modeName = json.get("mode");
         boolean fastMode = modeName.equals("fast");
         boolean slowMode = modeName.equals("slow");
-        if (fastMode) Sdpo.systemConfig.set("alcometer_fast", true);
-        if (slowMode) Sdpo.systemConfig.set("alcometer_fast", false);
+        if (fastMode) Sdpo.settings.systemConfig.set("alcometer_fast", true);
+        if (slowMode) Sdpo.settings.systemConfig.set("alcometer_fast", false);
         return ResponseEntity.ok().body("");
     }
 

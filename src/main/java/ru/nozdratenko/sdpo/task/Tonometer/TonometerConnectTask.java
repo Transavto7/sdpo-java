@@ -30,7 +30,7 @@ public class TonometerConnectTask implements Runnable {
                 continue;
             }
 
-            String uuid = Sdpo.mainConfig.getString("tonometer_mac");
+            String uuid = Sdpo.settings.mainConfig.getString("tonometer_mac");
 
             if (uuid == null || uuid.isEmpty()) {
                 continue;
@@ -46,8 +46,8 @@ public class TonometerConnectTask implements Runnable {
                 if (result.equals("set")) {
                     bluetooth.setIndicate(uuid);
                     currentStatus = StatusType.RESULT;
-//                    Sdpo.mainConfig.set("tonometer_connect", true);
-//                    Sdpo.mainConfig.saveFile();
+//                    Sdpo.settings.mainConfig.set("tonometer_connect", true);
+//                    Sdpo.settings.mainConfig.saveFile();
                 }
             }
         }

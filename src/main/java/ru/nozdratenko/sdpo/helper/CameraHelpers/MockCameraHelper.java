@@ -1,36 +1,19 @@
 package ru.nozdratenko.sdpo.helper.CameraHelpers;
 
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamException;
-import org.bytedeco.ffmpeg.global.avcodec;
-import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.*;
-import org.bytedeco.opencv.global.opencv_imgcodecs;
-import org.bytedeco.opencv.opencv_core.IplImage;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.file.FileBase;
-import ru.nozdratenko.sdpo.network.MultipartUtility;
-import ru.nozdratenko.sdpo.task.MediaMakeTask;
+import ru.nozdratenko.sdpo.Core.Network.MultipartUtility;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Profile("develop")
@@ -67,10 +50,12 @@ public class MockCameraHelper implements CameraHelper {
         return "10";
     }
 
-    public byte[] makePhotoBytes() {
+    public byte[] makePhotoBytes() throws IOException {
         SdpoLog.info("MockCameraHelper::makePhotoBytes");
+        ClassPathResource resource = new ClassPathResource("printer.jpg");
+        Path filePath = Path.of(resource.getURI());
 
-        return null;
+        return Files.readAllBytes(filePath);
     }
 
     public String makePhoto(String name) throws IOException {
@@ -98,9 +83,12 @@ public class MockCameraHelper implements CameraHelper {
         SdpoLog.info("MockCameraHelper::makeVideo");
     }
 
-    public byte[] readVideoByte() {
+    public byte[] readVideoByte() throws IOException {
         SdpoLog.info("MockCameraHelper::readVideoByte");
-        return null;
+        ClassPathResource resource = new ClassPathResource("printer.jpg");
+        Path filePath = Path.of(resource.getURI());
+
+        return Files.readAllBytes(filePath);
     }
 
     public String savePhoto(Frame image, String name) {

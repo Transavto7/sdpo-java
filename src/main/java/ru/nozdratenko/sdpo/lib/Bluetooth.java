@@ -1,6 +1,6 @@
 package ru.nozdratenko.sdpo.lib;
 
-import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.HashMap;

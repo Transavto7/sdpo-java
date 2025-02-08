@@ -1,7 +1,7 @@
 package ru.nozdratenko.sdpo.util.device;
 
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.BufferedReader;
@@ -13,7 +13,7 @@ public class BluetoothDeviceService {
     private static final String BleApp = "bleapp.exe";
     private static final String getTonometerResult = "getTonometerResult";
     private static final String tonometer_process_id = "tonometer_process_id";
-    private static final Integer PID = Sdpo.systemConfig.getInt(tonometer_process_id);
+    private static final Integer PID = Sdpo.settings.systemConfig.getInt(tonometer_process_id);
 
     public static String getTonometerResult() {
         try {
@@ -61,7 +61,7 @@ public class BluetoothDeviceService {
     }
 
     private static void savePid(long pid) {
-        Sdpo.systemConfig.set(tonometer_process_id, (int) pid).saveFile();
+        Sdpo.settings.systemConfig.set(tonometer_process_id, (int) pid).saveFile();
         SdpoLog.info("Saved tonometer_process_id: " + pid);
     }
 

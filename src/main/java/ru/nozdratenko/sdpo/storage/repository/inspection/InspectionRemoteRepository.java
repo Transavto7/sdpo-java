@@ -2,7 +2,7 @@ package ru.nozdratenko.sdpo.storage.repository.inspection;
 
 import org.json.JSONArray;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;

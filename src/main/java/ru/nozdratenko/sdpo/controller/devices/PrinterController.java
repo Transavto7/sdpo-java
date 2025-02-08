@@ -12,7 +12,7 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -47,7 +47,7 @@ public class PrinterController {
     @PostMapping(value = "/device/printer/inspection/verified/qr")
     @ResponseBody
     public ResponseEntity printVerifyInspectionQR(@RequestBody Map<String, String> json) {
-        if (Sdpo.systemConfig.getBoolean("print_qr_check")) {
+        if (Sdpo.settings.systemConfig.getBoolean("print_qr_check")) {
             try {
                 PDDocument document = PrintService.getVerifiedQrInspectionToPDF(Integer.parseInt(json.get("id")));
                 PrinterHelper.printFromPDFRotate(document);

@@ -46,7 +46,7 @@ public class TonometerResultTask implements Runnable {
                 }
 
                if (currentStatus == StatusType.WAIT) {
-                   String uuid = Sdpo.mainConfig.getString("tonometer_mac");
+                   String uuid = Sdpo.settings.mainConfig.getString("tonometer_mac");
                    if (uuid == null || uuid.isEmpty()) {
                        continue;
                    }

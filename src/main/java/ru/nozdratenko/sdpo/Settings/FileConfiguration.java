@@ -1,6 +1,8 @@
-package ru.nozdratenko.sdpo.file;
+package ru.nozdratenko.sdpo.Settings;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;

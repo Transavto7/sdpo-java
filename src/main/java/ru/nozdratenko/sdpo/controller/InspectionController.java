@@ -11,7 +11,7 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
-import ru.nozdratenko.sdpo.network.Request;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
@@ -112,7 +112,7 @@ public class InspectionController {
             if (!Sdpo.isConnection()) {
                 return this.inspectionSaveOffline(json);
             } else {
-                if (Sdpo.systemConfig.getBoolean("manual_mode")) {
+                if (Sdpo.settings.systemConfig.getBoolean("manual_mode")) {
                     return this.inspectionSavePack(json);
                 } else {
                     return this.inspectionSaveOnline(json);
@@ -178,10 +178,10 @@ public class InspectionController {
             resultJson = new JSONObject(result);
         }
 
-        if (Sdpo.systemConfig.getBoolean("printer_write")) {
+        if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(resultJson);
         }
-        if (Sdpo.systemConfig.getBoolean("print_qr_check")) {
+        if (Sdpo.settings.systemConfig.getBoolean("print_qr_check")) {
             try {
                 PDDocument document = PrintService.getVerifiedQrInspectionToPDF(resultJson.getInt("id"));
                 String path = PrintService.storeQrToPath(document, Integer.toString(resultJson.getInt("id")));
@@ -207,16 +207,16 @@ public class InspectionController {
         String tonometer = "125/80";
         double alcometer = 0.0;
 
-        if (Sdpo.mainConfig.getJson().has("selected_medic")) {
+        if (Sdpo.settings.mainConfig.getJson().has("selected_medic")) {
 
             try {
-                inspection.put("user_eds", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
-                inspection.put("user_name", Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
+                inspection.put("user_eds", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
+                inspection.put("user_name", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
             } catch (JSONException e) {
                 SdpoLog.error("Error get medic id");
             }
             try {
-                String validity = "Срок действия с " + Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_start") + " по " + Sdpo.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end");
+                String validity = "Срок действия с " + Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_start") + " по " + Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end");
                 inspection.put("validity", validity);
             } catch (JSONException e) {
                 SdpoLog.error("Error get medic eds validity");
@@ -265,7 +265,7 @@ public class InspectionController {
 
         inspection.put("created_at", currentDate);
         Sdpo.inspectionStorage.saveInspection(inspection);
-        if (Sdpo.systemConfig.getBoolean("printer_write")) {
+        if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(inspection);
         }
         SdpoLog.info("Offline save: " + inspection.toString());
@@ -283,11 +283,11 @@ public class InspectionController {
         JSONObject resultJson = new JSONObject(result);
         SdpoLog.info("3 Saved inspection: " + resultJson.toString());
 
-        if (Sdpo.systemConfig.getBoolean("printer_write")) {
+        if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(resultJson);
         }
 
-        if (Sdpo.systemConfig.getBoolean("print_qr_check")) {
+        if (Sdpo.settings.systemConfig.getBoolean("print_qr_check")) {
             try {
                 PDDocument document = PrintService.getVerifiedQrInspectionToPDF(resultJson.getInt("id"));
                 String path = PrintService.storeQrToPath(document, Integer.toString(resultJson.getInt("id")));

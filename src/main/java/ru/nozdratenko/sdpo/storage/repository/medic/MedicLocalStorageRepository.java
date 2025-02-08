@@ -1,7 +1,7 @@
 package ru.nozdratenko.sdpo.storage.repository.medic;
 
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.file.FileBase;
+import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
