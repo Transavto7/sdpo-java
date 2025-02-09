@@ -3,14 +3,13 @@ package ru.nozdratenko.sdpo.Settings.Factories;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
+import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
-import ru.nozdratenko.sdpo.util.SdpoLog;
 
 @Component
 public class SettingsFactory {
     public static FileConfiguration makeMain(JSONObject defaultSettings) {
-        SdpoLog.info("!!!!!!!!!!!!!!! defaultSettings:  " + defaultSettings);
         FileConfiguration configuration = new FileConfiguration("configs/main.json");
         configuration.setDefault("password", SettingsFactory.getValue(defaultSettings, "password", "7344946"))
                 .setDefault("medic_password", SettingsFactory.getValue(defaultSettings, "medic_password", "0000000"))
@@ -22,7 +21,17 @@ public class SettingsFactory {
                         ))
                 .setDefault("tonometer_mac", null)
                 .setDefault("tonometer_connect", false)
+                .mergeWithJson(defaultSettings)
                 .saveFile();
+
+        if (configuration.getString("url") != null) {
+            Sdpo.connectionConfig.set("url", configuration.getString("url"));
+            Sdpo.connectionConfig.set("token", configuration.getString("token"));
+            configuration.getJson().remove("url");
+            configuration.getJson().remove("token");
+            configuration.saveFile();
+            Sdpo.connectionConfig.saveFile();
+        }
 
         return configuration;
     }
@@ -64,6 +73,7 @@ public class SettingsFactory {
                 .setDefault("auto_start", SettingsFactory.getValue(defaultSettings, "auto_start", true))
                 .setDefault("delay_before_retry_inspection", SettingsFactory.getValue(defaultSettings, "delay_before_retry_inspection", 5000))
                 .setDefault("delay_before_redirect_to_main_page", SettingsFactory.getValue(defaultSettings, "delay_before_redirect_to_main_page", 10000))
+                .mergeWithJson(defaultSettings)
                 .saveFile();
 
         return configuration;

@@ -3,11 +3,12 @@ package ru.nozdratenko.sdpo.Settings;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
+import ru.nozdratenko.sdpo.Settings.Contracts.Configuration;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
-public class FileConfiguration extends FileBase {
+public class FileConfiguration extends FileBase implements Configuration {
     protected JSONObject json = new JSONObject();
 
     public FileConfiguration(String path) {
@@ -92,6 +93,16 @@ public class FileConfiguration extends FileBase {
             this.writeFile(json.toString(1));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        return this;
+    }
+
+    public FileConfiguration mergeWithJson(JSONObject mainJson) {
+        if (mainJson != null) {
+            for (String key : mainJson.keySet()) {
+                json.put(key, mainJson.get(key));
+            }
         }
 
         return this;

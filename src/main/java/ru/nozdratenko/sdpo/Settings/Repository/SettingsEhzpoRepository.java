@@ -17,7 +17,7 @@ public class SettingsEhzpoRepository {
 
             return new JSONObject(response);
         } catch (Exception | ApiException e) {
-            SdpoLog.error("Error load storage data");
+            SdpoLog.error("Error load settings from EHZPO " + e);
             return null;
         }
     }

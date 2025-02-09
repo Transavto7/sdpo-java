@@ -30,6 +30,8 @@ export default {
       return this.$store.state.config?.main || {};
     },
     connectionConfig() {
+      console.log(
+        this.$store.state.config?.connection)
       return this.$store.state.config?.connection || {};
     },
     connection() {

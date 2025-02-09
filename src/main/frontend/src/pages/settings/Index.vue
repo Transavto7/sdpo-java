@@ -35,10 +35,6 @@ export default {
               :class="{active: selected === 'tonometer'}">
         Настройки тонометра
       </button>
-      <button class="admin__tab animate__animated animate__fadeInDown d-4" @click="selected = 'print'"
-              :class="{active: selected === 'print'}">
-        Настройка печати
-      </button>
       <button class="admin__tab animate__animated animate__fadeInDown d-3" @click="selected = 'logo'"
               :class="{active: selected === 'logo'}">
         Смена логотипа
@@ -53,7 +49,6 @@ export default {
     <tonometer v-if="selected === 'tonometer'"/>
     <password v-if="selected === 'password'"/>
     <main-settings v-if="selected === 'main'"/>
-    <print v-if="selected === 'print'"/>
     <logo v-if="selected === 'logo'"/>
   </div>
 </template>

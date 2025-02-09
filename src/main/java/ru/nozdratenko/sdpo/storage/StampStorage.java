@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.storage.repository.stamp.StampLocalStorageRepository;
 import ru.nozdratenko.sdpo.storage.repository.stamp.StampRemoteRepository;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 import java.util.Map;
@@ -39,5 +40,4 @@ public class StampStorage implements RemoteServerRequest, StoreInLocalMemory {
         Sdpo.settings.mainConfig.getJson().put("selected_stamp", stamp);
         Sdpo.settings.mainConfig.saveFile();
     }
-
 }

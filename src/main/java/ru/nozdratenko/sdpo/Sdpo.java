@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
@@ -42,6 +43,7 @@ public class Sdpo {
     }
 
     public static SettingsContainer settings;
+    public static FileConfiguration connectionConfig;
 
     public static DriverStorage driverStorage;
     public static MedicStorage medicStorage;
@@ -55,6 +57,7 @@ public class Sdpo {
 
     public void init() {
         SdpoLog.info("Run project");
+        connectionConfig = SettingsFactory.makeConnectionConfig();
         settings = SettingsContainer.init();
         runTasks();
         cameraHelper.initDimension();

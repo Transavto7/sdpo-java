@@ -5,25 +5,24 @@ import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.Repository.SettingsEhzpoRepository;
 
+import java.util.Optional;
+
 public class SettingsContainer {
     public final FileConfiguration mainConfig;
-    public final FileConfiguration ehzpoConnectConfig;
     public final FileConfiguration systemConfig;
 
-    public SettingsContainer(FileConfiguration mainConfig, FileConfiguration ehzpoConnectConfig, FileConfiguration systemConfig) {
+    public SettingsContainer(FileConfiguration mainConfig, FileConfiguration systemConfig) {
         this.mainConfig = mainConfig;
-        this.ehzpoConnectConfig = ehzpoConnectConfig;
         this.systemConfig = systemConfig;
     }
 
     public static SettingsContainer init() {
         SettingsEhzpoRepository repository = SpringContext.getBean(SettingsEhzpoRepository.class);
-        JSONObject defaultSettings = repository.getSettings();
+        JSONObject defaultSettings = Optional.ofNullable(repository.getSettings()).orElse(new JSONObject());
 
         return new SettingsContainer(
-            SettingsFactory.makeMain(defaultSettings),
-            SettingsFactory.makeConnectionConfig(),
-            SettingsFactory.makeSystem(defaultSettings)
+            SettingsFactory.makeMain(defaultSettings.optJSONObject("main")),
+            SettingsFactory.makeSystem(defaultSettings.optJSONObject("system"))
         );
     }
 }

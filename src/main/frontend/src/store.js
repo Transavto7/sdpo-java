@@ -24,8 +24,8 @@ const store = createStore({
     },
     getters: {
         url: state => {
-            if(state.config?.main?.url) {
-                return state.config.main.url;
+            if(state.config?.connection?.url) {
+                return state.config.connection.url;
             } else {
                 toast.error('Ошибка конфигурации. URL адрес не указан.')
                 throw new Error('Error configuration API url');

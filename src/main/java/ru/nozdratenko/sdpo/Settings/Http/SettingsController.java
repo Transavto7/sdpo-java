@@ -29,7 +29,7 @@ public class SettingsController {
     public ResponseEntity loadSettings() {
         JSONObject json = new JSONObject();
         json.put("main", Sdpo.settings.mainConfig.getJson());
-        json.put("connection", Sdpo.settings.ehzpoConnectConfig.getJson());
+        json.put("connection", Sdpo.connectionConfig.getJson());
         json.put("system", Sdpo.settings.systemConfig.getJson());
         return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
     }
@@ -66,16 +66,16 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity saveApi(@RequestBody Map<String, String> json) {
         if (json.get("address") != null && !json.get("address").isEmpty()) {
-            Sdpo.settings.ehzpoConnectConfig.set("url", json.get("address"));
+            Sdpo.connectionConfig.set("url", json.get("address"));
             SdpoLog.info("Save new url: " + json.get("address"));
         }
 
         if (json.get("token") != null && !json.get("token").isEmpty()) {
-            Sdpo.settings.ehzpoConnectConfig.set("token", json.get("token"));
+            Sdpo.connectionConfig.set("token", json.get("token"));
             SdpoLog.info("Save new token: " + json.get("token"));
         }
 
-        Sdpo.settings.ehzpoConnectConfig.saveFile();
+        Sdpo.connectionConfig.saveFile();
 
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }

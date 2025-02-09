@@ -107,6 +107,8 @@ public class IndexController {
             String response = request.sendGet();
             if (request.success && response.length() < 500) {
                 JSONObject jsonObject = new JSONObject(response);
+                Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
+
                 return ResponseEntity.ok().body(jsonObject.toMap());
             } else {
                 return ResponseEntity.status(403).body("error");
