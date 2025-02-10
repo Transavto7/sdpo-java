@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.WindowsCameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -13,9 +14,6 @@ import java.io.IOException;
 
 @Component
 public class TranslationVideoTask implements Runnable {
-    @Autowired
-    private CameraHelper cameraHelper;
-
     private RemoteEndpoint.Basic basicRemote;
     private Session session;
 
@@ -28,6 +26,8 @@ public class TranslationVideoTask implements Runnable {
 
     @Override
     public void run() {
+        CameraHelper cameraHelper = SpringContext.getBean(CameraHelper.class);
+
         cameraHelper.openCam();
         while (session.isOpen()) {
             try {

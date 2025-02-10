@@ -15,9 +15,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class MediaMakeTask extends Thread {
-    private transient static final Queue<String> medias = new PriorityQueue<>();
+    private static final Queue<String> medias = new PriorityQueue<>();
     private static final Lock cameraLock = new ReentrantLock();
-    public static transient boolean skip = false;
+    public static boolean skip = false;
 
     public static void record(String name) {
         medias.offer(name);

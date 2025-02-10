@@ -17,10 +17,12 @@ public class TonometerResultTask implements Runnable {
     private final JSONObject json = new JSONObject();
     private StatusType currentStatus = StatusType.FREE;
     private final Bluetooth bluetooth;
+    private final TonometerHelper tonometerHelper;
 
     @Autowired
-    public TonometerResultTask(Bluetooth bluetooth) {
+    public TonometerResultTask(Bluetooth bluetooth, TonometerHelper tonometerHelper) {
         this.bluetooth = bluetooth;
+        this.tonometerHelper = tonometerHelper;
     }
 
 
@@ -54,7 +56,7 @@ public class TonometerResultTask implements Runnable {
                        continue;
                    }
 
-                   if (TonometerHelper.scan().isEmpty()){
+                   if (this.tonometerHelper.scan().isEmpty()){
                        SdpoLog.info("Tonometer is disconnected");
                        continue;
                    }
@@ -82,7 +84,7 @@ public class TonometerResultTask implements Runnable {
                        continue;
                    }
 
-                   if (Sdpo.systemConfig.getBoolean("tonometer_logs_visible")) {
+                   if (Sdpo.settings.systemConfig.getBoolean("tonometer_logs_visible")) {
                        SdpoLog.info("Tonometer Logs:\n" + bleappLogs);
                    }
 

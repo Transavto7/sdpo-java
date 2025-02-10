@@ -27,11 +27,7 @@ public class ThermometerResultTask implements Runnable {
     }
 
     public boolean exist() {
-        if (this.result > 0) {
-            return true;
-        }
-
-        return false;
+        return this.result > 0;
     }
 
     public void clear() {

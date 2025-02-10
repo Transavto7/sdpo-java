@@ -6,6 +6,7 @@ import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 @Component
 public class SettingsFactory {
@@ -24,7 +25,7 @@ public class SettingsFactory {
                 .mergeWithJson(defaultSettings)
                 .saveFile();
 
-        if (configuration.getString("url") != null) {
+        if (!configuration.getString("url").isEmpty()) {
             Sdpo.connectionConfig.set("url", configuration.getString("url"));
             Sdpo.connectionConfig.set("token", configuration.getString("token"));
             configuration.getJson().remove("url");
@@ -59,6 +60,7 @@ public class SettingsFactory {
                 .setDefault("alcometer_visible", SettingsFactory.getValue(defaultSettings, "alcometer_visible", true))
                 .setDefault("tonometer_skip", SettingsFactory.getValue(defaultSettings, "tonometer_skip", true))
                 .setDefault("tonometer_visible", SettingsFactory.getValue(defaultSettings, "tonometer_visible", true))
+                .setDefault("tonometer_logs_visible", SettingsFactory.getValue(defaultSettings, "tonometer_logs_visible", true))
                 .setDefault("camera_video", SettingsFactory.getValue(defaultSettings, "camera_video", true))
                 .setDefault("check_phone_number", SettingsFactory.getValue(defaultSettings, "check_phone_number", true))
                 .setDefault("camera_photo", SettingsFactory.getValue(defaultSettings, "camera_photo", true))

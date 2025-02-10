@@ -17,12 +17,14 @@ public class SettingsContainer {
     }
 
     public static SettingsContainer init() {
-        SettingsEhzpoRepository repository = SpringContext.getBean(SettingsEhzpoRepository.class);
-        JSONObject defaultSettings = Optional.ofNullable(repository.getSettings()).orElse(new JSONObject());
+//        SettingsEhzpoRepository repository = SpringContext.getBean(SettingsEhzpoRepository.class);
+//        JSONObject defaultSettings = Optional.ofNullable(repository.getSettings()).orElse(new JSONObject());
 
         return new SettingsContainer(
-            SettingsFactory.makeMain(defaultSettings.optJSONObject("main")),
-            SettingsFactory.makeSystem(defaultSettings.optJSONObject("system"))
+//            SettingsFactory.makeMain(defaultSettings.optJSONObject("main")),
+//            SettingsFactory.makeSystem(defaultSettings.optJSONObject("system"))
+                SettingsFactory.makeMain(new JSONObject()),
+                SettingsFactory.makeSystem(new JSONObject())
         );
     }
 }

@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
@@ -16,9 +17,6 @@ import java.io.IOException;
 
 @Component
 public class SaveStoreInspectionTask extends Thread {
-    @Autowired
-    private CameraHelper cameraHelper;
-
     @Override
     public void run() {
         while (true) {
@@ -53,6 +51,7 @@ public class SaveStoreInspectionTask extends Thread {
     }
 
     private void saveMedia(JSONObject json) {
+        CameraHelper cameraHelper = SpringContext.getBean(CameraHelper.class);
         if (json.has("photo")) {
             String name = json.getString("photo");
             String[] split = name.split("/");
