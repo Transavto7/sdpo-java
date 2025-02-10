@@ -4,10 +4,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.event.StopRunProcessesEvent;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelper;
@@ -27,6 +29,12 @@ import java.util.Map;
 
 @RestController
 public class InspectionController {
+
+    private final ApplicationEventPublisher eventPublisher;
+
+    public InspectionController(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
 
     @PostMapping("inspection/{id}")
     public ResponseEntity inspectionStart(@PathVariable String id) throws IOException {
@@ -109,15 +117,18 @@ public class InspectionController {
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
         try {
+            ResponseEntity entity;
             if (!Sdpo.isConnection()) {
-                return this.inspectionSaveOffline(json);
+                entity = this.inspectionSaveOffline(json);
             } else {
                 if (Sdpo.settings.systemConfig.getBoolean("manual_mode")) {
-                    return this.inspectionSavePack(json);
+                    entity = this.inspectionSavePack(json);
                 } else {
-                    return this.inspectionSaveOnline(json);
+                    entity = this.inspectionSaveOnline(json);
                 }
             }
+            eventPublisher.publishEvent(new StopRunProcessesEvent(this));
+            return entity;
         } catch (ApiException e) {
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {

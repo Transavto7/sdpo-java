@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
@@ -7,7 +7,6 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 using System.Globalization;
-using System.Linq;
 
 namespace BleAppConsole
 {
@@ -16,7 +15,6 @@ namespace BleAppConsole
         static DeviceInformation deviceInfo = null;
         static DeviceWatcher deviceWatcher = null;
         static BluetoothLEDevice bluetoothLeDevice = null;
-        static GattCharacteristicsResult characteristicResult;
         static string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
         public static string BloodPressureUUID = "00001810-0000-1000-8000-00805f9b34fb";
         static string result;
@@ -56,7 +54,19 @@ namespace BleAppConsole
                     }
                     else
                     {
-                        await CheckAdapter();
+                        var btAdapter = await BluetoothAdapter.GetDefaultAsync();
+                        if (btAdapter == null)
+                        {
+                            return "error_bluetooth_off";
+                        }
+                        if (!btAdapter.IsLowEnergySupported)
+                            return "error_bluetooth_low_energy_supported";
+
+                        Radio radio = await btAdapter.GetRadioAsync();
+                        if (radio == null || radio.State != RadioState.On)
+                        {
+                            return "error_bluetooth_radio_off";
+                        }
 
                         bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.Id);
                         GattDeviceServicesResult gattDevice = await bluetoothLeDevice.GetGattServicesAsync();
@@ -67,22 +77,14 @@ namespace BleAppConsole
                             foreach (var service in services)
                             {
                                 if (service.Uuid.ToString() == BloodPressureUUID)
-                                //if (service.Uuid == GattCharacteristicUuids.BloodPressureMeasurement)
                                 {
-                                    characteristicResult = await service.GetCharacteristicsAsync();
-
-                                    if (characteristicResult.Status != GattCommunicationStatus.Success)
-                                    {
-                                        Console.WriteLine($"Failed to get characteristics. Status: {characteristicResult.Status}. Attempting to reconnect...");
-                                        await ReconnectToDevice();
-                                    }
+                                    GattCharacteristicsResult characteristicResult = await service.GetCharacteristicsAsync();
 
                                     if (characteristicResult.Status == GattCommunicationStatus.Success)
                                     {
                                         var characteristics = characteristicResult.Characteristics;
                                         foreach (var characteristic in characteristics)
                                         {
-                                            //if (characteristic.Uuid.ToString() == BloodPressureUUID) // doesn't work
                                             if (characteristic.Uuid == GattCharacteristicUuids.BloodPressureMeasurement)
                                             {
                                                 bool readed = false;
@@ -101,7 +103,7 @@ namespace BleAppConsole
                                                             }
                                                             catch (Exception ex)
                                                             {
-                                                                Console.WriteLine($"error_reconnect : {ex.Message}");
+                                                                Console.WriteLine($"Reconnect error: {ex.Message}");
                                                             }
                                                         });
 
@@ -111,47 +113,29 @@ namespace BleAppConsole
                                                     byte[] dataArr = new byte[reader.UnconsumedBufferLength];
                                                     reader.ReadBytes(dataArr);
 
-                                                    if (dataArr == null || dataArr.Length == 0)
-                                                    {
-                                                        Console.WriteLine("DataReader.FromBuffer is null or empty");
-                                                        Environment.Exit(102);
-                                                    }
+                                                    var hexString = BitConverter.ToString(dataArr);
 
-                                                    //var hexString = BitConverter.ToString(dataArr);
-                                                    //Console.WriteLine($"Received hexString from tonometer : {hexString}");
+                                                    string[] hexValues = hexString.Split('-');
+                                                    byte[] byteArray = new byte[hexValues.Length];
 
-                                                    //string[] hexValues = hexString.Split('-');
-                                                    //int[] intArray = new int[hexValues.Length];
+                                                    bool pulsePresent = (byteArray[0] & (1 << 5)) != 0;
 
-                                                    //for (int i = 0; i < hexValues.Length; i++)
-                                                    //{
-                                                    //    intArray[i] = Convert.ToInt32(hexValues[i], 16);
-                                                    //}
-                                                    int[] intArray = dataArr.Select(b => (int)b).ToArray();
-                                                    Console.WriteLine("Received data from tonometer: " + string.Join(", ", intArray));
-
-                                                    int systolicPressure = 0;
-                                                    int diastolicPressure = 0;
-                                                    int pulse = 0;
-                                                    if (dataArr.Length < 15)
+                                                    if (!pulsePresent)
                                                     {
                                                         Console.WriteLine("Pulse data may be incorrect");
-                                                        pulse = dataArr[7];
                                                     }
-                                                    else
+
+
+                                                    for (int i = 0; i < hexValues.Length; i++)
                                                     {
-                                                        pulse = dataArr[14];
+                                                        byteArray[i] = Convert.ToByte(hexValues[i], 16);
                                                     }
-                                                    if (pulse <= 0)
-                                                    {
-                                                        Console.WriteLine("Pulse data is incorrect");
-                                                        //Environment.Exit(103);
-                                                    }
-                                                    systolicPressure = dataArr[1];
-                                                    diastolicPressure = dataArr[3];
+
+                                                    int systolicPressure = byteArray[1];  
+                                                    int diastolicPressure = byteArray[3]; 
+                                                    int pulse = byteArray[14];            
 
                                                     result = ("#" + $"{systolicPressure}||{diastolicPressure}||{pulse}");
-//                                                    Console.WriteLine("BloodPressureMeasurement result: " + result);
 
                                                     lock (lockObj)
                                                     {
@@ -172,19 +156,15 @@ namespace BleAppConsole
                                             }
                                         }
                                     }
-                                    Console.WriteLine("Characteristic not found");
-                                    return "error_characteristic_not_found";
-                                    //break;
+                                    break;
                                 }
                             }
                         }
                         else
                         {
-                            Console.WriteLine("error_read_services");
-                            //return "error_read_services";
+                            return "error_read_services";
                         }
                         deviceWatcher.Stop();
-                        Console.WriteLine("Device Watcher stopped");
                         break;
                     }
                 }
@@ -192,16 +172,17 @@ namespace BleAppConsole
             catch (System.Runtime.InteropServices.COMException ex)
             {
                 string error = ex.Message + " (HRESULT: " + ex.HResult.ToString() + ")";
-                Console.WriteLine("error_windows WinRT " + error);
-                Environment.Exit(111);
+                return "error_windows WinRT " + error;
             }
             catch (Exception ex)
             {
                 string error = ex.Message + " (HRESULT: " + ex.HResult.ToString() + ")";
-                Console.WriteLine("error_windows " + error);
-                Environment.Exit(112);
+                return "error_windows " + error;
             }
-            
+            //catch
+            //{
+            //    return "error_windows unknown error";
+            //}
             return null;
         }
 
@@ -255,7 +236,7 @@ namespace BleAppConsole
         private async void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
             Console.WriteLine("DeviceWatcher stopped. Restarting...");
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            await Task.Delay(TimeSpan.FromSeconds(3)); // Затримка перед повторним запуском
             StartWatchingDevices();
         }
 
@@ -291,11 +272,11 @@ namespace BleAppConsole
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"error_connection_failed: {ex.Message}");
+                    Console.WriteLine($"Connection failed: {ex.Message}");
                 }
 
                 retryCount++;
-                await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, retryCount))); // Delay grows exponentionally
+                await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, retryCount))); // Затримка зростає експоненційно
             }
 
             Console.WriteLine("Failed to connect to device after multiple attempts.");
@@ -318,72 +299,7 @@ namespace BleAppConsole
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"error_while_reconnecting: {ex.Message}");
-            }
-        }
-
-        private static async Task ReconnectToDevice()
-        {
-            // Перепідключення до пристрою
-            bluetoothLeDevice.Dispose(); // Звільняємо ресурси
-            bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.Id);
-
-            if (bluetoothLeDevice == null)
-            {
-                Console.WriteLine("Reconnection failed: BluetoothLEDevice is null.");
-                //return "error_reconnect_failed";
-            }
-
-            // Повторне отримання сервісу
-            GattDeviceServicesResult gattDeviceRetry = await bluetoothLeDevice.GetGattServicesAsync();
-            if (gattDeviceRetry.Status != GattCommunicationStatus.Success)
-            {
-                Console.WriteLine($"Failed to retrieve GATT services after reconnect. Status: {gattDeviceRetry.Status}");
-                //return "error_read_services_after_reconnect";
-            }
-
-            // Пошук потрібного сервісу
-            var retryServices = gattDeviceRetry.Services;
-            var bloodPressureService = retryServices.FirstOrDefault(s => s.Uuid.ToString() == BloodPressureUUID);
-            //var bloodPressureService = retryServices.FirstOrDefault(s => s.Uuid == GattCharacteristicUuids.BloodPressureMeasurement);
-
-            if (bloodPressureService == null)
-            {
-                Console.WriteLine("Blood Pressure Service not found after reconnect.");
-                //return "error_service_not_found";
-            }
-
-            // Повторна спроба отримати характеристики
-            characteristicResult = await bloodPressureService.GetCharacteristicsAsync();
-            if (characteristicResult.Status != GattCommunicationStatus.Success)
-            {
-                Console.WriteLine($"Failed to get characteristics after reconnect. Status: {characteristicResult.Status}");
-                //return "error_characteristics_read_failed_after_reconnect";
-                Environment.Exit(121);
-            }
-        }
-
-        private static async Task CheckAdapter()
-        {
-            var btAdapter = await BluetoothAdapter.GetDefaultAsync();
-            if (btAdapter == null)
-            {
-                Console.WriteLine("bluetooth off");
-                //return "error_bluetooth_off";
-                Environment.Exit(131);
-            }
-            if (!btAdapter.IsLowEnergySupported)
-            {
-                Console.WriteLine("bluetooth low energy unsupported");
-                //return "error_bluetooth_low_energy_supported";
-                Environment.Exit(132);
-            }
-            Radio radio = await btAdapter.GetRadioAsync();
-            if (radio == null || radio.State != RadioState.On)
-            {
-                Console.WriteLine("bluetooth radio off");
-                //return "error_bluetooth_radio_off";
-                Environment.Exit(133);
+                Console.WriteLine($"Error while reconnecting: {ex.Message}");
             }
         }
 

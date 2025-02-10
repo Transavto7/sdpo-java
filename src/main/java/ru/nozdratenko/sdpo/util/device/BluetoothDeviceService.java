@@ -6,16 +6,16 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BluetoothDeviceService {
     private static String workDir = null;
-    private static final String BleApp = "bleapp.exe";
+    private static final String TonometerApp = "bleapp.exe";
     private static final String getTonometerResult = "getTonometerResult";
-    private static final String tonometer_process_id = "tonometer_process_id";
-    private static final Integer PID = Sdpo.settings.systemConfig.getInt(tonometer_process_id);
+    private static final String tonometer_pid = "tonometer_process_id";
 
-    public static String getTonometerResult() {
+    public static List<String> getTonometerResult() {
         try {
             String[] command = {workDir, getTonometerResult};
 
@@ -23,8 +23,7 @@ public class BluetoothDeviceService {
             builder.redirectErrorStream(true);
             Process process = builder.start();
 
-            long pid = process.pid();
-            savePid(pid);
+            savePid(process.pid());
 
             // Read the output from the C# application
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -40,38 +39,43 @@ public class BluetoothDeviceService {
 
             // Wait for the process to exit
             int exitCode = process.waitFor();
-            SdpoLog.info("BleApp exited with code: " + exitCode);
+            SdpoLog.info("Tonometer App exited with code: " + exitCode);
 
-            return output.toString();
+            return processBleappResult(output.toString());
         } catch (Exception e) {
             SdpoLog.error(e.getMessage());
         }
         return null;
     }
 
+    private static List<String> processBleappResult(String tonomResult){
+        String[] resultArr = tonomResult.split("#");
+        return List.of(resultArr[0], resultArr.length > 1 ? resultArr[1] : "");
+    }
+
     public static void start() {
         try {
             stopPreviousTonometerApp();
             Thread.sleep(2000);
-            workDir = FileBase.exportLibrary(BleApp);
-            SdpoLog.info("bleapp.exe placed into: " + workDir);
+            workDir = FileBase.exportLibrary(TonometerApp);
+            SdpoLog.info("Tonometer App dir: " + workDir);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
     private static void savePid(long pid) {
-        Sdpo.settings.systemConfig.set(tonometer_process_id, (int) pid).saveFile();
-        SdpoLog.info("Saved tonometer_process_id: " + pid);
+        Sdpo.settings.systemConfig.set(tonometer_pid, (int) pid).saveFile();
+        SdpoLog.info("New tonometer PID: " + pid);
     }
 
     public static void stopPreviousTonometerApp() {
         try {
+            int PID = Sdpo.settings.systemConfig.getInt(tonometer_pid);
             if (PID != 0) {
-                SdpoLog.info("Previous bleapp PID: " + PID);
                 ProcessHandle processHandle = ProcessHandle.of(PID).orElse(null);
                 if (processHandle != null && processHandle.isAlive()) {
-                    SdpoLog.info("Stopping previous bleapp process with PID: " + PID);
+                    SdpoLog.info("Stop previous tonometer process with PID: " + PID);
                     processHandle.destroy();
                     processHandle.onExit().get(5, TimeUnit.SECONDS);
                 }

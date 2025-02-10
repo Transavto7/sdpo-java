@@ -18,3 +18,8 @@ C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-wi
 C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppConsole\BleAppConsole\obj\x64\Debug\BleAppCo.C6C33D90.Up2Date
 C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppConsole\BleAppConsole\obj\x64\Debug\bleapp.exe
 C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppConsole\BleAppConsole\obj\x64\Debug\bleapp.pdb
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppTonometer\BleAppConsole\obj\x64\Debug\BleAppConsole.csproj.AssemblyReference.cache
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppTonometer\BleAppConsole\obj\x64\Debug\BleAppConsole.csproj.CoreCompileInputs.cache
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppTonometer\BleAppConsole\obj\x64\Debug\bleapp.exe
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppTonometer\BleAppConsole\obj\x64\Debug\bleapp.pdb
+C:\Users\АННА ФЕТИСОВА\IdeaProjects\sdpo-java\src\main\csharp\ble-win-csharp\bleapp\BleAppTonometer\BleAppConsole\obj\x64\Debug\BleAppCo.C6C33D90.Up2Date

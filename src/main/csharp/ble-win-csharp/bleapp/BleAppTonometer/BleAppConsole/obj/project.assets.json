@@ -1200,11 +1200,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj",
+      "projectUniqueName": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppTonometer\\BleAppConsole\\BleAppConsole.csproj",
       "projectName": "bleapp",
-      "projectPath": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\BleAppConsole.csproj",
+      "projectPath": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppTonometer\\BleAppConsole\\BleAppConsole.csproj",
       "packagesPath": "C:\\Users\\АННА ФЕТИСОВА\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppConsole\\BleAppConsole\\obj\\",
+      "outputPath": "C:\\Users\\АННА ФЕТИСОВА\\IdeaProjects\\sdpo-java\\src\\main\\csharp\\ble-win-csharp\\bleapp\\BleAppTonometer\\BleAppConsole\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [
