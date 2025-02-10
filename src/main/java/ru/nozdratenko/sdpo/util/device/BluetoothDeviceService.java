@@ -58,7 +58,7 @@ public class BluetoothDeviceService {
             stopPreviousTonometerApp();
             Thread.sleep(2000);
             workDir = FileBase.exportLibrary(TonometerApp);
-            SdpoLog.info("Tonometer App is placed into: " + workDir);
+            SdpoLog.info("Tonometer App dir: " + workDir);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

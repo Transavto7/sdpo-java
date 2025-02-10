@@ -3,6 +3,7 @@ package ru.nozdratenko.sdpo.task;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.helper.TonometerHelper;
 import ru.nozdratenko.sdpo.lib.Bluetooth;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.StatusType;
@@ -25,21 +26,27 @@ public class TonometerResultTask extends Thread {
                     SdpoLog.info("Start tonometer");
                     Bluetooth.restart();
                     BluetoothDeviceService.start();
-                    this.json.clear();
+                    clear();
                     this.currentStatus = StatusType.WAIT;
                 }
 
                 if (currentStatus == StatusType.STOP) {
                     SdpoLog.info("Stop tonometer");
                     Bluetooth.restart();
-                    this.json.clear();
+                    clear();
                     this.currentStatus = StatusType.FREE;
                     continue;
                 }
 
                if (currentStatus == StatusType.WAIT) {
+//                   SdpoLog.info("!!! Wait Tonometer");
                    String uuid = Sdpo.mainConfig.getString("tonometer_mac");
                    if (uuid == null || uuid.isEmpty()) {
+                       continue;
+                   }
+
+                   if (TonometerHelper.scan().isEmpty()){
+                       SdpoLog.info("Tonometer is disconnected");
                        continue;
                    }
 
@@ -66,35 +73,50 @@ public class TonometerResultTask extends Thread {
                        continue;
                    }
 
-                   SdpoLog.info("Tonometer Logs:\n" + bleappLogs);
+                   if (Sdpo.systemConfig.getBoolean("tonometer_logs_visible")) {
+                       SdpoLog.info("Tonometer Logs:\n" + bleappLogs);
+                   }
 
                    String result = null;
-                   if (bleappResult.size() > 1) result = bleappResult.get(1);
+                   if (bleappResult.size() > 1) result = bleappResult.get(1).trim();
 
                    if (result == null || result.isEmpty()) {
-                       continue;
+                       SdpoLog.info("Tonometer Measurement is null or empty");
+                       this.currentStatus = StatusType.STOP;
+//                       suspendCurrentAction(1000);
+//                       continue;
+                   } else {
+                       if (result.contains("255")) {
+                           SdpoLog.info("result contains 255");
+                           continue;
+                       }
+
+                       SdpoLog.info(String.format("result: %s.", result));
+
+                       String[] split = result.split("\\|\\|");
+                       try {
+                           json.put("systolic", Integer.valueOf(split[0]));
+                           json.put("diastolic", Integer.valueOf(split[1]));
+                           json.put("pulse", Integer.valueOf(split[2]));
+                       } catch (Exception e) {
+                           SdpoLog.error("Fail to create alkom result json: " + e);
+                           clear();
+                       }
+
+                       this.currentStatus = StatusType.RESULT;
                    }
-
-                   SdpoLog.info("result: " + result);
-
-                   if (result.contains("255")) {
-                       continue;
-                   }
-
-                   String[] split = result.split("\\|\\|");
-                   try {
-                       json.put("systolic", Integer.valueOf(split[0]));
-                       json.put("diastolic", Integer.valueOf(split[1]));
-                       json.put("pulse", Integer.valueOf(split[2]));
-                   } catch (Exception e) {
-                       json.clear();
-                   }
-
-                   this.currentStatus = StatusType.RESULT;
                }
             } catch (Exception e) {
                 SdpoLog.error(e);
             }
+        }
+    }
+
+    private static void suspendCurrentAction(long milsec){
+        try {
+            Thread.sleep(milsec);
+        } catch (InterruptedException e){
+            SdpoLog.error("suspendCurrentAction: " + e);
         }
     }
 

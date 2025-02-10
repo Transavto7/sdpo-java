@@ -155,6 +155,7 @@ public class Sdpo {
                 .setDefault("alcometer_visible", true)
                 .setDefault("tonometer_skip", true)
                 .setDefault("tonometer_visible", true)
+                .setDefault("tonometer_logs_visible", true)
                 .setDefault("camera_video", true)
                 .setDefault("check_phone_number", true)
                 .setDefault("camera_photo", true)

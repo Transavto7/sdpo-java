@@ -3,7 +3,6 @@ package ru.nozdratenko.sdpo.helper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.lib.Bluetooth;
-import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.HashMap;
 
