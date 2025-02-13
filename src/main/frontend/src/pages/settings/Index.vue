@@ -6,10 +6,14 @@ import MainSettings from "./tabs/MainSettings";
 import Logo from "./tabs/Logo.vue";
 import Print from "@/pages/settings/tabs/Print";
 import {loadSettings} from "@/helpers/settings";
+import QueueToSend from "@/pages/settings/tabs/QueueToSend";
 
 export default {
-  components: {Print, Testing, Tonometer, Password, MainSettings, Logo},
+  components: {QueueToSend, Print, Testing, Tonometer, Password, MainSettings, Logo},
   mounted() {
+    loadSettings()
+  },
+  unmounted() {
     loadSettings()
   },
   data() {
@@ -43,6 +47,10 @@ export default {
               :class="{active: selected === 'logo'}">
         Смена логотипа
       </button>
+      <button class="admin__tab animate__animated animate__fadeInDown d-3" @click="selected = 'queue_to_send'"
+              :class="{active: selected === 'queue_to_send'}">
+        Очередь на отправку
+      </button>
       <button class="admin__tab animate__animated animate__fadeInDown d-4" @click="selected = 'testing'"
               :class="{active: selected === 'testing'}">
         Тестирование
@@ -54,6 +62,7 @@ export default {
     <password v-if="selected === 'password'"/>
     <main-settings v-if="selected === 'main'"/>
     <print v-if="selected === 'print'"/>
+    <queue-to-send v-if="selected === 'queue_to_send'"/>
     <logo v-if="selected === 'logo'"/>
   </div>
 </template>

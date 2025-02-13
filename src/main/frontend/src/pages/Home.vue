@@ -1,5 +1,5 @@
 <script>
-import {getDriver, savePhone} from '@/helpers/api';
+import {getDriver, savePhone} from '@/helpers/api/api';
 import {useToast} from "vue-toastification";
 import MedicSelect from '@/components/MedicSelect.vue';
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
@@ -74,6 +74,19 @@ export default {
     }
   },
   computed: {
+    terminalIsLocked() {
+
+      if (!store.state.connection) {
+        if (this.system.max_inspection_in_offline_mod - this.system.count_inspections <= 0) return true;
+
+        let lastOnline = this.system.last_online || new Date();
+        return (((new Date()) - Date.parse(lastOnline)) / 8.64e7 > this.system.delay_day_in_offline_mod)
+      }
+      return false;
+    },
+    system() {
+      return this.$store.state.config?.system || {};
+    },
     config() {
       return this.$store.state.config;
     },
@@ -99,7 +112,13 @@ export default {
 <template>
   <medic-select/>
   <div class="home">
-    <div class="driver-form">
+    <div v-if="terminalIsLocked" style="width: 100%; justify-content: center; display: flex">
+      <div class="driver-form__not-found animate__animated animate__fadeInUp">
+        Работа терминала приостановлена.
+        Проверьте подключение к интернету
+      </div>
+    </div>
+    <div v-else class="driver-form">
       <div v-if="inspection.driver_fio" class="driver-form__title animate__animated animate__fadeInDown d-2">
         {{ inspection.driver_fio }}
       </div>

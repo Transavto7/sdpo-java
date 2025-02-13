@@ -9,7 +9,7 @@ import { routes } from './router'
 import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
 import {getSettings, loadSettings} from './helpers/settings'
-import {checkConnect, saveInspection} from './helpers/api'
+import {checkConnect, saveInspection} from './helpers/api/api'
 import { closeAlcometer } from './helpers/alcometer'
 import 'animate.css'
 import VueDatePicker from '@vuepic/vue-datepicker';

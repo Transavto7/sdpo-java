@@ -18,6 +18,8 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Controller
@@ -58,6 +60,14 @@ public class IndexController {
                 String response = request.sendGet();
                 if (response.equals("true")) {
                     Sdpo.setConnection(true);
+
+                    Date date = new Date();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String currentDate = dateFormat.format(date);
+                    Sdpo.systemConfig.set("last_online", currentDate);
+                    Sdpo.systemConfig.set("count_inspections", 0);
+                    Sdpo.systemConfig.saveFile();
+
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);
                 }
@@ -95,13 +105,25 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity apiGetVerification() {
         try {
-            Request request = new Request( "sdpo/terminal/verification");
-            String response = request.sendGet();
-            if (request.success && response.length() < 500) {
-                JSONObject jsonObject = new JSONObject(response);
-                return ResponseEntity.ok().body(jsonObject.toMap());
+            if (Sdpo.isConnection()) {
+                Request request = new Request("sdpo/terminal/verification");
+                String response = request.sendGet();
+                if (request.success && response.length() < 500) {
+                    JSONObject jsonObject = new JSONObject(response);
+                    try {
+                        Sdpo.systemConfig.set("date_check", (String) jsonObject.get("date_check"));
+                        Sdpo.systemConfig.set("serial_number", (String) jsonObject.get("serial_number"));
+                        Sdpo.systemConfig.saveFile();
+                    } catch (JSONException ignore) {}
+                    return ResponseEntity.ok().body(jsonObject.toMap());
+                } else {
+                    return ResponseEntity.status(403).body("error");
+                }
             } else {
-                return ResponseEntity.status(403).body("error");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("date_check", Sdpo.systemConfig.getString("date_check"));
+                jsonObject.put("serial_number", Sdpo.systemConfig.getString("serial_number"));
+                return ResponseEntity.ok().body(jsonObject.toMap());
             }
         } catch (IOException | ApiException e) {
             SdpoLog.error(e);

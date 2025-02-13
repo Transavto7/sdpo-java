@@ -1,6 +1,6 @@
 <script>
 
-import {getStamps, saveStamp} from "@/helpers/api";
+import {getStamps, saveStamp} from "@/helpers/api/api";
 import {useToast} from "vue-toastification";
 
 export default {

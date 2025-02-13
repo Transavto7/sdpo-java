@@ -1,11 +1,13 @@
 package ru.nozdratenko.sdpo;
 
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.file.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
+import ru.nozdratenko.sdpo.network.Request;
 import ru.nozdratenko.sdpo.storage.DriverStorage;
 import ru.nozdratenko.sdpo.storage.InspectionStorage;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
@@ -15,6 +17,10 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.port.PortService;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 @Component
@@ -40,6 +46,7 @@ public class Sdpo {
         SdpoLog.info("Run project");
         initMainConfig();
         initSystemConfig();
+        checkConnection();
         runTasks();
         CameraHelper.initDimension();
         if (!PortService.isAdmin() && !isAdmin()) {
@@ -48,6 +55,28 @@ public class Sdpo {
         AlcometerHelper.setDeviceInstanceId();
         AlcometerHelper.setComPort();
         ThermometerHelper.setComPort();
+    }
+
+    private static void checkConnection() {
+        //todo вынести в отдельный хелпер
+        try {
+                String address = Sdpo.mainConfig.getString("url");
+
+                if (!address.endsWith("/")) {
+                    address += "/";
+                }
+
+                Request request = new Request(new URL(address + "sdpo/check"));
+                String response = request.sendGet();
+                if (response.equals("true")) {
+                    Sdpo.setConnection(true);
+                }
+        }
+        catch (UnknownHostException ignored) {}
+        catch (Exception | ApiException e) {
+            SdpoLog.error(e);
+        }
+        Sdpo.setConnection(false);
     }
 
 
@@ -145,6 +174,11 @@ public class Sdpo {
 
     private static void initSystemConfig() {
         FileConfiguration fileConfiguration = new FileConfiguration("configs/system.json");
+
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDate = dateFormat.format(date);
+
         fileConfiguration.setDefault("driver_info", false)
                 .setDefault("type_ride", true)
                 .setDefault("question_sleep", true)
@@ -168,7 +202,14 @@ public class Sdpo {
                 .setDefault("thermometer_visible", true)
                 .setDefault("manual_mode", false)
                 .setDefault("auto_start", true)
+                .setDefault("auto_send_to_crm", true)
+                .setDefault("delay_day_in_offline_mod", 30)
+                .setDefault("max_inspection_in_offline_mod", 300)
+                .setDefault("last_online", currentDate)
+                .setDefault("count_inspections", 0)
                 .setDefault("delay_before_retry_inspection", 5000)
+                .setDefault("date_verification", null)
+                .setDefault("serial_number", null)
                 .setDefault("delay_before_redirect_to_main_page", 10000)
                 .saveFile();
         systemConfig = fileConfiguration;

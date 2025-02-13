@@ -4,10 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.helper.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -73,7 +70,7 @@ public class SettingsController {
 
     @PostMapping("/setting/system")
     @ResponseBody
-    public ResponseEntity saveSystem(@RequestBody Map<String,  String> json) {
+    public ResponseEntity saveSystem(@RequestBody Map<String, String> json) {
         for (String key : json.keySet()) {
             Sdpo.systemConfig.set(key, json.get(key));
         }
@@ -89,6 +86,21 @@ public class SettingsController {
         }
 
         CameraHelper.initDimension();
+        return ResponseEntity.status(HttpStatus.OK).body("success");
+    }
+
+    @PostMapping("/setting/system/auto-send-to-crm/{flag}")
+    @ResponseBody
+    public ResponseEntity saveAutoSendToCrmFlag(@PathVariable boolean flag) {
+        Sdpo.systemConfig.set("auto_send_to_crm", flag);
+        Sdpo.systemConfig.saveFile();
+        try {
+            SdpoLog.info("Save auto_send_to_crm flag in settings system: auto_send_to_crm=" + flag);
+        } catch (JSONException e) {
+            SdpoLog.error("Exception save flag in setting system auto_send_to_crm with status " + flag);
+            SdpoLog.error("Exception: " + e);
+            return ResponseEntity.status(500).body("Ошибка сохранения");
+        }
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 }

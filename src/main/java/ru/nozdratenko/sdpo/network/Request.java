@@ -16,6 +16,7 @@ public class Request {
     protected HttpsURLConnection connection;
     protected String method = "POST";
     public boolean success = true;
+    protected int responseCode;
 
     public Request(String url) throws IOException {
         String baseURL = Sdpo.mainConfig.getString("url");
@@ -108,8 +109,8 @@ public class Request {
         in.close();
         connection.disconnect();
 
-        int responseCode = connection.getResponseCode();
-        if (200 > responseCode || responseCode > 299) {
+        this.setResponseCode(connection.getResponseCode());
+        if (200 > this.getResponseCode() || this.getResponseCode() > 299) {
             String message = "Неизвестная ошибка запроса.";
             try {
                 JSONObject jsonObject = new JSONObject(response.toString());
@@ -142,9 +143,10 @@ public class Request {
         }
 
         InputStream inputStream;
-        int status = connection.getResponseCode();
 
-        if (status < 400) {
+        this.setResponseCode(connection.getResponseCode());
+
+        if (this.getResponseCode() < 400) {
             inputStream = connection.getInputStream();
         } else {
             inputStream = connection.getErrorStream();
@@ -159,5 +161,13 @@ public class Request {
 
     public URL getUrl() {
         return url;
+    }
+
+
+    protected void setResponseCode(int code) {
+        this.responseCode = code;
+    }
+    public int getResponseCode() {
+        return this.responseCode;
     }
 }

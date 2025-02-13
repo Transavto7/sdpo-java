@@ -1,7 +1,7 @@
 @import 'normalize.scss';
 @import 'fonts.scss';
 @import 'global.scss';
-@import 'navigation.scss';
+@import './navigation/navigation';
 @import 'preloader.scss';
 
 @import 'home';
@@ -20,4 +20,4 @@
 @import 'steps/step-question.scss';
 @import 'steps/step-8.scss';
 @import 'steps/step-photo.scss';
-@import 'settings.scss';
+@import 'settings/settings';
