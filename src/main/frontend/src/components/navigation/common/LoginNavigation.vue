@@ -44,6 +44,6 @@ export default {
     <i class="ri-tools-fill"></i>
   </button>
   <div class="animate__animated animate__fadeInDown d-3">
-    <span :class="{ green: connection, red: !connection } " class="activity-circle"></span>
+    <span :class="{ green_gradient_circle: connection, red_gradient_circle: !connection } " class="activity-circle"></span>
   </div>
 </template>
