@@ -34,6 +34,6 @@ public class WishMessageController {
             SdpoLog.error("Error get wish message");
             SdpoLog.error(e);
         }
-        return ResponseEntity.status(403).body("error");
+        return ResponseEntity.ok().body("");
     }
 }

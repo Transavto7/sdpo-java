@@ -2,6 +2,7 @@
 import store from "@/store";
 
 export default {
+
   methods: {
     selectMedic() {
       this.$emit('selectMedic')
@@ -19,9 +20,9 @@ export default {
       this.$emit('print-qr')
     }
   },
-  computed:   {
+  computed: {
     connection() {
-      return this.$store.state.connection
+      return store.state.connection
 
     }
   }
@@ -38,7 +39,11 @@ export default {
   </button>
   <button v-if="connection" @click="printQr()" class="btn opacity animate__animated animate__fadeInDown d-2">QR
   </button>
-  <button @click="settings()" class="btn icon animate__animated animate__fadeInDown d-3">
+  <button @click="settings()" class="btn icon animate__animated animate__fadeInDown d-3"
+          style="padding: 0 1.5em 0 1.25em;">
     <i class="ri-tools-fill"></i>
   </button>
+  <div class="animate__animated animate__fadeInDown d-3">
+    <span :class="{ green_gradient_circle: connection, red_gradient_circle: !connection } " class="activity-circle"></span>
+  </div>
 </template>

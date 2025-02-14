@@ -31,7 +31,6 @@ public class TonometerConnectTask implements Runnable {
             }
 
             String uuid = Sdpo.settings.mainConfig.getString("tonometer_mac");
-
             if (uuid == null || uuid.isEmpty()) {
                 continue;
             }

@@ -2,7 +2,7 @@
 import {saveSystem, saveApi} from '@/helpers/settings';
 import {useToast} from "vue-toastification";
 import {getSizes} from '@/helpers/camera';
-import {getPoint} from '@/helpers/api';
+import {getPoint} from '@/helpers/api/api';
 
 export default {
   data() {
@@ -30,8 +30,6 @@ export default {
       return this.$store.state.config?.main || {};
     },
     connectionConfig() {
-      console.log(
-        this.$store.state.config?.connection)
       return this.$store.state.config?.connection || {};
     },
     connection() {
@@ -105,6 +103,21 @@ export default {
         <input min="1000" class="medium" type="number" v-model="system.delay_before_retry_inspection">
       </div>
     </div>
+
+    <div class="admin__system-card animate__animated animate__fadeInUp d-5">
+      <div class="admin__system-card__title">
+        Автономный режим
+      </div>
+      <div class="admin__system-card__item">
+        <span>Максимальное количество <br> дней работы <br> в автономном режиме</span>
+        <input min="0" class="medium" type="number" v-model="system.delay_day_in_offline_mod">
+      </div>
+      <div class="admin__system-card__item">
+        <span>Максимальное количество <br> осмотров <br> в автономном режиме</span>
+        <input min="1" class="medium" type="number" v-model="system.max_inspection_in_offline_mod">
+      </div>
+    </div>
+
     <div class="admin__system-card animate__animated animate__fadeInUp d-2">
       <div class="admin__system-card__title">
         Алкометр

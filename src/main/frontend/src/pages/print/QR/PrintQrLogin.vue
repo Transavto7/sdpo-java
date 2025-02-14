@@ -1,6 +1,6 @@
 <script>
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
-import {getCar, getDriver} from '@/helpers/api';
+import {getCar, getDriver} from '@/helpers/api/api';
 import { useToast } from "vue-toastification";
 
 export default {

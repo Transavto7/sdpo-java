@@ -7,7 +7,11 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.event.StopRunProcessesEvent;
 import ru.nozdratenko.sdpo.exception.ApiException;
@@ -116,6 +120,8 @@ public class InspectionController {
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
+        Sdpo.settings.systemConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") + 1);
+        Sdpo.settings.systemConfig.saveFile();
         try {
             ResponseEntity entity;
             if (!Sdpo.isConnection()) {
@@ -130,14 +136,20 @@ public class InspectionController {
             eventPublisher.publishEvent(new StopRunProcessesEvent(this));
             return entity;
         } catch (ApiException e) {
+            Sdpo.settings.systemConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
+            Sdpo.settings.systemConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error create inspection: " + e);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Ошибка запроса");
+            Sdpo.settings.systemConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
+            Sdpo.settings.systemConfig.saveFile();
             return ResponseEntity.status(500).body(jsonObject);
         } catch (PrinterException e) {
+            Sdpo.settings.systemConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
+            Sdpo.settings.systemConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse());
         }
     }
@@ -205,10 +217,10 @@ public class InspectionController {
                 SdpoLog.warning("ERROR: " + error);
             }
         }
-
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
     }
 
+    //todo inspectionManager
     public ResponseEntity inspectionSaveOffline(Map<String, String> json)
             throws PrintException, IOException, PrinterException {
         JSONObject inspection = new JSONObject(json);
@@ -220,6 +232,7 @@ public class InspectionController {
 
         if (Sdpo.settings.mainConfig.getJson().has("selected_medic")) {
 
+            //todo selectMedic(inspection) : inspection
             try {
                 inspection.put("user_eds", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
                 inspection.put("user_name", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
@@ -275,6 +288,8 @@ public class InspectionController {
         String currentDate = dateFormat.format(date);
 
         inspection.put("created_at", currentDate);
+        inspection.put("status_send", ResendStatusEnum.UNSENT);
+
         Sdpo.inspectionStorage.saveInspection(inspection);
         if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
             PrinterHelper.print(inspection);

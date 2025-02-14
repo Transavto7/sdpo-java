@@ -1,5 +1,5 @@
 <script>
-import { saveLogo } from '@/helpers/api';
+import { saveLogo } from '@/helpers/api/api';
 import { useToast } from "vue-toastification";
 
 export default {

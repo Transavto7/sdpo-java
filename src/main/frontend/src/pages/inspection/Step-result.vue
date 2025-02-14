@@ -6,7 +6,7 @@ import {
   sendFeedbackAfterInspection,
   getPhrase,
   getWishMessage
-} from '@/helpers/api';
+} from '@/helpers/api/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
 import {getSettings} from "@/helpers/settings";

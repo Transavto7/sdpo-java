@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.controller;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,16 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Controller
 public class IndexController {
-    private final Sdpo sdpo;
     private final CameraHelper cameraHelper;
 
     @Autowired
-    public IndexController(Sdpo sdpo, CameraHelper cameraHelper) {
-        this.sdpo = sdpo;
+    public IndexController(CameraHelper cameraHelper) {
         this.cameraHelper = cameraHelper;
     }
 
@@ -65,7 +66,14 @@ public class IndexController {
                 Request request = new Request(new URL(address + "sdpo/check"));
                 String response = request.sendGet();
                 if (response.equals("true")) {
-                    this.sdpo.setConnection(true);
+                    Sdpo.setConnection(true);
+
+                    Date date = new Date();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String currentDate = dateFormat.format(date);
+                    Sdpo.settings.systemConfig.set("last_online", currentDate);
+                    Sdpo.settings.systemConfig.set("count_inspections", 0);
+                    Sdpo.settings.systemConfig.saveFile();
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);
                 }
@@ -78,7 +86,7 @@ public class IndexController {
             SdpoLog.error(e);
         }
 
-        this.sdpo.setConnection(false);
+        Sdpo.setConnection(false);
         return ResponseEntity.status(403).body("error");
     }
 
@@ -103,15 +111,27 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity apiGetVerification() {
         try {
-            Request request = new Request( "sdpo/terminal/verification");
-            String response = request.sendGet();
-            if (request.success && response.length() < 500) {
-                JSONObject jsonObject = new JSONObject(response);
-                Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
+            if (Sdpo.isConnection()) {
+                Request request = new Request("sdpo/terminal/verification");
+                String response = request.sendGet();
+                if (request.success && response.length() < 500) {
+                    JSONObject jsonObject = new JSONObject(response);
+                    try {
+                        Sdpo.settings.systemConfig.set("date_check", (String) jsonObject.get("date_check"));
+                        Sdpo.settings.systemConfig.set("serial_number", (String) jsonObject.get("serial_number"));
+                        Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
 
-                return ResponseEntity.ok().body(jsonObject.toMap());
+                        Sdpo.settings.systemConfig.saveFile();
+                    } catch (JSONException ignore) {}
+                    return ResponseEntity.ok().body(jsonObject.toMap());
+                } else {
+                    return ResponseEntity.status(403).body("error");
+                }
             } else {
-                return ResponseEntity.status(403).body("error");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("date_check", Sdpo.settings.systemConfig.getString("date_check"));
+                jsonObject.put("serial_number", Sdpo.settings.systemConfig.getString("serial_number"));
+                return ResponseEntity.ok().body(jsonObject.toMap());
             }
         } catch (IOException | ApiException e) {
             SdpoLog.error(e);

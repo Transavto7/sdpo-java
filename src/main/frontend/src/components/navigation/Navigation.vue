@@ -1,5 +1,5 @@
 <script>
-import {close} from '@/helpers/api';
+import {close} from '@/helpers/api/api';
 import AdminNavigation from "@/components/navigation/common/AdminNavigation";
 import LoginNavigation from "@/components/navigation/common/LoginNavigation";
 import InspectionProgressLine from "@/components/navigation/common/InspectionProgressLine";
@@ -60,7 +60,7 @@ export default {
       return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage || this.isSetNumberPhonePage;
     },
     isHomePage() {
-        return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage);
+      return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage);
     },
     isHelpPage() {
       return this.currentRouter.includes('/help');
@@ -120,7 +120,7 @@ export default {
                         @get-help="$router.push('/help')"
                         @get-last-inspection="$router.push('/print/index')"
                         @print-qr="$router.push('/print/qr')"
-                        @settings="$router.push('/login')" />
+                        @settings="$router.push('/login')"/>
     </div>
   </div>
   <div class="step-progress animate__animated animate__fadeInDown" v-if="isInspectionPage">

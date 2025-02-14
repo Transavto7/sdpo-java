@@ -1,7 +1,7 @@
 <script>
 import InputPhoneNumber from "@/components/InputPhoneNumber";
 import Loader from "@/components/common/Loader";
-import {savePhone} from '@/helpers/api';
+import {savePhone} from '@/helpers/api/api';
 
 import {useToast} from "vue-toastification";
 

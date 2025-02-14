@@ -6,7 +6,9 @@ import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
-import ru.nozdratenko.sdpo.util.SdpoLog;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Component
 public class SettingsFactory {
@@ -50,6 +52,9 @@ public class SettingsFactory {
     public static FileConfiguration makeSystem(JSONObject defaultSettings) {
         CameraHelper cameraHelper = SpringContext.getBean(CameraHelper.class);
         FileConfiguration configuration = new FileConfiguration("configs/system.json");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDate = dateFormat.format(new Date());
+
         configuration.setDefault("driver_info", SettingsFactory.getValue(defaultSettings, "driver_info", false))
                 .setDefault("type_ride", SettingsFactory.getValue(defaultSettings, "type_ride", true))
                 .setDefault("question_sleep", SettingsFactory.getValue(defaultSettings, "question_sleep", true))
@@ -73,6 +78,12 @@ public class SettingsFactory {
                 .setDefault("thermometer_visible", SettingsFactory.getValue(defaultSettings, "thermometer_visible", true))
                 .setDefault("manual_mode", SettingsFactory.getValue(defaultSettings, "manual_mode", false))
                 .setDefault("auto_start", SettingsFactory.getValue(defaultSettings, "auto_start", true))
+                .setDefault("delay_day_in_offline_mod", SettingsFactory.getValue(defaultSettings, "delay_day_in_offline_mod", 30))
+                .setDefault("max_inspection_in_offline_mod", SettingsFactory.getValue(defaultSettings, "max_inspection_in_offline_mod", 300))
+                .setDefault("auto_send_to_crm", SettingsFactory.getValue(defaultSettings, "auto_send_to_crm", true))
+                .setDefault("last_online", currentDate)
+                .setDefault("count_inspections", 0)
+                .setDefault("date_verification", null)
                 .setDefault("delay_before_retry_inspection", SettingsFactory.getValue(defaultSettings, "delay_before_retry_inspection", 5000))
                 .setDefault("delay_before_redirect_to_main_page", SettingsFactory.getValue(defaultSettings, "delay_before_redirect_to_main_page", 10000))
                 .mergeWithJson(defaultSettings)

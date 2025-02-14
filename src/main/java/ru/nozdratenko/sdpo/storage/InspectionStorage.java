@@ -50,4 +50,8 @@ public class InspectionStorage extends FileBase implements StoreInLocalMemory {
             SdpoLog.error(e);
         }
     }
+
+    public void setStore(JSONArray store) {
+        this.store = store;
+    }
 }

@@ -1,0 +1,39 @@
+.activity-circle {
+  display: block;
+  border-radius: 50%;
+  height: 15px;
+  width: 15px;
+  margin: 0;
+  background: #afafaf;
+  animation: activity-circle-rotated 4s infinite;
+}
+
+.red_gradient_circle {
+  background: radial-gradient(circle at 20px 10px, #ff8f8f, #6d0000)
+}
+
+.green_gradient_circle {
+  background: radial-gradient(circle at 20px 10px, #2af100, #2d6500);
+}
+
+@keyframes activity-circle-rotated {
+  0% {
+    transform: rotate(15deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+  90% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(15deg);
+  }
+}
+

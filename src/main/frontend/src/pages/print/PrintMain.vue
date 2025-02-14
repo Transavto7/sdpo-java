@@ -2,7 +2,7 @@
 import PrintLogin from "@/pages/print/PrintLogin";
 import PrintIndex from "@/pages/print/PrintIndex";
 import Loader from "@/components/common/Loader";
-import {getInspections, printInspection, printInspectionQr} from '@/helpers/api';
+import {getInspections, printInspection, printInspectionQr} from '@/helpers/api/api';
 import {useToast} from "vue-toastification";
 
 

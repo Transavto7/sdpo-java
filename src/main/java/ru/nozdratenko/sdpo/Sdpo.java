@@ -2,9 +2,11 @@ package ru.nozdratenko.sdpo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
+import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
@@ -18,6 +20,10 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.port.PortService.PortService;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Component
 public class Sdpo {
@@ -59,6 +65,7 @@ public class Sdpo {
         SdpoLog.info("Run project");
         connectionConfig = SettingsFactory.makeConnectionConfig();
         settings = SettingsContainer.init();
+        checkConnection();
         runTasks();
         cameraHelper.initDimension();
         if (!this.portService.isAdmin() && !isAdmin()) {
@@ -68,6 +75,27 @@ public class Sdpo {
         alcometerHelper.setDeviceInstanceId();
         alcometerHelper.setComPort();
         thermometerHelper.setComPort();
+    }
+
+    private void checkConnection() {
+        try {
+            String address = Sdpo.connectionConfig.getString("url");
+
+            if (!address.endsWith("/")) {
+                address += "/";
+            }
+
+            Request request = new Request(new URL(address + "sdpo/check"));
+            String response = request.sendGet();
+            if (response.equals("true")) {
+                Sdpo.setConnection(true);
+            }
+        }
+        catch (UnknownHostException ignored) {}
+        catch (Exception | ApiException e) {
+            SdpoLog.error(e);
+        }
+        Sdpo.setConnection(false);
     }
 
     public void runTasks() {
@@ -131,7 +159,7 @@ public class Sdpo {
         return connection;
     }
 
-    public void setConnection(boolean connection) {
+    public static void setConnection(boolean connection) {
         Sdpo.connection = connection;
     }
 }
