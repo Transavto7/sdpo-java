@@ -477,5 +477,4 @@ public class WindowsCameraHelper implements CameraHelper {
             }
         }).start();
     }
-
 }

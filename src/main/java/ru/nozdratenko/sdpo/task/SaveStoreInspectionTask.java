@@ -62,6 +62,7 @@ public class SaveStoreInspectionTask extends Thread {
                     inspections.remove(index);
                     index = 0;
                     Sdpo.inspectionStorage.save();
+                    this.saveMedia(json);
                 }
                 catch (InternalServerError e) {
                     try {

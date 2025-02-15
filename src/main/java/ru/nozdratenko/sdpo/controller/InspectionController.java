@@ -28,7 +28,10 @@ import javax.print.PrintException;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -42,6 +45,16 @@ public class InspectionController {
 
     @PostMapping("inspection/{id}")
     public ResponseEntity inspectionStart(@PathVariable String id) throws IOException {
+        String dateEdsEndRaw = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end").toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate dateEdsEnd = LocalDate.parse(dateEdsEndRaw, formatter);
+
+        if (dateEdsEnd.isBefore(LocalDate.now())) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("message", "Требуется обновление терминала!");
+            return ResponseEntity.status(303).body(map);
+        }
+
         if (Sdpo.isConnection()) {
             Request response = new Request("sdpo/driver/" + id);
             try {
@@ -51,7 +64,6 @@ public class InspectionController {
                 SdpoLog.error(e);
                 return ResponseEntity.status(303).body(e.getResponse().toMap());
             }
-
         } else {
             String name = Sdpo.driverStorage.getStore().get(id);
             if (name != null) {
