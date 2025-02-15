@@ -21,7 +21,7 @@ public class ProcessCloserListener {
         this.tonometerTaskRunner = tonometerTaskRunner;
     }
 
-    @Async
+    @Async("tonometerTaskExecutor")
     @EventListener
     public void handleStopRunProcessesEvent(StopRunProcessesEvent event) {
         TonometerResultTask tonometerResultTask = this.tonometerTaskRunner.getTonometerResultTask();

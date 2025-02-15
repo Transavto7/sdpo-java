@@ -26,7 +26,7 @@ public class SaveStoreInspectionTask extends Thread {
         while (true) {
             try {
                 Thread.sleep(10000);
-            } catch (InterruptedException ignored) { }
+            } catch (InterruptedException ignored) {}
 
             if (!Sdpo.isConnection()) {
                 continue;
@@ -62,7 +62,6 @@ public class SaveStoreInspectionTask extends Thread {
                     inspections.remove(index);
                     index = 0;
                     Sdpo.inspectionStorage.save();
-                    this.saveMedia(json);
                 }
                 catch (InternalServerError e) {
                     try {
@@ -87,36 +86,6 @@ public class SaveStoreInspectionTask extends Thread {
                     SdpoLog.error("resultJson - error: " + e.toString());
                     break;
                 }
-            }
-        }
-    }
-
-    private void saveMedia(JSONObject json) {
-        CameraHelper cameraHelper = SpringContext.getBean(CameraHelper.class);
-        if (json.has("photo")) {
-            String name = json.getString("photo");
-            String[] split = name.split("/");
-            name = split[split.length - 1];
-
-            File file = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "image", name));
-            if (file.exists())  {
-                cameraHelper.sendPhoto(file);
-            } else {
-                SdpoLog.error("Image " + name + " not found!");
-            }
-        }
-
-
-        if (json.has("video")) {
-            String name = json.getString("video");
-            String[] split = name.split("/");
-            name = split[split.length - 1];
-
-            File file = new File(FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name));
-            if (file.exists())  {
-                cameraHelper.sendVideo(file);
-            } else {
-                SdpoLog.error("Video " + name + " not found!");
             }
         }
     }

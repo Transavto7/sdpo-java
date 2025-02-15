@@ -19,6 +19,7 @@ public class MedicRemoteRepository implements GetRequest {
         try {
             Request request = new Request(url);
             String response = request.sendGet();
+
             return new JSONObject(response);
         } catch (IOException | ApiException e) {
             SdpoLog.error("Error load MEDIC list");

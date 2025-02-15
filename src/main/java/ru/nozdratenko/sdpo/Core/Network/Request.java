@@ -27,7 +27,6 @@ public class Request {
         if (!baseURL.endsWith("/") && !url.startsWith("/")) {
             baseURL += "/";
         }
-
         this.url = new URL(baseURL + url);
     }
 

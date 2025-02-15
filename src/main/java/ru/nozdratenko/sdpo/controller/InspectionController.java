@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.event.StopRunProcessesEvent;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
-import ru.nozdratenko.sdpo.helper.PrinterHelper;
+import ru.nozdratenko.sdpo.helper.PrinterHelpers.PrinterHelper;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,11 +38,13 @@ import java.util.Map;
 
 @RestController
 public class InspectionController {
-
     private final ApplicationEventPublisher eventPublisher;
+    private final PrinterHelper printerHelper;
 
-    public InspectionController(ApplicationEventPublisher eventPublisher) {
+    @Autowired
+    public InspectionController(ApplicationEventPublisher eventPublisher, PrinterHelper printerHelper) {
         this.eventPublisher = eventPublisher;
+        this.printerHelper = printerHelper;
     }
 
     @PostMapping("inspection/{id}")
@@ -65,27 +69,49 @@ public class InspectionController {
                 return ResponseEntity.status(303).body(e.getResponse().toMap());
             }
         } else {
-            String name = Sdpo.driverStorage.getStore().get(id);
-            if (name != null) {
-                JSONObject response = new JSONObject();
-                response.put("hash_id", id);
-                response.put("fio", name);
-                return ResponseEntity.status(HttpStatus.OK).body(response.toMap());
+            JSONObject driver = Sdpo.driverStorage.getStore().get(id);
+
+            if (driver != null) {
+                if (driver.has("end_of_ban")) {
+                    if (driver.getString("end_of_ban") != null) {
+                        DateTimeFormatter barFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        DateTimeFormatter viewFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+                        String dateEndOfBanRaw = driver.getString("end_of_ban");
+                        LocalDateTime dateEndOfBan = LocalDateTime.parse(dateEndOfBanRaw, barFormatter);
+
+                        if (dateEndOfBan.isAfter(LocalDateTime.now())) {
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put("message", "Указанный водитель отстранен до " + dateEndOfBan.format(viewFormatter) + "!");
+                            return ResponseEntity.status(303).body(map);
+                        }
+                    }
+                }
+
+                if (driver.has("dismissed")) {
+                    if (driver.getBoolean("dismissed")) {
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put("message", "Водитель с указанным ID уволен!");
+                        return ResponseEntity.status(303).body(map);
+                    }
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(driver.toMap());
             }
         }
+
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("inspection/print")
     public ResponseEntity inspectionPrint() {
-        if (PrinterHelper.lastPrint == null) {
+        if (this.printerHelper.getLastPrint() == null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Нет прошлой печати");
             return ResponseEntity.status(500).body(jsonObject);
         }
 
         try {
-            PrinterHelper.print(PrinterHelper.lastPrint);
+            this.printerHelper.print(this.printerHelper.getLastPrint());
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error create inspection: " + e);
@@ -101,16 +127,16 @@ public class InspectionController {
 
     @PostMapping("inspection/print/qr")
     public ResponseEntity inspectionPrintQr() {
-        if (PrinterHelper.lastQRPath == null) {
+        if (this.printerHelper.getLastQRPath() == null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Нет прошлой печати");
             return ResponseEntity.status(500).body(jsonObject);
         }
         try {
-            File qrCheck = new File(PrinterHelper.lastQRPath);
-            PrinterHelper.printFromPDFRotate(PDDocument.load(qrCheck));
+            File qrCheck = new File(this.printerHelper.getLastQRPath());
+            this.printerHelper.printFromPDFRotate(PDDocument.load(qrCheck));
         } catch (IOException error) {
-            SdpoLog.warning("Impossible to get qr! File path: " + PrinterHelper.lastQRPath);
+            SdpoLog.warning("Impossible to get qr! File path: " + this.printerHelper.getLastQRPath());
             SdpoLog.warning("ERROR: " + error);
         } catch (java.awt.print.PrinterException e) {
             throw new RuntimeException(e);
@@ -214,14 +240,14 @@ public class InspectionController {
         }
 
         if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
-            PrinterHelper.print(resultJson);
+            this.printerHelper.print(resultJson);
         }
         if (Sdpo.settings.systemConfig.getBoolean("print_qr_check")) {
             try {
                 PDDocument document = PrintService.getVerifiedQrInspectionToPDF(resultJson.getInt("id"));
                 String path = PrintService.storeQrToPath(document, Integer.toString(resultJson.getInt("id")));
                 resultJson.put("qr_check_path", path);
-                PrinterHelper.printFromPDFRotate(document);
+                this.printerHelper.printFromPDFRotate(document);
 
 
             } catch (ApiException | IOException error) {
@@ -236,14 +262,17 @@ public class InspectionController {
     public ResponseEntity inspectionSaveOffline(Map<String, String> json)
             throws PrintException, IOException, PrinterException {
         JSONObject inspection = new JSONObject(json);
+        JSONObject driver = Sdpo.driverStorage.getStore().get(inspection.getString("driver_id"));
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         inspection.put("admitted", "Допущен");
-
+        SdpoLog.info("Start offline saving inspection: " + inspection);
         double temp = 36.6;
         String tonometer = "125/80";
+        int pulse = 70;
         double alcometer = 0.0;
 
         if (Sdpo.settings.mainConfig.getJson().has("selected_medic")) {
-
             //todo selectMedic(inspection) : inspection
             try {
                 inspection.put("user_eds", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
@@ -275,38 +304,63 @@ public class InspectionController {
             tonometer = inspection.getString("tonometer");
         }
 
+        if (inspection.has("pulse")) {
+            try {
+                pulse = Integer.parseInt(inspection.getString("pulse"));
+            } catch (JSONException e) {
+                SdpoLog.error("Error valueOf double temp people");
+            }
+        }
+
         if (temp > 37.0) {
             inspection.put("med_view", "Отстранение");
             inspection.put("admitted", "Не допущен");
         }
 
-        if (alcometer > 0) {
-            inspection.put("med_view", "Отстранение");
-            inspection.put("admitted", "Не допущен");
-        }
-
         try {
-            int tonRs = Integer.valueOf(tonometer.split("/")[0]);
-            if (tonRs > 150) {
-                inspection.put("med_view", "Отстранение");
-                inspection.put("admitted", "Не допущен");
+            String[] results = tonometer.split("/");
+            int pressureSystolic = Integer.parseInt(results[0]);
+            int pressureDiastolic = Integer.parseInt(results[1]);
+            if (driver.has("pressure_systolic")) {
+                if (
+                        driver.getInt("pressure_systolic") < pressureSystolic ||
+                                driver.getInt("pressure_diastolic") < pressureDiastolic ||
+                                driver.getInt("pulse_upper") < pulse ||
+                                driver.getInt("pulse_lower") > pulse
+                ) {
+                    inspection.put("med_view", "Отстранение");
+                    inspection.put("admitted", "Не допущен");
+                    driver.put("end_of_ban", currentDateTime.plusMinutes(driver.getInt("time_of_pressure_ban")).format(formatter));
+                }
+            } else {
+                if (pressureSystolic > 150) {
+                    inspection.put("med_view", "Отстранение");
+                    inspection.put("admitted", "Не допущен");
+                }
             }
         } catch (NumberFormatException e) {
             SdpoLog.error("Error value of tonometer result");
         }
 
+        if (alcometer > 0) {
+            inspection.put("med_view", "Отстранение");
+            inspection.put("admitted", "Не допущен");
+            if (driver.has("time_of_alcohol_ban")) {
+                driver.put("end_of_ban", currentDateTime.plusMinutes(driver.getInt("time_of_alcohol_ban")).format(formatter));
+            }
+        }
+
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String currentDate = dateFormat.format(date);
 
-        inspection.put("created_at", currentDate);
+        inspection.put("created_at", dateFormat.format(date));
         inspection.put("status_send", ResendStatusEnum.UNSENT);
 
         Sdpo.inspectionStorage.saveInspection(inspection);
         if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
-            PrinterHelper.print(inspection);
+            this.printerHelper.print(inspection);
         }
-        SdpoLog.info("Offline save: " + inspection.toString());
+        SdpoLog.info("Offline save: " + inspection);
 
         return ResponseEntity.status(HttpStatus.OK).body(inspection.toMap());
     }
@@ -322,7 +376,7 @@ public class InspectionController {
         SdpoLog.info("3 Saved inspection: " + resultJson.toString());
 
         if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
-            PrinterHelper.print(resultJson);
+            this.printerHelper.print(resultJson);
         }
 
         if (Sdpo.settings.systemConfig.getBoolean("print_qr_check")) {
@@ -330,9 +384,8 @@ public class InspectionController {
                 PDDocument document = PrintService.getVerifiedQrInspectionToPDF(resultJson.getInt("id"));
                 String path = PrintService.storeQrToPath(document, Integer.toString(resultJson.getInt("id")));
                 resultJson.put("qr_check_path", path);
-                PrinterHelper.printFromPDFRotate(document);
-                PrinterHelper.lastQRPath = path;
-
+                this.printerHelper.printFromPDFRotate(document);
+                this.printerHelper.setLastQRPath(path);
             } catch (ApiException | IOException error) {
                 SdpoLog.warning("Impossible to get qr! Inspection id: " + resultJson.getInt("id"));
                 SdpoLog.warning("ERROR: " + error);

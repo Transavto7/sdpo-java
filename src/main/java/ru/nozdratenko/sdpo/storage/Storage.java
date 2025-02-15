@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Storage extends FileBase {
-    protected HashMap<String, String> store = new HashMap<>();
+    protected HashMap<String, JSONObject> store = new HashMap<>();
     protected Long lastUpdate = 0L;
 
     public Storage(String path) {
@@ -65,11 +65,11 @@ public class Storage extends FileBase {
 
     }
 
-    public void setStore(HashMap<String, String> store) {
+    public void setStore(HashMap<String, JSONObject> store) {
         this.store = store;
     }
 
-    public HashMap<String, String> getStore() {
+    public HashMap<String, JSONObject> getStore() {
         return store;
     }
 }

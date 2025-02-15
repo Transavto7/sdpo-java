@@ -44,7 +44,7 @@ public class InspectionStorage extends FileBase implements StoreInLocalMemory {
     @Override
     public void saveToLocalStorage() {
         try {
-            create();
+            this.create();
             this.writeFile(store.toString(1));
         } catch (IOException e) {
             SdpoLog.error(e);

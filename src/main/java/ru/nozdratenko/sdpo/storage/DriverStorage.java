@@ -2,6 +2,8 @@ package ru.nozdratenko.sdpo.storage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
@@ -19,7 +21,7 @@ public class DriverStorage extends Storage {
             if (obj instanceof JSONObject) {
                 JSONObject json = (JSONObject) obj;
                 if (json.has("hash_id") && json.has("fio")) {
-                    store.put(json.getString("hash_id"), json.getString("fio"));
+                    store.put(json.getString("hash_id"), json);
                 }
             }
         }
@@ -30,10 +32,7 @@ public class DriverStorage extends Storage {
         JSONArray result = new JSONArray();
 
         for (String key : this.store.keySet()) {
-            JSONObject json = new JSONObject();
-            json.put("hash_id", key);
-            json.put("fio", this.store.get(key));
-            result.put(json);
+            result.put(this.store.get(key));
         }
 
         return result;

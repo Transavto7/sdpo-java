@@ -28,7 +28,6 @@ public class AlcometerResultTask implements Runnable {
     public void run() {
         SdpoLog.info("Alcometer run task: " + AlcometerResultTask.currentStatus.toString());
         while (stopFlag) {
-//            SdpoLog.info("!!!!!!! Alcometer run task: " + AlcometerResultTask.currentStatus.toString());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {}

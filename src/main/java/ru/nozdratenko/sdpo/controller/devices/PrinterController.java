@@ -2,6 +2,7 @@ package ru.nozdratenko.sdpo.controller.devices;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
-import ru.nozdratenko.sdpo.helper.PrinterHelper;
+import ru.nozdratenko.sdpo.helper.PrinterHelpers.PrinterHelper;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -23,12 +24,18 @@ import java.util.Map;
 
 @RestController
 public class PrinterController {
+    private final PrinterHelper printerHelper;
+
+    @Autowired
+    public PrinterController(PrinterHelper printerHelper) {
+        this.printerHelper = printerHelper;
+    }
 
     @PostMapping(value = "/device/printer")
     @ResponseBody
     public ResponseEntity printer() {
         try {
-            PrinterHelper.print("Тестовый Тест Тестович",
+            this.printerHelper.print("Тестовый Тест Тестович",
                     "прошел",
                     "Предрейсовый/Предсменный",
                     "допущен",
@@ -50,7 +57,7 @@ public class PrinterController {
         if (Sdpo.settings.systemConfig.getBoolean("print_qr_check")) {
             try {
                 PDDocument document = PrintService.getVerifiedQrInspectionToPDF(Integer.parseInt(json.get("id")));
-                PrinterHelper.printFromPDFRotate(document);
+                this.printerHelper.printFromPDFRotate(document);
 
             } catch (ApiException | IOException error) {
                 SdpoLog.warning("Impossible to get qr! Inspection id: " + json.get("id"));
@@ -69,7 +76,7 @@ public class PrinterController {
     public ResponseEntity printer(@RequestBody Map<String, String> json) throws PrintException, IOException, PrinterException {
         JSONObject inspection = new JSONObject(json);
         try {
-            PrinterHelper.print(inspection);
+            this.printerHelper.print(inspection);
         } catch (PrinterException e) {
             return ResponseEntity.status(500).body(e.getResponse());
         } catch (Exception e) {
@@ -96,7 +103,7 @@ public class PrinterController {
             SdpoLog.info(result);
 
             PDDocument document = PDDocument.load(result);
-            PrinterHelper.printFromPDF(document);
+            this.printerHelper.printFromPDF(document);
         } catch (IOException | ApiException e) {
                 SdpoLog.error(e);
         } catch (Exception e) {
