@@ -119,7 +119,9 @@ public class IndexController {
                     try {
                         Sdpo.settings.systemConfig.set("date_check", (String) jsonObject.get("date_check"));
                         Sdpo.settings.systemConfig.set("serial_number", (String) jsonObject.get("serial_number"));
-                        Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
+                        if (jsonObject.has("stamp")) {
+                            Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
+                        }
 
                         Sdpo.settings.systemConfig.saveFile();
                     } catch (JSONException ignore) {}

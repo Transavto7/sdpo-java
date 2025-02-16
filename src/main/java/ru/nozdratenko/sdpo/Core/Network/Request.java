@@ -74,6 +74,11 @@ public class Request {
         connection.disconnect();
 
         int responseCode = connection.getResponseCode();
+
+        if (responseCode == 404) {
+            throw new ApiException("Resource not found " + this.url);
+        }
+
         if (200 > responseCode || responseCode > 299) {
             String message = "Неизвестная ошибка запроса";
             try {
@@ -84,7 +89,7 @@ public class Request {
                     message = "Ошибка запроса. Неизвестный ответ";
                 }
             } catch (Exception e) {
-                SdpoLog.error(response.toString());
+                SdpoLog.error("Exception in response " + e);
             }
 
             throw new ApiException(message);
@@ -114,6 +119,11 @@ public class Request {
         connection.disconnect();
 
         this.setResponseCode(connection.getResponseCode());
+
+        if (this.getResponseCode() == 404) {
+            throw new ApiException("Resource not found " + this.url);
+        }
+
         if (200 > this.getResponseCode() || this.getResponseCode() > 299) {
             String message = "Неизвестная ошибка запроса.";
             try {

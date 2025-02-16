@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.storage.repository.stamp;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Repository;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.storage.repository.GetRequest;
@@ -8,6 +9,7 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
+@Repository
 public class StampRemoteRepository implements GetRequest {
 
     @Override

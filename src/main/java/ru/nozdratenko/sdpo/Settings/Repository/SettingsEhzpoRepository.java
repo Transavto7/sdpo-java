@@ -1,14 +1,14 @@
 package ru.nozdratenko.sdpo.Settings.Repository;
 
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
-@Component
+@Repository
 public class SettingsEhzpoRepository {
     public JSONObject getSettings() {
         try {
