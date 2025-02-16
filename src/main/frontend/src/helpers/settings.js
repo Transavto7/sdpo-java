@@ -17,6 +17,21 @@ export async function loadSettings() {
     store.state.verification = await getVerification();
 }
 
+export async function syncSettings() {
+    await axios.post('/setting/sync').then(({ data }) => {
+        store.state.config = data;
+
+        if (data?.system?.cursor) {
+            document.documentElement.classList.remove('disable-mouse');
+        }
+    }).catch(error => {
+        console.log(error);
+    })
+
+    store.state.point = await getPoint();
+    store.state.verification = await getVerification();
+}
+
 export async function savePassword(password) {
     await axios.post('/setting/password', {
         password

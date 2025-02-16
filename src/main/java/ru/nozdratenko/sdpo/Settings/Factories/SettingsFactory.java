@@ -16,7 +16,8 @@ public class SettingsFactory {
         FileConfiguration configuration = new FileConfiguration("configs/main.json");
         configuration.setDefault("password", SettingsFactory.getValue(defaultSettings, "password", "7344946"))
                 .setDefault("medic_password", SettingsFactory.getValue(defaultSettings, "medic_password", "0000000"))
-                .setDefault("support_phone", SettingsFactory.getValue(defaultSettings, "support_phone", "0000000"))
+                .setDefault("support_phone", SettingsFactory.getValue(defaultSettings, "support_phone", "+7 (916) 363-59-07"))
+                .setDefault("terminal_is_blocked", SettingsFactory.getValue(defaultSettings, "terminal_is_blocked", false))
                 .setDefault("run_browser_cmd",
                         SettingsFactory.getValue(defaultSettings,
                                 "run_browser_cmd",

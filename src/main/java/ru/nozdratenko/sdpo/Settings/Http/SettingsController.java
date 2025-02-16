@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.Settings.Http;
 
+import lombok.AllArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,28 +8,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.Settings.Queries.GetSettingsQuery;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.Map;
 
 @RestController
+@AllArgsConstructor
 public class SettingsController {
     private final CameraHelper cameraHelper;
-
-    @Autowired
-    public SettingsController(CameraHelper cameraHelper) {
-        this.cameraHelper = cameraHelper;
-    }
+    private final GetSettingsQuery getSettingsQuery;
 
     @PostMapping("/setting/load")
     @ResponseBody
     public ResponseEntity loadSettings() {
-        JSONObject json = new JSONObject();
-        json.put("main", Sdpo.settings.mainConfig.getJson());
-        json.put("connection", Sdpo.connectionConfig.getJson());
-        json.put("system", Sdpo.settings.systemConfig.getJson());
-        return ResponseEntity.status(HttpStatus.OK).body(json.toMap());
+        return ResponseEntity.status(HttpStatus.OK).body(getSettingsQuery.handle().toMap());
     }
 
     @PostMapping("/setting/password")

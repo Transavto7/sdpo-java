@@ -75,7 +75,6 @@ export default {
   },
   computed: {
     terminalIsLocked() {
-
       if (!store.state.connection) {
         if (this.system.max_inspection_in_offline_mod - this.system.count_inspections <= 0) return true;
 
@@ -83,6 +82,9 @@ export default {
         return (((new Date()) - Date.parse(lastOnline)) / 8.64e7 > this.system.delay_day_in_offline_mod)
       }
       return false;
+    },
+    terminalIsBlocked() {
+      return this.$store.state.config.main?.terminal_is_blocked;
     },
     system() {
       return this.$store.state.config?.system || {};
@@ -116,6 +118,12 @@ export default {
       <div class="driver-form__not-found animate__animated animate__fadeInUp">
         Работа терминала приостановлена.
         Проверьте подключение к интернету
+      </div>
+    </div>
+    <div v-else-if="terminalIsBlocked" style="width: 100%; justify-content: center; display: flex">
+      <div class="driver-form__not-found animate__animated animate__fadeInUp">
+        Работа терминала заблокирована.
+        Обратитесь к администратору.
       </div>
     </div>
     <div v-else class="driver-form">

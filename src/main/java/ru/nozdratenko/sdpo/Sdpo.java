@@ -1,6 +1,6 @@
 package ru.nozdratenko.sdpo;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
@@ -22,31 +22,15 @@ import ru.nozdratenko.sdpo.util.port.PortService.PortService;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Component
+@AllArgsConstructor
 public class Sdpo {
     private final AlcometerHelper alcometerHelper;
     private final PortService portService;
     private final BrowserHelper browserHelper;
     private final ThermometerHelper thermometerHelper;
     private final CameraHelper cameraHelper;
-
-    @Autowired
-    public Sdpo(
-            AlcometerHelper alcometerHelper,
-            PortService portService,
-            BrowserHelper browserHelper,
-            ThermometerHelper thermometerHelper,
-            CameraHelper cameraHelper
-    ) {
-        this.alcometerHelper = alcometerHelper;
-        this.portService = portService;
-        this.browserHelper = browserHelper;
-        this.thermometerHelper = thermometerHelper;
-        this.cameraHelper = cameraHelper;
-    }
 
     public static SettingsContainer settings;
     public static FileConfiguration connectionConfig;
@@ -63,8 +47,7 @@ public class Sdpo {
 
     public void init() {
         SdpoLog.info("Run project");
-        connectionConfig = SettingsFactory.makeConnectionConfig();
-        settings = SettingsContainer.init();
+        this.initSettings();
         checkConnection();
         runTasks();
         cameraHelper.initDimension();
@@ -75,6 +58,11 @@ public class Sdpo {
         alcometerHelper.setDeviceInstanceId();
         alcometerHelper.setComPort();
         thermometerHelper.setComPort();
+    }
+
+    public void initSettings() {
+        connectionConfig = SettingsFactory.makeConnectionConfig();
+        settings = SettingsContainer.init();
     }
 
     private void checkConnection() {

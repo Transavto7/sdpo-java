@@ -1,5 +1,5 @@
 <script>
-import {saveSystem, saveApi} from '@/helpers/settings';
+import {saveSystem, saveApi, syncSettings} from '@/helpers/settings';
 import {useToast} from "vue-toastification";
 import {getSizes} from '@/helpers/camera';
 import {getPoint} from '@/helpers/api/api';
@@ -21,6 +21,10 @@ export default {
       this.$store.state.point = await getPoint();
       this.toast.success('Настройки сохранены');
     },
+    async sync() {
+      await syncSettings();
+      this.toast.success('Настройки получены!');
+    }
   },
   computed: {
     system() {
@@ -264,7 +268,8 @@ export default {
     </div>
 
     <div class="admin__system-footer  animate__animated animate__fadeInUp d-7">
-      <button @click="save" class="btn blue">Сохранить</button>
+      <button @click="save" class="btn blue mr-2">Сохранить</button>
+      <button @click="sync" class="btn blue">Получить настройки</button>
     </div>
   </div>
 </template>
