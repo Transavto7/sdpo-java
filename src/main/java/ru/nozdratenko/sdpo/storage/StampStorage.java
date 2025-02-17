@@ -29,7 +29,10 @@ public class StampStorage implements RemoteServerRequest, StoreInLocalMemory {
     }
 
     public void getAllFromApi() throws IOException {
-        this.data = remoteRepository.all();
+        JSONObject data = remoteRepository.all();
+        if (data != null) {
+            this.data = data;
+        }
     }
 
     public JSONObject getFromApi() {

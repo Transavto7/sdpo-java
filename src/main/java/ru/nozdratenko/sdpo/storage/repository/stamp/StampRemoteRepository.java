@@ -28,7 +28,7 @@ public class StampRemoteRepository implements GetRequest {
             return new JSONObject(response);
         } catch (IOException | ApiException e) {
             SdpoLog.error("Error load STAMP list");
-            throw new RuntimeException(e);
+            return null;
         }
     }
 }

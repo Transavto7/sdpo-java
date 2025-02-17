@@ -23,7 +23,7 @@ public class MedicRemoteRepository implements GetRequest {
             return new JSONObject(response);
         } catch (IOException | ApiException e) {
             SdpoLog.error("Error load MEDIC list");
-            throw new RuntimeException(e);
+            return null;
         }
     }
 }

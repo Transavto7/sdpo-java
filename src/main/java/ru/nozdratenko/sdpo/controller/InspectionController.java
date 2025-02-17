@@ -73,7 +73,7 @@ public class InspectionController {
 
             if (driver != null) {
                 if (driver.has("end_of_ban")) {
-                    if (driver.getString("end_of_ban") != null) {
+                    if (!driver.get("end_of_ban").equals(JSONObject.NULL)) {
                         DateTimeFormatter barFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         DateTimeFormatter viewFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
                         String dateEndOfBanRaw = driver.getString("end_of_ban");

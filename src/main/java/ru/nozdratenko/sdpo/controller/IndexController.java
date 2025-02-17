@@ -102,7 +102,7 @@ public class IndexController {
                 return ResponseEntity.status(403).body("error");
             }
         } catch (IOException | ApiException e) {
-            SdpoLog.error(e);
+            SdpoLog.error("Failed to fetch sdpo/pv");
         }
         return ResponseEntity.status(403).body("error");
     }
