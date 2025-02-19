@@ -74,7 +74,7 @@ public class SettingsController {
 
     @PostMapping("/setting/system")
     @ResponseBody
-    public ResponseEntity saveSystem(@RequestBody Map<String, String> json) {
+    public ResponseEntity saveSystem(@RequestBody Map<String, Object> json) {
         for (String key : json.keySet()) {
             Sdpo.settings.systemConfig.set(key, json.get(key));
         }

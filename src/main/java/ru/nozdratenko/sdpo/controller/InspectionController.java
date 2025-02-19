@@ -172,6 +172,7 @@ public class InspectionController {
                 }
             }
             eventPublisher.publishEvent(new StopRunProcessesEvent(this));
+
             return entity;
         } catch (ApiException e) {
             Sdpo.settings.systemConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
@@ -196,11 +197,11 @@ public class InspectionController {
             throws IOException, PrintException, PrinterException, ApiException, java.awt.print.PrinterException {
         JSONObject inspection = new JSONObject(json);
         inspection.put("type_anketa", "pak_queue");
-        SdpoLog.info("!!! inspectionSavePack.inspection: " + inspection.toString());
+        SdpoLog.info("!!! inspectionSavePack.inspection: " + inspection);
         Request response = new Request("sdpo/anketa");
         String result = response.sendPost(inspection.toString());
         JSONObject resultJson = new JSONObject(result);
-        SdpoLog.info("2 Saved inspection: " + resultJson.toString());
+        SdpoLog.info("!!! Saved inspectionSavePack response: " + resultJson);
 
         if (resultJson.has("id")) {
             int timeout = 20;
@@ -255,6 +256,8 @@ public class InspectionController {
                 SdpoLog.warning("ERROR: " + error);
             }
         }
+
+        SdpoLog.info("!!! Saved inspectionSavePack result: " + inspection);
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
     }
 
@@ -371,9 +374,8 @@ public class InspectionController {
         JSONObject jsonObject = new JSONObject(json);
         SdpoLog.info("!!! inspectionSaveOnline: " + jsonObject.toString(10));
         String result = response.sendPost(jsonObject.toString());
-
         JSONObject resultJson = new JSONObject(result);
-        SdpoLog.info("3 Saved inspection: " + resultJson.toString());
+        SdpoLog.info("!!! inspectionSaveOnline response: " + resultJson);
 
         if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
             this.printerHelper.print(resultJson);
@@ -391,6 +393,9 @@ public class InspectionController {
                 SdpoLog.warning("ERROR: " + error);
             }
         }
+
+        SdpoLog.info("!!! inspectionSaveOnline result: " + resultJson);
+
         return ResponseEntity.status(HttpStatus.OK).body(resultJson.toMap());
     }
 

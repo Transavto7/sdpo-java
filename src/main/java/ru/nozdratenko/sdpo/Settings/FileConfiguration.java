@@ -29,6 +29,11 @@ public class FileConfiguration extends FileBase implements Configuration {
         return this;
     }
 
+    public FileConfiguration set(String key, Object value) {
+        json.put(key, value);
+        return this;
+    }
+
     public FileConfiguration set(String key, int value) {
         json.put(key, value);
         return this;
