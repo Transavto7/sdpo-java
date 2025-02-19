@@ -5,6 +5,7 @@ plugins {
     id 'org.bytedeco.gradle-javacpp-platform' version "1.5.10"
     id 'io.freefair.lombok' version '8.4'
     id 'pmd'
+//    id "io.sentry.jvm.gradle" version "3.12.0"
 }
 
 group = 'ru.nozdratenko'
@@ -39,6 +40,14 @@ pmd {
     ]
 }
 
+//sentry {
+//    includeSourceContext = true
+//
+//    org = "sentry"
+//    projectName = "java-spring-boot"
+//    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+//}
+
 dependencies {
     implementation 'net.java.dev.jna:jna:5.14.0'
     implementation 'net.java.dev.jna:jna-platform:5.14.0'
@@ -67,4 +76,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Sentry
+//    implementation 'io.sentry:sentry-spring-boot-starter:6.30.0'
+//    implementation 'io.sentry:sentry-logback:6.30.0'
 }
