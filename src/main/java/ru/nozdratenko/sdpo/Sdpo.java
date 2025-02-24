@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
@@ -43,6 +44,7 @@ public class Sdpo {
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
+    @Getter
     private static boolean connection = true;
 
     public void init() {
@@ -141,10 +143,6 @@ public class Sdpo {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public static boolean isConnection() {
-        return connection;
     }
 
     public static void setConnection(boolean connection) {

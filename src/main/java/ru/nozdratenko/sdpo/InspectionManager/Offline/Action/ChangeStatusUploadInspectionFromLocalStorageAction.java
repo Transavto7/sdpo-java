@@ -1,20 +1,17 @@
 package ru.nozdratenko.sdpo.InspectionManager.Offline.Action;
 
+import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
+import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InspectionNotFound;
 import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
 
+@AllArgsConstructor
 public class ChangeStatusUploadInspectionFromLocalStorageAction {
-    private int index;
-    private ResendStatusEnum statusEnum;
-
-    public ChangeStatusUploadInspectionFromLocalStorageAction(ResendStatusEnum statusEnum, int index) {
-        this.index = index;
-        this.statusEnum = statusEnum;
-    }
+    private final ResendStatusEnum statusEnum;
+    private final int index;
 
     public void handle() {
         Sdpo.inspectionStorage.setStore(this.changeStatus(Sdpo.inspectionStorage.getStore()));
@@ -27,7 +24,6 @@ public class ChangeStatusUploadInspectionFromLocalStorageAction {
         store.put(this.index, item);
         return store;
     }
-
 
     public static void changeStatusByDriverIdAndCreateDate(String driverId, String createdDate, ResendStatusEnum statusEnum) throws InspectionNotFound {
         int index = (new InspectionLocalStorageRepository()).getInspectionsIndexByDriverIdAndCreatedDate(driverId, createdDate);

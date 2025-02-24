@@ -6,7 +6,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 public class TonometerThreadConfig {
-    @Bean
+    @Bean(name = "tonometerTaskExecutor")
     public ThreadPoolTaskExecutor tonometerTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);

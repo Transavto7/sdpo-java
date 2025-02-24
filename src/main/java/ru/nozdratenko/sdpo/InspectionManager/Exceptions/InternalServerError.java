@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.InspectionManager.Exception;
+package ru.nozdratenko.sdpo.InspectionManager.Exceptions;
 
 import org.json.JSONObject;
 

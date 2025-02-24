@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.InspectionManager.Offline.controllers;
+package ru.nozdratenko.sdpo.InspectionManager.Controllers;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InternalServerError;
+import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InspectionNotFound;
+import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InternalServerError;
 import ru.nozdratenko.sdpo.InspectionManager.Offline.Action.ChangeStatusUploadInspectionFromLocalStorageAction;
 import ru.nozdratenko.sdpo.InspectionManager.Offline.Action.DeleteInspectionFromLocalStorageAction;
 import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
@@ -65,9 +65,9 @@ public class InspectionStorageController {
             SdpoLog.error("resultJson - InternalServerError: " + json);
         }
         catch (UnknownHostException e) {
-            SdpoLog.error("resultJson - error - Unknown Host: " + e.toString());
+            SdpoLog.error("resultJson - error - Unknown Host: " + e);
         } catch (Exception | ApiException e) {
-            SdpoLog.error("resultJson - error: " + e.toString());
+            SdpoLog.error("resultJson - error: " + e);
         } catch (InspectionNotFound e) {
             return ResponseEntity.status(404).body("error");
         }

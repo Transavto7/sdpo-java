@@ -1,10 +1,9 @@
 package ru.nozdratenko.sdpo.listener;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.event.StopRunProcessesEvent;
 import ru.nozdratenko.sdpo.task.Tonometer.TonometerResultTask;
 import ru.nozdratenko.sdpo.task.Tonometer.TonometerTaskRunner;
@@ -13,15 +12,11 @@ import ru.nozdratenko.sdpo.util.StatusType;
 import ru.nozdratenko.sdpo.util.device.BluetoothDeviceService;
 
 @Component
+@RequiredArgsConstructor
 public class ProcessCloserListener {
     private final TonometerTaskRunner tonometerTaskRunner;
 
-    @Autowired
-    public ProcessCloserListener(TonometerTaskRunner tonometerTaskRunner) {
-        this.tonometerTaskRunner = tonometerTaskRunner;
-    }
-
-    @Async("tonometerTaskExecutor")
+    @Async
     @EventListener
     public void handleStopRunProcessesEvent(StopRunProcessesEvent event) {
         TonometerResultTask tonometerResultTask = this.tonometerTaskRunner.getTonometerResultTask();

@@ -2,7 +2,7 @@ package ru.nozdratenko.sdpo.storage.repository.inspection;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
+import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InspectionNotFound;
 
 public interface InspectionLocalStorage {
 

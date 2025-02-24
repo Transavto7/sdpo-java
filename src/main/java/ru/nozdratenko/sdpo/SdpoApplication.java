@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableAsync;
 import ru.nozdratenko.sdpo.commands.Command;
 
 import java.awt.image.BufferedImage;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @SpringBootApplication
+@EnableAsync
 public class SdpoApplication implements CommandLineRunner {
 	private final Sdpo sdpo;
 

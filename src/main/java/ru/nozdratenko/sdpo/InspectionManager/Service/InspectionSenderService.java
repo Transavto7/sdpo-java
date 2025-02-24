@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.Core.Network.Request;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InternalServerError;
+import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InternalServerError;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -37,7 +37,7 @@ public class InspectionSenderService {
             throw new InternalServerError("Ответ не обработан. Код ответа: " + response.getResponseCode());
         }
         JSONObject resultJson = new JSONObject(result);
-        SdpoLog.info("1 Saved inspection: " + resultJson.toString());
+        SdpoLog.info("1 Saved inspection: " + resultJson);
 
         return resultJson;
     }
