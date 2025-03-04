@@ -1,16 +1,13 @@
-package ru.nozdratenko.sdpo.InspectionManager.InspectionSavers;
+package ru.nozdratenko.sdpo.Inspections.Employees.InspectionSavers;
 
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.ResendStatusEnum;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.exception.PrinterException;
-import ru.nozdratenko.sdpo.helper.PrinterHelpers.PrinterHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.print.PrintException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -20,37 +17,21 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class OfflineInspectionSaver implements InspectionSaver{
-    private final PrinterHelper printerHelper;
+public class EmployeeOfflineInspectionSaver implements EmployeeInspectionSaver {
 
     @Override
     public JSONObject save(Map<String, String> json)
-            throws PrintException, IOException, PrinterException {
+            throws IOException {
         JSONObject inspection = new JSONObject(json);
-        JSONObject driver = Sdpo.driverStorage.getStore().get(inspection.getString("driver_id"));
+        JSONObject driver = Sdpo.employeeStorage.getStore().get(inspection.getString("employee_id"));
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         inspection.put("admitted", "Допущен");
-        SdpoLog.info("Start offline saving inspection: " + inspection);
+        SdpoLog.info("Start offline saving employee inspection: " + inspection);
         double temp = 36.6;
         String tonometer = "125/80";
         int pulse = 70;
         double alcometer = 0.0;
-
-        if (Sdpo.settings.mainConfig.getJson().has("selected_medic")) {
-            try {
-                inspection.put("user_eds", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("eds"));
-                inspection.put("user_name", Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("name"));
-            } catch (JSONException e) {
-                SdpoLog.error("Error get medic id");
-            }
-            try {
-                String validity = "Срок действия с " + Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_start") + " по " + Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end");
-                inspection.put("validity", validity);
-            } catch (JSONException e) {
-                SdpoLog.error("Error get medic eds validity");
-            }
-        }
 
         if (inspection.has("t_people")) {
             try {
@@ -120,11 +101,10 @@ public class OfflineInspectionSaver implements InspectionSaver{
         inspection.put("created_at", dateFormat.format(date));
         inspection.put("status_send", ResendStatusEnum.UNSENT);
 
-        Sdpo.inspectionStorage.saveInspection(inspection);
-        if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
-            this.printerHelper.print(inspection);
-        }
-        SdpoLog.info("Offline save: " + inspection);
+        Sdpo.employeeInspectionStorage.putInspection(inspection);
+        Sdpo.employeeInspectionStorage.save();
+
+        SdpoLog.info("Employee offline save: " + inspection);
 
         return inspection;
     }

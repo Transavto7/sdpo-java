@@ -57,6 +57,7 @@ export async function replayPrintQr() {
 }
 
 export async function checkConnect(address) {
+    return;
     return await axios.post(`api/check`, {
         address
     }).then(({data}) => {

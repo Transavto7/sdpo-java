@@ -1,11 +1,9 @@
-package ru.nozdratenko.sdpo.InspectionManager.Controllers;
+package ru.nozdratenko.sdpo.Inspections.Drivers.Controllers;
 
 import lombok.AllArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,35 +11,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.nozdratenko.sdpo.InspectionManager.InspectionSavers.InspectionSaver;
-import ru.nozdratenko.sdpo.InspectionManager.InspectionSavers.InspectionSaversBuilder;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
+import ru.nozdratenko.sdpo.Inspections.Drivers.InspectionSavers.DriverInspectionSaver;
+import ru.nozdratenko.sdpo.Inspections.Drivers.InspectionSavers.DriverInspectionSaversBuilder;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.event.StopRunProcessesEvent;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelpers.PrinterHelper;
 import ru.nozdratenko.sdpo.Core.Network.Request;
-import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import javax.print.PrintException;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @AllArgsConstructor
-public class InspectionController {
+public class DriverInspectionController {
     private final ApplicationEventPublisher eventPublisher;
     private final PrinterHelper printerHelper;
 
@@ -161,7 +154,7 @@ public class InspectionController {
         Sdpo.settings.systemConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") + 1);
         Sdpo.settings.systemConfig.saveFile();
         try {
-            InspectionSaver inspectionSaver = InspectionSaversBuilder.build();
+            DriverInspectionSaver inspectionSaver = DriverInspectionSaversBuilder.build();
             JSONObject inspection =  inspectionSaver.save(json);
 
             eventPublisher.publishEvent(new StopRunProcessesEvent(this));

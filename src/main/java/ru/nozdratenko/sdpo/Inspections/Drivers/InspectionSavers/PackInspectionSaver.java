@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.InspectionManager.InspectionSavers;
+package ru.nozdratenko.sdpo.Inspections.Drivers.InspectionSavers;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class PackInspectionSaver implements InspectionSaver{
+public class PackInspectionSaver implements DriverInspectionSaver {
     private final PrinterHelper printerHelper;
 
     @Override

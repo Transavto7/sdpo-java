@@ -12,10 +12,7 @@ import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
-import ru.nozdratenko.sdpo.storage.DriverStorage;
-import ru.nozdratenko.sdpo.storage.InspectionStorage;
-import ru.nozdratenko.sdpo.storage.MedicStorage;
-import ru.nozdratenko.sdpo.storage.StampStorage;
+import ru.nozdratenko.sdpo.storage.*;
 import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.port.PortService.PortService;
@@ -37,9 +34,11 @@ public class Sdpo {
     public static FileConfiguration connectionConfig;
 
     public static DriverStorage driverStorage;
+    public static EmployeeStorage employeeStorage;
     public static MedicStorage medicStorage;
     public static StampStorage serviceDataStorage;
     public static InspectionStorage inspectionStorage;
+    public static EmployeeInspectionStorage employeeInspectionStorage;
 
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
@@ -99,6 +98,9 @@ public class Sdpo {
         driverStorage = new DriverStorage();
         driverStorage.save();
 
+        employeeStorage = new EmployeeStorage();
+        employeeStorage.save();
+
         medicStorage = new MedicStorage();
         medicStorage.saveToLocalStorage();
 
@@ -108,10 +110,16 @@ public class Sdpo {
         inspectionStorage = new InspectionStorage();
         inspectionStorage.save();
 
+        employeeInspectionStorage = new EmployeeInspectionStorage();
+        employeeInspectionStorage.save();
+
         new Thread(() -> {
             try {
                 driverStorage.load();
                 driverStorage.save();
+
+                employeeStorage.load();
+                employeeStorage.save();
 
                 medicStorage.getAllFromApi();
                 medicStorage.saveToLocalStorage();

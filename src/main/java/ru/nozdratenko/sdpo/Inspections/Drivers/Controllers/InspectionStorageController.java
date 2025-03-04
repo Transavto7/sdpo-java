@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.InspectionManager.Controllers;
+package ru.nozdratenko.sdpo.Inspections.Drivers.Controllers;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InspectionNotFound;
-import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InternalServerError;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.Action.ChangeStatusUploadInspectionFromLocalStorageAction;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.Action.DeleteInspectionFromLocalStorageAction;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
-import ru.nozdratenko.sdpo.InspectionManager.Service.InspectionSenderService;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InspectionNotFound;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InternalServerError;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.Action.ChangeStatusUploadInspectionFromLocalStorageAction;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.Action.DeleteInspectionFromLocalStorageAction;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.ResendStatusEnum;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Service.InspectionSenderService;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorage;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;

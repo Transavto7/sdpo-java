@@ -1,5 +1,6 @@
 export const routes = [
     { path: '', name: 'home',  component: () => import('./pages/Home') },
+    { path: '/employee', component: () => import('./pages/employee-inspection/EmployeeMain') },
     { path: '/help', component: () => import('./pages/Help') },
     { path: '/login', component: () => import('./pages/settings/Login') },
     { path: '/print/index', component: () => import('./pages/print/PrintMain') },
@@ -40,9 +41,13 @@ export const routes = [
         path: '/step/helth', component: () => import('./pages/inspection/Step-helth'), name: 'step-helth',
         meta: {visible: 'question_helth', next: 'step-result', prev: 'step-sleep', number: 8 } 
     },
-    { 
+    {
         path: '/step/result', component: () => import('./pages/inspection/Step-result'), name: 'step-result',
         meta: { next: 'home', prev: 'step-result', number: 9 } 
+    },
+    {
+        path: '/step/result-employee', component: () => import('./pages/inspection/Step-result-employee'), name: 'step-result-employee',
+        meta: { next: 'home', prev: 'step-result-employee', number: 9 }
     },
     {
         path: '/step/retry', component: () => import('./pages/inspection/Step-result'), name: 'step-retry',

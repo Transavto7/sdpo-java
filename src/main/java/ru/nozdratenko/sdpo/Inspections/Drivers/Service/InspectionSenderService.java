@@ -1,11 +1,11 @@
-package ru.nozdratenko.sdpo.InspectionManager.Service;
+package ru.nozdratenko.sdpo.Inspections.Drivers.Service;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.Core.Network.Request;
-import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InternalServerError;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InternalServerError;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;

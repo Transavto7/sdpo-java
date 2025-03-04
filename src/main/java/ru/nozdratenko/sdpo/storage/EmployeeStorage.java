@@ -2,19 +2,18 @@ package ru.nozdratenko.sdpo.storage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
-public class DriverStorage extends Storage {
-    public DriverStorage(String path) {
+public class EmployeeStorage extends Storage {
+    public EmployeeStorage(String path) {
         super(path);
     }
 
-    public DriverStorage() {
-        super("storage/drivers.json");
+    public EmployeeStorage() {
+        super("storage/employees.json");
     }
+
     @Override
     public void formatDataLoad(JSONArray array) {
         for (Object obj : array) {
@@ -39,6 +38,6 @@ public class DriverStorage extends Storage {
     }
 
     public void load() throws IOException {
-        this.loadApi("sdpo/drivers");
+        this.loadApi("sdpo/employees");
     }
 }

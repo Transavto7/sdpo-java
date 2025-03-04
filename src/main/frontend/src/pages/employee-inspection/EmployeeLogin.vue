@@ -1,42 +1,45 @@
 <script>
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
-import { getDriver } from '@/helpers/api/api';
 import { useToast } from "vue-toastification";
+import {getEmployee} from "@/helpers/api/employee";
 
 export default {
   components: {InputPersonalNumberForm },
   data() {
     return {
       employee_id: '',
-      employee: {},
+      employee: null,
       error: '',
       toast: useToast(),
       loading: false,
     }
   },
   methods: {
-    async start() {
-      this.$emit('success-auth', this.driver)
+    start() {
+      this.$store.state.inspection.person_id = this.employee.hash_id;
+      this.$store.state.inspection.person_fio = this.employee.fio;
+      this.$store.state.inspection.type = 'employee';
+      this.$router.push({name: 'step-driver'});
     },
-    updateDriverId(inputPassword) {
-      this.driver_id = inputPassword;
+    updateEmployeeId(inputPassword) {
+      this.employee_id = inputPassword;
+      this.checkEmployee();
     },
-    async checkDriver() {
+    async checkEmployee() {
       this.error = null;
 
-      if (this.driver_id.length < 6) {
+      if (this.employee_id.length < 6) {
         return;
       }
 
       this.loading = true;
       try {
-        const driver = await getDriver(this.driver_id);
-        if (driver) {
-          this.driver = driver
+        const employee = await getEmployee(this.employee_id);
+        if (employee) {
+          this.employee = employee
           this.error = null;
-          await this.start()
         } else {
-          this.error = 'Водитель не найден';
+          this.error = 'Сотрудник не найден';
         }
       } catch (error) {
         this.error = error.response?.data?.message || 'Неизвестная ошибка';
@@ -45,21 +48,10 @@ export default {
       this.loading = false;
     }
   },
-  watch: {
-    driver_id: function (val) {
-      this.checkDriver();
-      if (!this.hasDriver) this.processingApproval = false;
-    }
-  },
   computed: {
-    config() {
-      return this.$store.state.config;
-    },
-    hasDriver() {
-      return this.driver.driver_id && !this.error
+    login() {
+      return this.employee;
     }
-  },
-  mounted() {
   }
 }
 </script>
@@ -67,19 +59,24 @@ export default {
 <template>
   <div class="home">
     <div class="driver-form">
-      <div v-if="driver.driver_fio" class="driver-form__title animate__animated animate__fadeInDown d-2">
-        {{ driver.driver_fio }}
+      <div v-if="login" class="driver-form__title animate__animated animate__fadeInDown d-2">
+        {{ employee.fio }}
       </div>
       <div v-else class="driver-form__title animate__animated animate__fadeInDown d-2">
         Введите ваш идентификатор
       </div>
       <div class="driver-form__input">
-        <input type="number" class="animate__animated animate__fadeIn d-5" v-model="driver_id" @input="checkDriver" />
+        <input type="number" class="animate__animated animate__fadeIn d-5" v-model="employee_id" @input="checkEmployee" />
       </div>
 
       <input-personal-number-form
-          @password=" (inputPassword) => updateDriverId(inputPassword)"
+          @password=" (inputPassword) => updateEmployeeId(inputPassword)"
       />
+      <button v-if="this.employee"
+              @click="start"
+              class="btn animate__animated animate__fadeInUp">
+        начать осмотр
+      </button>
       <div v-if="error" class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
     </div>
   </div>

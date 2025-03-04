@@ -1,10 +1,10 @@
-package ru.nozdratenko.sdpo.InspectionManager.Offline.Action;
+package ru.nozdratenko.sdpo.Inspections.Drivers.Offline.Action;
 
 import lombok.AllArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InspectionNotFound;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InspectionNotFound;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.ResendStatusEnum;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
 

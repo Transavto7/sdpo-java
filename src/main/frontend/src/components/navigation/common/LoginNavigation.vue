@@ -4,6 +4,9 @@ import store from "@/store";
 export default {
 
   methods: {
+    employeeStart() {
+      this.$emit('employee-start')
+    },
     selectMedic() {
       this.$emit('selectMedic')
     },
@@ -30,6 +33,7 @@ export default {
 </script>
 
 <template>
+  <button @click="employeeStart()" class="btn opacity animate__animated animate__fadeInDown">Смена</button>
   <button @click="selectMedic()" class="btn opacity animate__animated animate__fadeInDown">Мед
     работник
   </button>

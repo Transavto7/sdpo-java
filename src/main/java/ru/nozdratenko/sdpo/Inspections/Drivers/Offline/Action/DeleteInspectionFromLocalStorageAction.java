@@ -1,7 +1,7 @@
-package ru.nozdratenko.sdpo.InspectionManager.Offline.Action;
+package ru.nozdratenko.sdpo.Inspections.Drivers.Offline.Action;
 
 import lombok.RequiredArgsConstructor;
-import ru.nozdratenko.sdpo.InspectionManager.Exceptions.InspectionNotFound;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InspectionNotFound;
 import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionLocalStorageRepository;
 
 @RequiredArgsConstructor

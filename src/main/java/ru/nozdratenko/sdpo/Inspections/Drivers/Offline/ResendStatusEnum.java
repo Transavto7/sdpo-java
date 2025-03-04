@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.InspectionManager.Offline;
+package ru.nozdratenko.sdpo.Inspections.Drivers.Offline;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
