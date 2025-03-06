@@ -100,7 +100,6 @@ public class FileConfiguration extends FileBase implements Configuration {
         try {
             create();
             String settings = json.toString(1);
-            SdpoLog.info("Write settings to file:  " + settings);
             this.writeFile(settings);
             SdpoLog.info("Write settings to file successfully!");
         } catch (IOException e) {
