@@ -30,6 +30,10 @@ public class EmployeeInspectionStorage extends FileBase {
         store.put(inspection);
     }
 
+    public int count() {
+        return this.store.length();
+    }
+
     public void save() {
         try {
             this.create();
@@ -37,5 +41,13 @@ public class EmployeeInspectionStorage extends FileBase {
         } catch (IOException e) {
             SdpoLog.error(e);
         }
+    }
+
+    public JSONObject getInspection(int index) {
+        return this.store.getJSONObject(index);
+    }
+
+    public void remove(int index) {
+        this.store.remove(index);
     }
 }

@@ -1,5 +1,7 @@
 package ru.nozdratenko.sdpo.storage;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.exception.ApiException;
@@ -12,6 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Storage extends FileBase {
+    @Getter
+    @Setter
     protected HashMap<String, JSONObject> store = new HashMap<>();
     protected Long lastUpdate = 0L;
 
@@ -41,7 +45,8 @@ public class Storage extends FileBase {
             formatDataLoad(array);
             this.lastUpdate = new Date().getTime();
         } catch (Exception | ApiException e) {
-            SdpoLog.error("Error load storage data: " + url);
+            SdpoLog.info("Error load storage data: " + url);
+            SdpoLog.error(e);
         }
     }
 
@@ -61,15 +66,5 @@ public class Storage extends FileBase {
         return new JSONArray();
     }
 
-    protected void formatDataLoad(JSONArray jsonArray) {
-
-    }
-
-    public void setStore(HashMap<String, JSONObject> store) {
-        this.store = store;
-    }
-
-    public HashMap<String, JSONObject> getStore() {
-        return store;
-    }
+    protected void formatDataLoad(JSONArray jsonArray) {}
 }

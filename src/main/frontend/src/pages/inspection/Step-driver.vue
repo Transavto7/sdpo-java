@@ -10,7 +10,7 @@ export default {
           return this.$store.state.inspection;
       },
       identifier() {
-        return this.inspection?.driver_id || this.inspection?.person_id;
+        return String(this.inspection?.driver_id || this.inspection?.person_id);
       },
       fio() {
         return this.inspection?.driver_fio || this.inspection?.person_fio;

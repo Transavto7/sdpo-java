@@ -40,14 +40,8 @@ export default {
     clearTimeout(this.backTimeout);
   },
   methods: {
-    getSleepStatus(status) {
-      return status === 'Да' ? 'Выспались' : 'Не выспались';
-    },
-    getPeopleStatus(status) {
-      return status === 'Да' ? 'Хорошее' : 'Плохое';
-    },
     async save() {
-      this.result = await saveEmployeeInspection(); // TODO
+      this.result = await saveEmployeeInspection();
       this.conclusion.admitted = this.result.admitted ?? '';
       this.conclusion.comments = this.result.comments ?? '';
     },
@@ -124,14 +118,6 @@ export default {
           <div v-if="system.thermometer_visible && inspection.hasOwnProperty('t_people')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Температура тела</span>
             {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
-          </div>
-          <div v-if="system.question_sleep && inspection.hasOwnProperty('sleep_status')" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <span>Сонливость</span>
-            {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
-          </div>
-          <div v-if="system.question_helth && inspection.hasOwnProperty('people_status')" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <span>Самочувствие</span>
-            {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
           </div>
         </div>
       </div>

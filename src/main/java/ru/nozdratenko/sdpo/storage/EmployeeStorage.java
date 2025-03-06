@@ -20,7 +20,7 @@ public class EmployeeStorage extends Storage {
             if (obj instanceof JSONObject) {
                 JSONObject json = (JSONObject) obj;
                 if (json.has("hash_id") && json.has("fio")) {
-                    store.put(json.getString("hash_id"), json);
+                    store.put(json.get("hash_id").toString(), json);
                 }
             }
         }

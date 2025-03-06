@@ -13,10 +13,9 @@ export async function getEmployee(id) {
 }
 
 export async function saveEmployeeInspection(inspection = store.state.inspection) {
-    console.log("SAVE", inspection);
-    // return await axios.post(`employees/inspection/save`, inspection)
-    //     .then(({data}) => {
-    //     return data;
-    // }).catch(defaultError);
+    return await axios.post(`employees/inspection/save`, inspection)
+        .then(({data}) => {
+        return data;
+    }).catch(defaultError);
 }
 

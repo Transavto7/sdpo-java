@@ -12,10 +12,12 @@ import ru.nozdratenko.sdpo.Inspections.Employees.InspectionSavers.EmployeeInspec
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.event.StopRunProcessesEvent;
 import ru.nozdratenko.sdpo.exception.ApiException;
+import ru.nozdratenko.sdpo.exception.ApiNotFoundException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/employees/inspection")
@@ -31,6 +33,10 @@ public class EmployeeInspectionController {
                 String result = response.sendGet();
 
                 return ResponseEntity.status(HttpStatus.OK).body(result);
+            } catch (ApiNotFoundException e) {
+                JSONObject json = new JSONObject();
+                json.put("message", "Данный функционал не поддерживается в вашей версии ЭЖПО");
+                return ResponseEntity.status(303).body(json.toMap());
             } catch (ApiException e) {
                 SdpoLog.error(e);
 
@@ -48,10 +54,10 @@ public class EmployeeInspectionController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity save(@RequestBody Map<String, String> json) {
+    public ResponseEntity save(@RequestBody Map<String, Object> json) {
         try {
             EmployeeInspectionSaver inspectionSaver = EmployeeInspectionSaversBuilder.build();
-            JSONObject inspection =  inspectionSaver.save(json);
+            JSONObject inspection = inspectionSaver.save(json);
 
             eventPublisher.publishEvent(new StopRunProcessesEvent(this));
 

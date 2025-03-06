@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
+import ru.nozdratenko.sdpo.Inspections.Employees.Tasks.SaveStoreEmployeesInspectionTask;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
@@ -41,6 +42,7 @@ public class Sdpo {
     public static EmployeeInspectionStorage employeeInspectionStorage;
 
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
+    public static final SaveStoreEmployeesInspectionTask saveStoreEmployeeInspectionTask = new SaveStoreEmployeesInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
     @Getter
@@ -94,6 +96,7 @@ public class Sdpo {
 
     public void loadData() {
         saveStoreInspectionTask.start();
+        saveStoreEmployeeInspectionTask.start();
 
         driverStorage = new DriverStorage();
         driverStorage.save();

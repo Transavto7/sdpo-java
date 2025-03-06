@@ -3,6 +3,7 @@ package ru.nozdratenko.sdpo.Core.Network;
 import org.json.JSONObject;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
+import ru.nozdratenko.sdpo.exception.ApiNotFoundException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -76,7 +77,7 @@ public class Request {
         int responseCode = connection.getResponseCode();
 
         if (responseCode == 404) {
-            throw new ApiException("Resource not found " + this.url);
+            throw new ApiNotFoundException(this.url.toString());
         }
 
         if (200 > responseCode || responseCode > 299) {
@@ -121,7 +122,7 @@ public class Request {
         this.setResponseCode(connection.getResponseCode());
 
         if (this.getResponseCode() == 404) {
-            throw new ApiException("Resource not found " + this.url);
+            throw new ApiNotFoundException(this.url.toString());
         }
 
         if (200 > this.getResponseCode() || this.getResponseCode() > 299) {
@@ -133,8 +134,9 @@ public class Request {
                 } else {
                     message = "Ошибка запроса. Неизвестный ответ.";
                 }
-            } catch (Exception e) { }
-
+            } catch (Exception e) {
+            }
+            SdpoLog.error("Failed to send response to url: " + this.url);
             throw new ApiException(message);
         }
 
@@ -151,7 +153,7 @@ public class Request {
         connection.setRequestProperty("Authorization", "Bearer " + Sdpo.connectionConfig.getString("token"));
         connection.setDoOutput(true);
 
-        try(OutputStream os = connection.getOutputStream()) {
+        try (OutputStream os = connection.getOutputStream()) {
             byte[] input = json.getBytes("utf-8");
             os.write(input, 0, input.length);
         }
@@ -179,16 +181,17 @@ public class Request {
 
     private HttpURLConnection getConnection(URL url) throws IOException {
         if (Objects.equals(url.getProtocol(), "http")) {
-            return (HttpURLConnection)  url.openConnection();
+            return (HttpURLConnection) url.openConnection();
         }
 
-        return (HttpsURLConnection)  url.openConnection();
+        return (HttpsURLConnection) url.openConnection();
     }
 
 
     protected void setResponseCode(int code) {
         this.responseCode = code;
     }
+
     public int getResponseCode() {
         return this.responseCode;
     }

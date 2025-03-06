@@ -20,10 +20,10 @@ import java.util.Map;
 public class EmployeeOfflineInspectionSaver implements EmployeeInspectionSaver {
 
     @Override
-    public JSONObject save(Map<String, String> json)
+    public JSONObject save(Map<String, Object> json)
             throws IOException {
         JSONObject inspection = new JSONObject(json);
-        JSONObject driver = Sdpo.employeeStorage.getStore().get(inspection.getString("employee_id"));
+        JSONObject person = Sdpo.employeeStorage.getStore().get(inspection.get("person_id").toString());
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         inspection.put("admitted", "Допущен");
@@ -60,27 +60,36 @@ public class EmployeeOfflineInspectionSaver implements EmployeeInspectionSaver {
         if (temp > 37.0) {
             inspection.put("med_view", "Отстранение");
             inspection.put("admitted", "Не допущен");
+            SdpoLog.info("Suspension: temp");
         }
 
         try {
             String[] results = tonometer.split("/");
             int pressureSystolic = Integer.parseInt(results[0]);
             int pressureDiastolic = Integer.parseInt(results[1]);
-            if (driver.has("pressure_systolic")) {
+            if (person.has("pressure_systolic")) {
                 if (
-                        driver.getInt("pressure_systolic") < pressureSystolic ||
-                                driver.getInt("pressure_diastolic") < pressureDiastolic ||
-                                driver.getInt("pulse_upper") < pulse ||
-                                driver.getInt("pulse_lower") > pulse
+                        person.getInt("pressure_systolic") < pressureSystolic ||
+                                person.getInt("pressure_diastolic") < pressureDiastolic ||
+                                person.getInt("pulse_upper") < pulse ||
+                                person.getInt("pulse_lower") > pulse
                 ) {
                     inspection.put("med_view", "Отстранение");
                     inspection.put("admitted", "Не допущен");
-                    driver.put("end_of_ban", currentDateTime.plusMinutes(driver.getInt("time_of_pressure_ban")).format(formatter));
+                    SdpoLog.info("Suspension: pressure_systolic pressureSystolic:"
+                            + pressureSystolic + " pressureDiastolic:"
+                            + pressureDiastolic + " pulse: " + pulse);
+                    SdpoLog.info(person);
+                    SdpoLog.info(person.getInt("pulse_upper"));
+                    SdpoLog.info(person.getInt("pulse_lower"));
+                    SdpoLog.info(person.getInt("pulse_upper") < pulse);
+                    SdpoLog.info(person.getInt("pulse_lower") > pulse);
                 }
             } else {
                 if (pressureSystolic > 150) {
                     inspection.put("med_view", "Отстранение");
                     inspection.put("admitted", "Не допущен");
+                    SdpoLog.info("Suspension: pressure_systolic 150");
                 }
             }
         } catch (NumberFormatException e) {
@@ -90,8 +99,9 @@ public class EmployeeOfflineInspectionSaver implements EmployeeInspectionSaver {
         if (alcometer > 0) {
             inspection.put("med_view", "Отстранение");
             inspection.put("admitted", "Не допущен");
-            if (driver.has("time_of_alcohol_ban")) {
-                driver.put("end_of_ban", currentDateTime.plusMinutes(driver.getInt("time_of_alcohol_ban")).format(formatter));
+            SdpoLog.info("Suspension: alcometer");
+            if (person.has("time_of_alcohol_ban")) {
+                person.put("end_of_ban", currentDateTime.plusMinutes(person.getInt("time_of_alcohol_ban")).format(formatter));
             }
         }
 

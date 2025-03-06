@@ -39,7 +39,7 @@ export const routes = [
     },
     { 
         path: '/step/helth', component: () => import('./pages/inspection/Step-helth'), name: 'step-helth',
-        meta: {visible: 'question_helth', next: 'step-result', prev: 'step-sleep', number: 8 } 
+        meta: {visible: 'question_helth', next: 'step-result', prev: 'step-sleep', number: 8 }
     },
     {
         path: '/step/result', component: () => import('./pages/inspection/Step-result'), name: 'step-result',
@@ -51,5 +51,6 @@ export const routes = [
     },
     {
         path: '/step/retry', component: () => import('./pages/inspection/Step-result'), name: 'step-retry',
-        meta: { next: 'step-driver', prev: 'step-result', number: 0 } },
+        meta: { next: 'step-driver', prev: 'step-result', number: 0 }
+    },
 ]
