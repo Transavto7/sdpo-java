@@ -18,7 +18,6 @@ import ru.nozdratenko.sdpo.exception.ApiNotFoundException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
@@ -61,7 +60,7 @@ public class EmployeeInspectionController {
 
                     inspectionType.put(EmployeeInspectionType.CLOSE.toString());
                 } else  {
-                    inspectionType.put(EmployeeInspectionType.CLOSE.toString());
+                    inspectionType.put(EmployeeInspectionType.OPEN.toString());
                 }
 
                 employee.put("inspection_types", inspectionType);

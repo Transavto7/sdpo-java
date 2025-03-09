@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.Inspections.Employees.Storages;
 
+import lombok.Getter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.lang.Nullable;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+@Getter
 public class EmployeeInspectionStorage extends FileBase {
     public JSONArray store = new JSONArray();
     public EmployeeInspectionStorage() {
