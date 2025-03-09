@@ -1,7 +1,8 @@
-package ru.nozdratenko.sdpo.storage;
+package ru.nozdratenko.sdpo.Inspections.Employees.Storages;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.nozdratenko.sdpo.storage.Storage;
 
 import java.io.IOException;
 

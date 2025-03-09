@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
+import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeInspectionStorage;
+import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeStorage;
 import ru.nozdratenko.sdpo.Inspections.Employees.Tasks.SaveStoreEmployeesInspectionTask;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.FileConfiguration;

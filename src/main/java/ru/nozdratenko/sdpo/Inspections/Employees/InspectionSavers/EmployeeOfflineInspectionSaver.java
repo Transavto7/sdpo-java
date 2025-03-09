@@ -105,10 +105,7 @@ public class EmployeeOfflineInspectionSaver implements EmployeeInspectionSaver {
             }
         }
 
-        Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        inspection.put("created_at", dateFormat.format(date));
+        inspection.put("created_at", currentDateTime.format(formatter));
         inspection.put("status_send", ResendStatusEnum.UNSENT);
 
         Sdpo.employeeInspectionStorage.putInspection(inspection);

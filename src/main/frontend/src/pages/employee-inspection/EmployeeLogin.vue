@@ -1,10 +1,10 @@
 <script>
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
-import { useToast } from "vue-toastification";
+import {useToast} from "vue-toastification";
 import {getEmployee} from "@/helpers/api/employee";
 
 export default {
-  components: {InputPersonalNumberForm },
+  components: {InputPersonalNumberForm},
   data() {
     return {
       employee_id: '',
@@ -15,10 +15,11 @@ export default {
     }
   },
   methods: {
-    start() {
+    start(typeAnketa) {
       this.$store.state.inspection.person_id = this.employee.hash_id;
       this.$store.state.inspection.person_fio = this.employee.fio;
       this.$store.state.inspection.type = 'employee';
+      this.$store.state.inspection.type_anketa = typeAnketa;
       this.$router.push({name: 'step-driver'});
     },
     updateEmployeeId(inputPassword) {
@@ -51,6 +52,12 @@ export default {
   computed: {
     login() {
       return this.employee;
+    },
+    canOpen() {
+      return this.employee?.inspection_types.includes('open')
+    },
+    canClose() {
+      return this.employee?.inspection_types.includes('close')
     }
   }
 }
@@ -66,17 +73,26 @@ export default {
         Введите ваш идентификатор
       </div>
       <div class="driver-form__input">
-        <input type="number" class="animate__animated animate__fadeIn d-5" v-model="employee_id" @input="checkEmployee" />
+        <input type="number" class="animate__animated animate__fadeIn d-5" v-model="employee_id"
+               @input="checkEmployee"/>
       </div>
 
       <input-personal-number-form
           @password=" (inputPassword) => updateEmployeeId(inputPassword)"
       />
-      <button v-if="this.employee"
-              @click="start"
-              class="btn animate__animated animate__fadeInUp">
-        начать осмотр
-      </button>
+
+      <div>
+        <button v-if="canOpen"
+                @click="start('open')"
+                class="btn animate__animated animate__fadeInUp mr-2">
+          начать смену
+        </button>
+        <button v-if="canClose"
+                @click="start('close')"
+                class="btn animate__animated animate__fadeInUp">
+          закончить смену
+        </button>
+      </div>
       <div v-if="error" class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}</div>
     </div>
   </div>

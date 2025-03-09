@@ -16,6 +16,9 @@ public class EmployeeInspectionRequestSerializer {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         result.put("date", currentDateTime.format(formatter));
+        if (inspection.has("created_at")) {
+            result.put("date", inspection.get("created_at"));
+        }
         result.put("employee_id", inspection.opt("person_id"));
         result.put("t_people", inspection.opt("t_people"));
         result.put("tonometer", inspection.opt("tonometer"));
@@ -28,8 +31,6 @@ public class EmployeeInspectionRequestSerializer {
 
         result.put("test_narko", inspection.opt("test_narko"));
         result.put("proba_alko", inspection.opt("proba_alko"));
-
-        SdpoLog.info(result);
 
         return result;
     }

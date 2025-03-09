@@ -1,12 +1,14 @@
 package ru.nozdratenko.sdpo.Inspections.Employees.Controllers;
 
 import lombok.AllArgsConstructor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Core.Network.Request;
+import ru.nozdratenko.sdpo.Inspections.Employees.Enums.EmployeeInspectionType;
 import ru.nozdratenko.sdpo.Inspections.Employees.InspectionSavers.EmployeeInspectionSaver;
 import ru.nozdratenko.sdpo.Inspections.Employees.InspectionSavers.EmployeeInspectionSaversBuilder;
 import ru.nozdratenko.sdpo.Sdpo;
@@ -16,8 +18,8 @@ import ru.nozdratenko.sdpo.exception.ApiNotFoundException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/employees/inspection")
@@ -46,6 +48,24 @@ public class EmployeeInspectionController {
             JSONObject employee = Sdpo.employeeStorage.getStore().get(id);
 
             if (employee != null) {
+                EmployeeInspectionType lastInspection  = Sdpo.employeeInspectionStorage.getLastInspectionTypeForEmployee(id);
+                JSONArray inspectionType = new JSONArray();
+
+                if (lastInspection != null) {
+                    if (lastInspection.equals(EmployeeInspectionType.CLOSE)) {
+                        JSONObject response = new JSONObject();
+                        response.put("message", "Сотрудник уже имеет запись в этот день");
+
+                        return ResponseEntity.status(303).body(response.toMap());
+                    }
+
+                    inspectionType.put(EmployeeInspectionType.CLOSE.toString());
+                } else  {
+                    inspectionType.put(EmployeeInspectionType.CLOSE.toString());
+                }
+
+                employee.put("inspection_types", inspectionType);
+
                 return ResponseEntity.status(HttpStatus.OK).body(employee.toMap());
             }
         }

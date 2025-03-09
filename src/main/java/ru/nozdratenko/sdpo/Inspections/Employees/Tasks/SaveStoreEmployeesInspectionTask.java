@@ -7,7 +7,7 @@ import ru.nozdratenko.sdpo.Inspections.Employees.InspectionSavers.EmployeeOnline
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.ApiNotFoundException;
-import ru.nozdratenko.sdpo.storage.EmployeeInspectionStorage;
+import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeInspectionStorage;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.net.UnknownHostException;
@@ -34,7 +34,7 @@ public class SaveStoreEmployeesInspectionTask extends Thread {
             }
 
             int index = 0;
-            while (inspections.count() > 0 && index <= inspections.count()) {
+            while (inspections.count() > 0 && index <= inspections.count() - 1) {
 
                 if (!Sdpo.isConnection()) {
                     try {

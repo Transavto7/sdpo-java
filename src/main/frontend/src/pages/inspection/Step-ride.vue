@@ -9,6 +9,9 @@ export default {
     }
   },
   mounted() {
+    if (this.inspection.type === 'employee') {
+      this.$router.push({name: 'step-tonometer'});
+    }
     this.$store.state.inspection.type_view = '';
   },
   methods: {
