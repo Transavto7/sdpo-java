@@ -11,7 +11,7 @@ export default {
         }
     },
     mounted() {
-        if (this.driver.photo) {
+        if (this.driver.photo || this.inspection.type === 'employee') {
             this.$router.push({ name: 'step-ride' });
             return;
         }
@@ -77,7 +77,7 @@ export default {
             Загрузка
         </div>
 
-        <div v-if="!loading" class="step-photo__video animate__animated animate__fadeInDown" :class="{preview: !translation}">
+        <div class="step-photo__video animate__animated animate__fadeInDown" :class="{preview: !translation}">
             <img ref="video">
         </div>
 
