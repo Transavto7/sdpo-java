@@ -39,7 +39,7 @@ export const routes = [
     },
     { 
         path: '/step/helth', component: () => import('./pages/inspection/Step-helth'), name: 'step-helth',
-        meta: {visible: 'question_helth', next: 'step-result', prev: 'step-sleep', number: 8 }
+        meta: {visible: 'question_helth', next: 'step-result', next_employee: 'step-result-employee', prev: 'step-sleep', number: 8 }
     },
     {
         path: '/step/result', component: () => import('./pages/inspection/Step-result'), name: 'step-result',

@@ -63,6 +63,10 @@ router.beforeEach((to, from, next) => {
           return router.push({ name: to.meta.prev });
         }
 
+        if (store.state.inspection.type === 'employee') {
+          return router.push({ name: to.meta.next_employee ?? to.meta.next });
+        }
+
         return router.push({ name: to.meta.next });
       }
     }
