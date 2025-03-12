@@ -5,17 +5,18 @@ import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.Repository.SettingsEhzpoRepository;
 import ru.nozdratenko.sdpo.storage.repository.stamp.StampRemoteRepository;
-import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.Optional;
 
 public class SettingsContainer {
     public final FileConfiguration mainConfig;
     public final FileConfiguration systemConfig;
+    public final FileConfiguration dynamic;
 
-    public SettingsContainer(FileConfiguration mainConfig, FileConfiguration systemConfig) {
+    public SettingsContainer(FileConfiguration mainConfig, FileConfiguration systemConfig, FileConfiguration dynamic) {
         this.mainConfig = mainConfig;
         this.systemConfig = systemConfig;
+        this.dynamic = dynamic;
     }
 
     public static SettingsContainer init() {
@@ -33,7 +34,8 @@ public class SettingsContainer {
 
         return new SettingsContainer(
                 main,
-                SettingsFactory.makeSystem(defaultSettings.optJSONObject("system"))
+                SettingsFactory.makeSystem(defaultSettings.optJSONObject("system")),
+                SettingsFactory.makeDynamic()
         );
     }
 }

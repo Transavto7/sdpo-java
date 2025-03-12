@@ -16,7 +16,7 @@ public class SettingsFactory {
         FileConfiguration configuration = new FileConfiguration("configs/main.json");
         configuration.setDefault("password", SettingsFactory.getValue(defaultSettings, "password", "7344946"))
                 .setDefault("medic_password", SettingsFactory.getValue(defaultSettings, "medic_password", "0000000"))
-                .setDefault("support_phone", SettingsFactory.getValue(defaultSettings, "support_phone", "+7 (916) 363-59-07"))
+                .setDefault("support_phone", SettingsFactory.getValue(defaultSettings, "support_phone", "8 (800) 777-72-46"))
                 .setDefault("terminal_is_blocked", SettingsFactory.getValue(defaultSettings, "terminal_is_blocked", false))
                 .setDefault("run_browser_cmd",
                         SettingsFactory.getValue(defaultSettings,
@@ -59,9 +59,9 @@ public class SettingsFactory {
 
         configuration.setDefault("driver_info", SettingsFactory.getValue(defaultSettings, "driver_info", false))
                 .setDefault("type_ride", SettingsFactory.getValue(defaultSettings, "type_ride", true))
-                .setDefault("question_sleep", SettingsFactory.getValue(defaultSettings, "question_sleep", true))
-                .setDefault("question_helth", SettingsFactory.getValue(defaultSettings, "question_helth", true))
-                .setDefault("alcometer_fast", SettingsFactory.getValue(defaultSettings, "alcometer_fast", false))
+                .setDefault("question_sleep", SettingsFactory.getValue(defaultSettings, "question_sleep", false))
+                .setDefault("question_helth", SettingsFactory.getValue(defaultSettings, "question_helth", false))
+                .setDefault("alcometer_fast", SettingsFactory.getValue(defaultSettings, "alcometer_fast", true))
                 .setDefault("alcometer_skip", SettingsFactory.getValue(defaultSettings, "alcometer_skip", false))
                 .setDefault("alcometer_retry", SettingsFactory.getValue(defaultSettings, "alcometer_retry", true))
                 .setDefault("alcometer_visible", SettingsFactory.getValue(defaultSettings, "alcometer_visible", true))
@@ -83,12 +83,22 @@ public class SettingsFactory {
                 .setDefault("delay_day_in_offline_mod", SettingsFactory.getValue(defaultSettings, "delay_day_in_offline_mod", 30))
                 .setDefault("max_inspection_in_offline_mod", SettingsFactory.getValue(defaultSettings, "max_inspection_in_offline_mod", 300))
                 .setDefault("auto_send_to_crm", SettingsFactory.getValue(defaultSettings, "auto_send_to_crm", true))
-                .setDefault("last_online", currentDate)
-                .setDefault("count_inspections", 0)
                 .setDefault("date_verification", null)
                 .setDefault("delay_before_retry_inspection", SettingsFactory.getValue(defaultSettings, "delay_before_retry_inspection", 5000))
                 .setDefault("delay_before_redirect_to_main_page", SettingsFactory.getValue(defaultSettings, "delay_before_redirect_to_main_page", 10000))
                 .mergeWithJson(defaultSettings)
+                .saveFile();
+
+        return configuration;
+    }
+
+    public static FileConfiguration makeDynamic() {
+        FileConfiguration configuration = new FileConfiguration("configs/dynamic.json");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDate = dateFormat.format(new Date());
+
+        configuration.setDefault("last_online", currentDate)
+                .setDefault("count_inspections", 0)
                 .saveFile();
 
         return configuration;

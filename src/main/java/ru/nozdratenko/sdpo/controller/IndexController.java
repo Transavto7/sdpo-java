@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
 
@@ -68,12 +71,26 @@ public class IndexController {
                 if (response.equals("true")) {
                     Sdpo.setConnection(true);
 
-                    Date date = new Date();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String currentDate = dateFormat.format(date);
-                    Sdpo.settings.systemConfig.set("last_online", currentDate);
-                    Sdpo.settings.systemConfig.set("count_inspections", 0);
-                    Sdpo.settings.systemConfig.saveFile();
+                    LocalDateTime lastOnline = null;
+                    DateTimeFormatter barFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                    if (Sdpo.settings.dynamic.getJson().has("last_online")){
+                        String lastOnlineRaw = Sdpo.settings.dynamic.getString("last_online");
+                        lastOnline = LocalDateTime.parse(lastOnlineRaw, barFormatter);
+                    }
+
+                    LocalDateTime currentDate = LocalDateTime.now();
+                    Sdpo.settings.dynamic.set("count_inspections", 0);
+
+                    if (lastOnline != null) {
+                        long minutes = ChronoUnit.MINUTES.between(lastOnline, currentDate);
+                        if (minutes >= 10) {
+                            Sdpo.settings.dynamic.set("last_online", barFormatter.format(currentDate));
+                            Sdpo.settings.dynamic.saveFile();
+                        }
+                    } else {
+                        Sdpo.settings.dynamic.saveFile();
+                    }
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);
                 }

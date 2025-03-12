@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'ru.nozdratenko'
-version = '2.9.1'
+version = '2.9.2'
 sourceCompatibility = '11'
 
 repositories {

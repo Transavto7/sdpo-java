@@ -76,9 +76,9 @@ export default {
   computed: {
     terminalIsLocked() {
       if (!store.state.connection) {
-        if (this.system.max_inspection_in_offline_mod - this.system.count_inspections <= 0) return true;
+        if (this.system.max_inspection_in_offline_mod - this.$store.state.config?.dynamic?.count_inspections <= 0) return true;
 
-        let lastOnline = this.system.last_online || new Date();
+        let lastOnline = this.$store.state.config?.dynamic?.last_online || new Date();
         return (((new Date()) - Date.parse(lastOnline)) / 8.64e7 > this.system.delay_day_in_offline_mod)
       }
       return false;
