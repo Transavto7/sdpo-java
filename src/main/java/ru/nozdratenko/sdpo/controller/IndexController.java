@@ -84,9 +84,11 @@ public class IndexController {
                         long minutes = ChronoUnit.MINUTES.between(lastOnline, currentDate);
                         if (minutes >= 10) {
                             Sdpo.settings.dynamicConfig.set("last_online", barFormatter.format(currentDate));
+                            SdpoLog.info("Save last_online");
                             Sdpo.settings.dynamicConfig.saveFile();
                         }
                     } else {
+                        SdpoLog.info("Save last_online with no lastOnline");
                         Sdpo.settings.dynamicConfig.saveFile();
                     }
                     timestamp = System.currentTimeMillis() - timestamp;

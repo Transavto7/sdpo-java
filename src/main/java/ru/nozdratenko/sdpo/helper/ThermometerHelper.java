@@ -26,19 +26,19 @@ public class ThermometerHelper {
         try {
             serialPort.openPort();
             serialPort.setParams(2400,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
+                SerialPort.DATABITS_8,
+                SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE);
 
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN |
-                    SerialPort.FLOWCONTROL_RTSCTS_OUT);
+                SerialPort.FLOWCONTROL_RTSCTS_OUT);
 
             int[] receivedData = serialPort.readIntArray(8, 3000);
             double temp = receivedData[5] + 256;
             temp /= 10;
 
-            if (receivedData[6] != 1 || temp < 32 || temp > 42) {
-                SdpoLog.info("Lo temp: " + temp);
+            if (receivedData[6] != 1) {
+                SdpoLog.info("Lo temp: " + receivedData[6]);
                 return 0.0;
             }
 
