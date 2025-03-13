@@ -19,11 +19,9 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Map;
 
 @Controller
@@ -74,22 +72,22 @@ public class IndexController {
                     LocalDateTime lastOnline = null;
                     DateTimeFormatter barFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-                    if (Sdpo.settings.dynamic.getJson().has("last_online")){
-                        String lastOnlineRaw = Sdpo.settings.dynamic.getString("last_online");
+                    if (Sdpo.settings.dynamicConfig.getJson().has("last_online")){
+                        String lastOnlineRaw = Sdpo.settings.dynamicConfig.getString("last_online");
                         lastOnline = LocalDateTime.parse(lastOnlineRaw, barFormatter);
                     }
 
                     LocalDateTime currentDate = LocalDateTime.now();
-                    Sdpo.settings.dynamic.set("count_inspections", 0);
+                    Sdpo.settings.dynamicConfig.set("count_inspections", 0);
 
                     if (lastOnline != null) {
                         long minutes = ChronoUnit.MINUTES.between(lastOnline, currentDate);
                         if (minutes >= 10) {
-                            Sdpo.settings.dynamic.set("last_online", barFormatter.format(currentDate));
-                            Sdpo.settings.dynamic.saveFile();
+                            Sdpo.settings.dynamicConfig.set("last_online", barFormatter.format(currentDate));
+                            Sdpo.settings.dynamicConfig.saveFile();
                         }
                     } else {
-                        Sdpo.settings.dynamic.saveFile();
+                        Sdpo.settings.dynamicConfig.saveFile();
                     }
                     timestamp = System.currentTimeMillis() - timestamp;
                     return ResponseEntity.ok().body(timestamp);

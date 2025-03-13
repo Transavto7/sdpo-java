@@ -4,7 +4,8 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
 import ru.nozdratenko.sdpo.Sdpo;
-import ru.nozdratenko.sdpo.Settings.FileConfiguration;
+import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
+import ru.nozdratenko.sdpo.Settings.CoreConfigurations.MemoryConfiguration;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 
 import java.text.SimpleDateFormat;
@@ -126,5 +127,13 @@ public class SettingsFactory {
         }
 
         return defaultValue;
+    }
+
+    public static MemoryConfiguration makeTemporary() {
+        MemoryConfiguration configuration = new MemoryConfiguration();
+
+        configuration.setDefault("cursor", false);
+
+        return configuration;
     }
 }

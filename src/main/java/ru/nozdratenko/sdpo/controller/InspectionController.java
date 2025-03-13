@@ -158,8 +158,8 @@ public class InspectionController {
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
-        Sdpo.settings.dynamic.set("count_inspections", Sdpo.settings.dynamic.getInt("count_inspections") + 1);
-        Sdpo.settings.dynamic.saveFile();
+        Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.dynamicConfig.getInt("count_inspections") + 1);
+        Sdpo.settings.dynamicConfig.saveFile();
         try {
             ResponseEntity entity;
             if (!Sdpo.isConnection()) {
@@ -175,20 +175,20 @@ public class InspectionController {
 
             return entity;
         } catch (ApiException e) {
-            Sdpo.settings.dynamic.set("count_inspections", Sdpo.settings.dynamic.getInt("count_inspections") - 1);
-            Sdpo.settings.dynamic.saveFile();
+            Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.dynamicConfig.getInt("count_inspections") - 1);
+            Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {
             e.printStackTrace();
             SdpoLog.error("Error create inspection: " + e);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Ошибка запроса");
-            Sdpo.settings.dynamic.set("count_inspections", Sdpo.settings.dynamic.getInt("count_inspections") - 1);
-            Sdpo.settings.dynamic.saveFile();
+            Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.dynamicConfig.getInt("count_inspections") - 1);
+            Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(jsonObject);
         } catch (PrinterException e) {
-            Sdpo.settings.dynamic.set("count_inspections", Sdpo.settings.dynamic.getInt("count_inspections") - 1);
-            Sdpo.settings.dynamic.saveFile();
+            Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.dynamicConfig.getInt("count_inspections") - 1);
+            Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse());
         }
     }

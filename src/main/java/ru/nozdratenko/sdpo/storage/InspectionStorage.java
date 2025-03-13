@@ -23,7 +23,7 @@ public class InspectionStorage extends FileBase implements StoreInLocalMemory {
             String str = read();
             if (!str.isEmpty()) {
                 this.store = new JSONArray(read());
-                Sdpo.settings.dynamic.set("count_inspections", this.store.length());
+                Sdpo.settings.dynamicConfig.set("count_inspections", this.store.length());
             }
         } catch (Exception e) {
             SdpoLog.error(e);

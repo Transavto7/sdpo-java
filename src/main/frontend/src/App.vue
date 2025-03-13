@@ -2,6 +2,7 @@
 import Navigation from './components/navigation/Navigation.vue'
 import ErrorModal from './components/ErrorModal.vue'
 import store from "@/store";
+import {loadSettings} from "@/helpers/settings";
 
 export default {
   name: 'App',
@@ -22,6 +23,9 @@ export default {
     serialNumber() {
       return this.$store.state.verification.serialNumberTerminal
     },
+  },
+  mounted() {
+    loadSettings()
   },
 }
 </script>

@@ -6,7 +6,7 @@ export async function loadSettings() {
     await axios.post('/setting/load').then(({ data }) => {
         store.state.config = data;
 
-        if (data?.system?.cursor) {
+        if (data?.temporary?.cursor) {
             document.documentElement.classList.remove('disable-mouse');
         }
     }).catch(error => {
@@ -74,4 +74,12 @@ export function getSettings(name) {
         return JSON.parse(store.state.config.system[name])
     }
     return false;
+}
+
+export async function setCursor(isEnable) {
+    await axios.post('/setting/temporary/cursor', {
+        cursor: isEnable
+    }).catch(error => {
+        console.log(error);
+    });
 }
