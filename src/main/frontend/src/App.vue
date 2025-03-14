@@ -2,6 +2,7 @@
 import Navigation from './components/navigation/Navigation.vue'
 import ErrorModal from './components/ErrorModal.vue'
 import store from "@/store";
+import {loadSettings} from "@/helpers/settings";
 
 export default {
   name: 'App',
@@ -23,6 +24,9 @@ export default {
       return this.$store.state.verification.serialNumberTerminal
     },
   },
+  mounted() {
+    loadSettings()
+  },
 }
 </script>
 
@@ -35,7 +39,7 @@ export default {
   <div class="footer">
     <div class="footer__point-version">
       {{ point || 'Незвестный пункт выпуска' }}
-      <span>Версия: 2.8.4</span>
+      <span>Версия: 2.9.3</span>
     </div>
   </div>
   <div class="footer__serial-number_date-notification">

@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class ProcessCloserListener {
         this.tonometerTaskRunner = tonometerTaskRunner;
     }
 
-    @Async("tonometerTaskExecutor")
+    @Async("eventTaskExecutor")
     @EventListener
     public void handleStopRunProcessesEvent(StopRunProcessesEvent event) {
         TonometerResultTask tonometerResultTask = this.tonometerTaskRunner.getTonometerResultTask();

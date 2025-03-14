@@ -75,3 +75,11 @@ export function getSettings(name) {
     }
     return false;
 }
+
+export async function setCursor(isEnable) {
+    await axios.post('/setting/temporary/cursor', {
+        cursor: isEnable
+    }).catch(error => {
+        console.log(error);
+    });
+}

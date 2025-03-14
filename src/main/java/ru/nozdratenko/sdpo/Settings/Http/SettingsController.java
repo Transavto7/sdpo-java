@@ -107,4 +107,11 @@ public class SettingsController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
+
+    @PostMapping("/setting/temporary/cursor")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void setCursor(@RequestBody Map<String, Object> json) {
+        Sdpo.settings.systemConfig.set("cursor", json.get("cursor"));
+        Sdpo.settings.systemConfig.saveFile();
+    }
 }
