@@ -6,7 +6,7 @@ export async function loadSettings() {
     await axios.post('/setting/load').then(({ data }) => {
         store.state.config = data;
 
-        if (data?.temporary?.cursor) {
+        if (data?.system?.cursor) {
             document.documentElement.classList.remove('disable-mouse');
         }
     }).catch(error => {
