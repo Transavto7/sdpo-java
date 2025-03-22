@@ -16,7 +16,7 @@ import ru.nozdratenko.sdpo.util.device.BluetoothDeviceService;
 public class ProcessCloserListener {
     private final TonometerTaskRunner tonometerTaskRunner;
 
-    @Async
+    @Async("taskExecutor")
     @EventListener
     public void handleStopRunProcessesEvent(StopRunProcessesEvent event) {
         TonometerResultTask tonometerResultTask = this.tonometerTaskRunner.getTonometerResultTask();

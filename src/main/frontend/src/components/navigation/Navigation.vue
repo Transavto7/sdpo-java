@@ -3,6 +3,7 @@ import {close} from '@/helpers/api/api';
 import AdminNavigation from "@/components/navigation/common/AdminNavigation";
 import LoginNavigation from "@/components/navigation/common/LoginNavigation";
 import InspectionProgressLine from "@/components/navigation/common/InspectionProgressLine";
+import {setCursor} from "@/helpers/settings";
 
 export default {
   components: {InspectionProgressLine, LoginNavigation, AdminNavigation},
@@ -14,10 +15,10 @@ export default {
     changeVisibleMouseCursor() {
       if (!document.documentElement.classList.contains('disable-mouse')) {
         document.documentElement.classList.add('disable-mouse');
-        this.system.cursor = false;
+        setCursor(false)
       } else {
         document.documentElement.classList.remove('disable-mouse');
-        this.system.cursor = true;
+        setCursor(true)
       }
     },
     logout() {

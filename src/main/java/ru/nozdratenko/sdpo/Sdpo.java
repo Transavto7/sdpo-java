@@ -8,7 +8,7 @@ import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeInspectionStor
 import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeStorage;
 import ru.nozdratenko.sdpo.Inspections.Employees.Tasks.SaveStoreEmployeesInspectionTask;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
-import ru.nozdratenko.sdpo.Settings.FileConfiguration;
+import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
@@ -83,9 +83,8 @@ public class Sdpo {
             if (response.equals("true")) {
                 Sdpo.setConnection(true);
             }
-        }
-        catch (UnknownHostException ignored) {}
-        catch (Exception | ApiException e) {
+        } catch (UnknownHostException ignored) {
+        } catch (Exception | ApiException e) {
             SdpoLog.error(e);
         }
         Sdpo.setConnection(false);

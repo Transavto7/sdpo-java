@@ -39,7 +39,7 @@ export async function saveInspection(inspection = store.state.inspection) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
     return await axios.post(`inspection/save`, inspection).then(({data}) => {
-        store.state.config.system.count_inspections = store.state.config?.system.count_inspections + 1 || 1;
+        store.state.config.dynamic.count_inspections = store.state.config?.dynamic.count_inspections + 1 || 1;
         return data;
     }).catch(defaultError);
 }
@@ -60,7 +60,7 @@ export async function checkConnect(address) {
     return await axios.post(`api/check`, {
         address
     }).then(({data}) => {
-        store.state.config.system.count_inspections = 0;
+        store.state.config.dynamic.count_inspections = 0;
         return data;
     }).catch((error) => {
         if (!error.response) {

@@ -1,9 +1,7 @@
-package ru.nozdratenko.sdpo.Settings;
+package ru.nozdratenko.sdpo.Settings.CoreConfigurations;
 
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
-import ru.nozdratenko.sdpo.Settings.Contracts.Configuration;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
@@ -16,7 +14,12 @@ public class FileConfiguration extends FileBase implements Configuration {
         try {
             String str = read();
             if (!str.isEmpty()) {
-                json = new JSONObject(read());
+                try {
+                    json = new JSONObject(str);
+                } catch (Exception e) {
+                    SdpoLog.info("Error for parse configuration json:  " + str);
+                    throw e;
+                }
             }
         } catch (Exception e) {
             json = new JSONObject();
@@ -66,7 +69,7 @@ public class FileConfiguration extends FileBase implements Configuration {
 
     public String getString(String key) {
         if (json.has(key)) {
-            return json.getString(key);
+            return json.get(key).toString();
         }
 
         return "";
@@ -95,9 +98,11 @@ public class FileConfiguration extends FileBase implements Configuration {
     public FileConfiguration saveFile() {
         try {
             create();
-            this.writeFile(json.toString(1));
+            String settings = json.toString(1);
+            this.writeFile(settings);
+            SdpoLog.info("Write settings to file successfully!");
         } catch (IOException e) {
-            e.printStackTrace();
+            SdpoLog.error(e);
         }
 
         return this;
