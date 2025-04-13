@@ -85,30 +85,13 @@ public class AlcometerHelper {
             throw new AlcometerException("Порт не найден");
         }
 
-        boolean currentMod;
         SdpoLog.info("Start alcometer");
-        if (Sdpo.settings.systemConfig.getBoolean("alcometer_fast")) {
-            currentMod = this.enableFastMode();
-        } else {
-            currentMod = this.enableSlowMode();
-        }
-        if (!currentMod) SdpoLog.warning("Режим алкометра не установлен");
+        this.enableSlowMode();
     }
 
-    /**
-     * @return boolean
-     */
-    private boolean enableSlowMode() throws SerialPortException, UnsupportedEncodingException {
+    private void enableSlowMode() throws SerialPortException, UnsupportedEncodingException {
         SdpoLog.info("Alcometer send slow mode");
-        return this.getSerialPort().writeString("$STARTSENTECH\r\n", "ascii");
-    }
-
-    /**
-     * @return boolean
-     */
-    private boolean enableFastMode() throws SerialPortException, UnsupportedEncodingException {
-        SdpoLog.info("Alcometer send fast mode");
-        return this.getSerialPort().writeString("$FASTSENTECH\r\n", "ascii");
+        this.getSerialPort().writeString("$STARTSENTECH\r\n", "ascii");
     }
 
     public String result() throws SerialPortException, AlcometerException {

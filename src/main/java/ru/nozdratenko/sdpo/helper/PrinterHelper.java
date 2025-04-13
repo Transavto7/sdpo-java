@@ -100,12 +100,10 @@ public class PrinterHelper {
 
         JSONObject stamp = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_stamp");
 
-        if (Sdpo.isConnection()) {
-            JSONObject raw = Sdpo.serviceDataStorage.getFromApi();
-            if (!raw.isNull("stamp_head") || !raw.isNull("stamp_licence")) {
-                stamp = Sdpo.serviceDataStorage.getFromApi();
-                Sdpo.serviceDataStorage.selectStamp(stamp);
-            }
+        JSONObject raw = Sdpo.serviceDataStorage.getFromApi();
+        if (!raw.isNull("stamp_head") || !raw.isNull("stamp_licence")) {
+            stamp = Sdpo.serviceDataStorage.getFromApi();
+            Sdpo.serviceDataStorage.selectStamp(stamp);
         }
 
         if (!stamp.isNull("stamp_head")) {
@@ -125,14 +123,14 @@ public class PrinterHelper {
         }
     }
 
-    public static void printFromPDF (PDDocument document) throws PrinterException, IOException {
+    public static void printFromPDF(PDDocument document) throws PrinterException, IOException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PrintQrTask(document));
         job.print();
         document.close();
     }
 
-    public static void printFromPDFRotate (PDDocument document) throws PrinterException, IOException {
+    public static void printFromPDFRotate(PDDocument document) throws PrinterException, IOException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PrintQrRotateTask(document));
         job.print();

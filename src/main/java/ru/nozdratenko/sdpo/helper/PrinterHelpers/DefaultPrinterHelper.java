@@ -1,5 +1,7 @@
 package ru.nozdratenko.sdpo.helper.PrinterHelpers;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,22 +25,13 @@ import java.io.IOException;
 @Service
 @Profile("production")
 public class DefaultPrinterHelper implements PrinterHelper {
+    @Getter
     public JSONObject lastPrint = null;
+    @Getter
+    @Setter
     public String lastQRPath = "";
     public String head = null;
     public String licence = null;
-
-    public JSONObject getLastPrint() {
-        return lastPrint;
-    }
-
-    public String getLastQRPath() {
-        return lastQRPath;
-    }
-
-    public void setLastQRPath(String lastQRPath) {
-        this.lastQRPath = lastQRPath;
-    }
 
     public void print(JSONObject json) throws PrintException, IOException, ru.nozdratenko.sdpo.exception.PrinterException {
         lastPrint = json;
@@ -116,12 +109,10 @@ public class DefaultPrinterHelper implements PrinterHelper {
 
         JSONObject stamp = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_stamp");
 
-        if (Sdpo.isConnection()) {
-            JSONObject raw = Sdpo.serviceDataStorage.getFromApi();
-            if (!raw.isNull("stamp_head") || !raw.isNull("stamp_licence")) {
-                stamp = Sdpo.serviceDataStorage.getFromApi();
-                Sdpo.serviceDataStorage.selectStamp(stamp);
-            }
+        JSONObject raw = Sdpo.serviceDataStorage.getFromApi();
+        if (!raw.isNull("stamp_head") || !raw.isNull("stamp_licence")) {
+            stamp = raw;
+            Sdpo.serviceDataStorage.selectStamp(stamp);
         }
 
         if (!stamp.isNull("stamp_head")) {
@@ -141,14 +132,14 @@ public class DefaultPrinterHelper implements PrinterHelper {
         }
     }
 
-    public void printFromPDF (PDDocument document) throws PrinterException, IOException {
+    public void printFromPDF(PDDocument document) throws PrinterException, IOException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PrintQrTask(document));
         job.print();
         document.close();
     }
 
-    public void printFromPDFRotate (PDDocument document) throws PrinterException, IOException {
+    public void printFromPDFRotate(PDDocument document) throws PrinterException, IOException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PrintQrRotateTask(document));
         job.print();

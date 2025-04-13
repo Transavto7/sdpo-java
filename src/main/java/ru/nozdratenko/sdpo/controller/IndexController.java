@@ -45,8 +45,8 @@ public class IndexController {
     public ResponseEntity video() {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .header("Content-Type", "video/mp4")
-                    .body(this.cameraHelper.readVideoByte());
+                .header("Content-Type", "video/mp4")
+                .body(this.cameraHelper.readVideoByte());
         } catch (IOException e) {
             SdpoLog.error("Error open video: " + e);
             return ResponseEntity.status(503).body(FileBase.concatPath(FileBase.getMainFolderUrl(), "video.mp4"));
@@ -72,7 +72,7 @@ public class IndexController {
                     LocalDateTime lastOnline = null;
                     DateTimeFormatter barFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-                    if (Sdpo.settings.dynamicConfig.getJson().has("last_online")){
+                    if (Sdpo.settings.dynamicConfig.getJson().has("last_online")) {
                         String lastOnlineRaw = Sdpo.settings.dynamicConfig.getString("last_online");
                         lastOnline = LocalDateTime.parse(lastOnlineRaw, barFormatter);
                     }
@@ -95,11 +95,9 @@ public class IndexController {
                     return ResponseEntity.ok().body(timestamp);
                 }
             }
-        }
-        catch (UnknownHostException ignored) {
+        } catch (UnknownHostException ignored) {
             Thread.sleep(5000);
-        }
-        catch (Exception | ApiException e) {
+        } catch (Exception | ApiException e) {
             SdpoLog.error(e);
         }
 
@@ -111,7 +109,7 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity apiGetPoint() {
         try {
-            Request request = new Request( "sdpo/pv");
+            Request request = new Request("sdpo/pv");
             String response = request.sendGet();
             if (request.success && response.length() < 500) {
                 return ResponseEntity.ok().body(response);
@@ -128,29 +126,23 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity apiGetVerification() {
         try {
-            if (Sdpo.isConnection()) {
-                Request request = new Request("sdpo/terminal/verification");
-                String response = request.sendGet();
-                if (request.success && response.length() < 500) {
-                    JSONObject jsonObject = new JSONObject(response);
-                    try {
-                        Sdpo.settings.systemConfig.set("date_check", (String) jsonObject.get("date_check"));
-                        Sdpo.settings.systemConfig.set("serial_number", (String) jsonObject.get("serial_number"));
-                        if (jsonObject.has("stamp")) {
-                            Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
-                        }
+            Request request = new Request("sdpo/terminal/verification");
+            String response = request.sendGet();
+            if (request.success && response.length() < 500) {
+                JSONObject jsonObject = new JSONObject(response);
+                try {
+                    Sdpo.settings.systemConfig.set("date_check", (String) jsonObject.get("date_check"));
+                    Sdpo.settings.systemConfig.set("serial_number", (String) jsonObject.get("serial_number"));
+                    if (jsonObject.has("stamp")) {
+                        Sdpo.serviceDataStorage.selectStamp(jsonObject.getJSONObject("stamp"));
+                    }
 
-                        Sdpo.settings.systemConfig.saveFile();
-                    } catch (JSONException ignore) {}
-                    return ResponseEntity.ok().body(jsonObject.toMap());
-                } else {
-                    return ResponseEntity.status(403).body("error");
+                    Sdpo.settings.systemConfig.saveFile();
+                } catch (JSONException ignore) {
                 }
-            } else {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("date_check", Sdpo.settings.systemConfig.getString("date_check"));
-                jsonObject.put("serial_number", Sdpo.settings.systemConfig.getString("serial_number"));
                 return ResponseEntity.ok().body(jsonObject.toMap());
+            } else {
+                return ResponseEntity.status(403).body("error");
             }
         } catch (IOException | ApiException e) {
             SdpoLog.error(e);
@@ -173,7 +165,7 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity apiSavePhoto(@RequestBody Map<String, String> json) {
         try {
-            Request request = new Request( "sdpo/driver/" + json.get("driver_id") + "/photo");
+            Request request = new Request("sdpo/driver/" + json.get("driver_id") + "/photo");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("photo", json.get("photo"));
             request.sendPost(jsonObject.toString());

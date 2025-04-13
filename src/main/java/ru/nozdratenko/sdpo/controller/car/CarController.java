@@ -18,19 +18,14 @@ public class CarController {
 
     @GetMapping("api/car/{id}")
     public ResponseEntity getCar(@PathVariable String id) throws IOException {
-        if (Sdpo.isConnection()) {
-            Request response = new Request("sdpo/car/" + id);
-            try {
-                String result = response.sendGet();
-                return ResponseEntity.status(HttpStatus.OK).body(result);
-            } catch (ApiException e) {
-                SdpoLog.error(e);
-                return ResponseEntity.status(303).body(e.getResponse().toMap());
-            }
+        Request response = new Request("sdpo/car/" + id);
+        try {
+            String result = response.sendGet();
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (ApiException e) {
+            SdpoLog.error(e);
+            return ResponseEntity.status(303).body(e.getResponse().toMap());
         }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message", "Отсутствует подключение к сети");
-        return ResponseEntity.status(500).body(jsonObject);
     }
 
 }

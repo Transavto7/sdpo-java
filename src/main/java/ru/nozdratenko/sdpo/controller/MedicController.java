@@ -23,15 +23,11 @@ public class MedicController {
     @ResponseBody
     public ResponseEntity aptMedics() {
         try {
-            if (Sdpo.isConnection()) {
-                Request request = new Request( "sdpo/medics");
-                String response = request.sendGet();
-                JSONObject jsonObject = new JSONObject(response);
+            Request request = new Request("sdpo/medics");
+            String response = request.sendGet();
+            JSONObject jsonObject = new JSONObject(response);
 
-                return ResponseEntity.ok().body(jsonObject.toMap());
-            } else {
-                return ResponseEntity.ok().body(Sdpo.medicStorage.getDataFromLocalStorage().toMap());
-            }
+            return ResponseEntity.ok().body(jsonObject.toMap());
 
         } catch (JSONException | IOException | ApiException e) {
             SdpoLog.error("Error get medic list");

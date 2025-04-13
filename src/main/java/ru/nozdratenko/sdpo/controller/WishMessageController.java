@@ -20,20 +20,16 @@ public class WishMessageController {
     @ResponseBody
     public ResponseEntity getStamps() {
         try {
-            if (Sdpo.isConnection()) {
-                Request request = new Request( "sdpo/wish-message");
-                String response = request.sendGet();
-                JSONObject jsonObject = new JSONObject(response);
+            Request request = new Request("sdpo/wish-message");
+            String response = request.sendGet();
+            JSONObject jsonObject = new JSONObject(response);
 
-                return ResponseEntity.ok().body(jsonObject.toMap());
-            } else {
-                return ResponseEntity.ok().body("");
-            }
-
+            return ResponseEntity.ok().body(jsonObject.toMap());
         } catch (JSONException | IOException | ApiException e) {
             SdpoLog.error("Error get wish message");
             SdpoLog.error(e);
         }
+
         return ResponseEntity.ok().body("");
     }
 }

@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
-import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeInspectionStorage;
-import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeStorage;
-import ru.nozdratenko.sdpo.Inspections.Employees.Tasks.SaveStoreEmployeesInspectionTask;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
@@ -36,15 +33,9 @@ public class Sdpo {
     public static SettingsContainer settings;
     public static FileConfiguration connectionConfig;
 
-    public static DriverStorage driverStorage;
-    public static EmployeeStorage employeeStorage;
-    public static MedicStorage medicStorage;
     public static StampStorage serviceDataStorage;
-    public static InspectionStorage inspectionStorage;
-    public static EmployeeInspectionStorage employeeInspectionStorage;
+    private static MedicStorage medicStorage;
 
-    public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
-    public static final SaveStoreEmployeesInspectionTask saveStoreEmployeeInspectionTask = new SaveStoreEmployeesInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
     @Getter
@@ -82,6 +73,7 @@ public class Sdpo {
             String response = request.sendGet();
             if (response.equals("true")) {
                 Sdpo.setConnection(true);
+                return;
             }
         } catch (UnknownHostException ignored) {
         } catch (Exception | ApiException e) {
@@ -96,35 +88,14 @@ public class Sdpo {
     }
 
     public void loadData() {
-        saveStoreInspectionTask.start();
-        saveStoreEmployeeInspectionTask.start();
-
-        driverStorage = new DriverStorage();
-        driverStorage.save();
-
-        employeeStorage = new EmployeeStorage();
-        employeeStorage.save();
-
         medicStorage = new MedicStorage();
         medicStorage.saveToLocalStorage();
 
         serviceDataStorage = new StampStorage();
         serviceDataStorage.saveToLocalStorage();
 
-        inspectionStorage = new InspectionStorage();
-        inspectionStorage.save();
-
-        employeeInspectionStorage = new EmployeeInspectionStorage();
-        employeeInspectionStorage.save();
-
         new Thread(() -> {
             try {
-                driverStorage.load();
-                driverStorage.save();
-
-                employeeStorage.load();
-                employeeStorage.save();
-
                 medicStorage.getAllFromApi();
                 medicStorage.saveToLocalStorage();
 

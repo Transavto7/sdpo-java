@@ -42,7 +42,6 @@ public class DriverController {
             SdpoLog.error(e);
         }
 
-        sdpo.setConnection(false);
         return ResponseEntity.status(403).body("error");
     }
 

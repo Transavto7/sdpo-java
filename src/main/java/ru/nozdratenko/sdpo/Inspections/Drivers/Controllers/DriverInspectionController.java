@@ -19,15 +19,11 @@ import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
 import ru.nozdratenko.sdpo.helper.PrinterHelpers.PrinterHelper;
 import ru.nozdratenko.sdpo.Core.Network.Request;
-import ru.nozdratenko.sdpo.storage.InspectionDataProvider;
-import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryFactory;
-import ru.nozdratenko.sdpo.storage.repository.inspection.InspectionRepositoryInterface;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,49 +46,16 @@ public class DriverInspectionController {
             return ResponseEntity.status(303).body(map);
         }
 
-        if (Sdpo.isConnection()) {
-            Request response = new Request("sdpo/driver/" + id);
-            try {
-                String result = response.sendGet();
+        Request response = new Request("sdpo/driver/" + id);
+        try {
+            String result = response.sendGet();
 
-                return ResponseEntity.status(HttpStatus.OK).body(result);
-            } catch (ApiException e) {
-                SdpoLog.error(e);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (ApiException e) {
+            SdpoLog.error(e);
 
-                return ResponseEntity.status(303).body(e.getResponse().toMap());
-            }
-        } else {
-            JSONObject driver = Sdpo.driverStorage.getStore().get(id);
-
-            if (driver != null) {
-                if (driver.has("end_of_ban")) {
-                    if (!driver.get("end_of_ban").equals(JSONObject.NULL)) {
-                        DateTimeFormatter barFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                        DateTimeFormatter viewFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-                        String dateEndOfBanRaw = driver.getString("end_of_ban");
-                        LocalDateTime dateEndOfBan = LocalDateTime.parse(dateEndOfBanRaw, barFormatter);
-
-                        if (dateEndOfBan.isAfter(LocalDateTime.now())) {
-                            HashMap<String, String> map = new HashMap<>();
-                            map.put("message", "Указанный водитель отстранен до " + dateEndOfBan.format(viewFormatter) + "!");
-                            return ResponseEntity.status(303).body(map);
-                        }
-                    }
-                }
-
-                if (driver.has("dismissed")) {
-                    if (driver.getBoolean("dismissed")) {
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put("message", "Водитель с указанным ID уволен!");
-                        return ResponseEntity.status(303).body(map);
-                    }
-                }
-
-                return ResponseEntity.status(HttpStatus.OK).body(driver.toMap());
-            }
+            return ResponseEntity.status(303).body(e.getResponse().toMap());
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("inspection/print")
@@ -138,24 +101,13 @@ public class DriverInspectionController {
         return ResponseEntity.status(200).body("");
     }
 
-    @PostMapping("api/{id}/inspections")
-    public ResponseEntity getInspectionsDriver(@PathVariable String id) throws IOException {
-        InspectionRepositoryInterface repository;
-
-        repository = InspectionRepositoryFactory.get();
-        JSONArray inspections = (new InspectionDataProvider(repository)).getInspectionsOnDriverHashId(id);
-
-        return ResponseEntity.status(HttpStatus.OK).body(inspections.toString());
-    }
-
-
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
         Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") + 1);
         Sdpo.settings.dynamicConfig.saveFile();
         try {
             DriverInspectionSaver inspectionSaver = DriverInspectionSaversBuilder.build();
-            JSONObject inspection =  inspectionSaver.save(json);
+            JSONObject inspection = inspectionSaver.save(json);
 
             eventPublisher.publishEvent(new StopRunProcessesEvent(this));
 
@@ -175,24 +127,6 @@ public class DriverInspectionController {
             Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
             Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse());
-        }
-    }
-
-    @PostMapping("/inspection/feedback")
-    public ResponseEntity sendFeedback(@RequestBody Map<String, String> json) throws IOException {
-        String id = json.get("id");
-        String feedback = json.get("feedback");
-        try {
-            Request response = new Request("sdpo/forms/" + id + "/feedback");
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("feedback", feedback);
-            String result = response.sendPost(jsonObject.toString());
-            JSONObject resultObject = new JSONObject(result);
-            SdpoLog.info("send feedback");
-            return ResponseEntity.status(HttpStatus.OK).body(resultObject.toString());
-        } catch (ApiException e) {
-            SdpoLog.info("error feedback : " + e);
-            return ResponseEntity.status(303).body(e.getResponse().toMap());
         }
     }
 }

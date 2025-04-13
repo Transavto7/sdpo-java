@@ -129,8 +129,6 @@ public class SettingsFactory {
     }
 
     public static MemoryConfiguration makeTemporary() {
-        MemoryConfiguration configuration = new MemoryConfiguration();
-
-        return configuration;
+        return new MemoryConfiguration();
     }
 }

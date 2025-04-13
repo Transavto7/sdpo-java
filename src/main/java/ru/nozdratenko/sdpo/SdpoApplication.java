@@ -36,7 +36,6 @@ public class SdpoApplication implements CommandLineRunner {
             Command.execute(args[0], Arrays.copyOfRange(args, 1, args.length));
             return;
         }
-        sdpo.loadData();
         sdpo.openBrowser();
     }
 

@@ -48,21 +48,21 @@ public class WindowsCameraHelper implements CameraHelper {
         }
     }
 
-    private FrameGrabber findWebcam(){
-        if(workWebcam == null){
+    private FrameGrabber findWebcam() {
+        if (workWebcam == null) {
             return this.findWebcam(true);
         }
         return workWebcam;
     }
 
-    private FrameGrabber findWebcam(boolean isDefaultWebcam){
+    private FrameGrabber findWebcam(boolean isDefaultWebcam) {
 
-        if(workWebcam == null && isCameraAvailable()) {
+        if (workWebcam == null && isCameraAvailable()) {
 
             List<Webcam> webcams = Webcam.getWebcams();
-            SdpoLog.info( String.format("Find %s camers: [ %s ]", webcams.size(), webcams.stream().map(entry -> entry.getName())
-                    .collect(Collectors.joining("], ["))));
-            if(!isDefaultWebcam && webcams.size() > 1) {
+            SdpoLog.info(String.format("Find %s camers: [ %s ]", webcams.size(), webcams.stream().map(entry -> entry.getName())
+                .collect(Collectors.joining("], ["))));
+            if (!isDefaultWebcam && webcams.size() > 1) {
                 SdpoLog.info("Entered SECOND camera.");
                 workWebcam = new OpenCVFrameGrabber(1);
             } else {
@@ -70,7 +70,7 @@ public class WindowsCameraHelper implements CameraHelper {
                 workWebcam = new OpenCVFrameGrabber(0);
             }
 
-            if(webcams == null){
+            if (webcams == null) {
                 SdpoLog.info("Camera not selected!");
             }
 
@@ -94,9 +94,9 @@ public class WindowsCameraHelper implements CameraHelper {
     }
 
     public void openCam() {
-        if(isCameraWorked){
+        if (isCameraWorked) {
             SdpoLog.info("Camera is open.");
-        }else if (isCameraAvailable()) {
+        } else if (isCameraAvailable()) {
             try {
                 workWebcam = findWebcam();
                 SdpoLog.info("Opening camera");
@@ -178,7 +178,7 @@ public class WindowsCameraHelper implements CameraHelper {
         return String.valueOf((int) result);
     }
 
-    public byte[] makePhotoBytes() throws IOException{
+    public byte[] makePhotoBytes() throws IOException {
         if (isCameraAvailable()) {
             SdpoLog.info("Make a foto, width name camera: " + Webcam.getDefault().getName());
 
@@ -186,16 +186,16 @@ public class WindowsCameraHelper implements CameraHelper {
             workWebcam = findWebcam();
 
             frame = workWebcam.grab();
-            SdpoLog.info("Image capture " + ( frame == null ? "is empty" : "successful"));
+            SdpoLog.info("Image capture " + (frame == null ? "is empty" : "successful"));
             if (frame != null) {
                 BufferedImage im = new Java2DFrameConverter().convert(frame);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 byte[] bytes = null;
-                try{
-                    ImageIO.write(im,"jpg",baos);
+                try {
+                    ImageIO.write(im, "jpg", baos);
                     baos.flush();
                     bytes = baos.toByteArray();
-                }finally{
+                } finally {
                     baos.close();
                 }
                 SdpoLog.info("Frame converted to foto. Image size: " + bytes.length);
@@ -240,7 +240,7 @@ public class WindowsCameraHelper implements CameraHelper {
         return null;
     }
 
-    public void stopMediaIntoTask(){
+    public void stopMediaIntoTask() {
         MediaMakeTask.mediaLastKill();
         try {
             Thread.sleep(500);
@@ -249,7 +249,7 @@ public class WindowsCameraHelper implements CameraHelper {
         }
     }
 
-    public JSONObject makePhotoAndVideo(){
+    public JSONObject makePhotoAndVideo() {
         return makePhotoAndVideo("");
     }
 
@@ -283,7 +283,7 @@ public class WindowsCameraHelper implements CameraHelper {
         }
     }
 
-    private String getPathRecordVideo(String name){
+    private String getPathRecordVideo(String name) {
         if (!isCameraAvailable()) {
             SdpoLog.info("No camera available.");
             return null;
@@ -300,10 +300,10 @@ public class WindowsCameraHelper implements CameraHelper {
             workWebcam = findWebcam();
 
             FrameRecorder recorder = new FFmpegFrameRecorder(filename,
-                    workWebcam.getImageWidth(), workWebcam.getImageHeight());
+                workWebcam.getImageWidth(), workWebcam.getImageHeight());
             recorder.setFrameRate(workWebcam.getFrameRate());
-            recorder.setVideoCodec( avcodec.AV_CODEC_ID_H264 );
-            recorder.setPixelFormat( avutil.AV_PIX_FMT_YUV420P );
+            recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+            recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
             recorder.setFormat("mp4");
             recorder.start();
 
@@ -315,7 +315,9 @@ public class WindowsCameraHelper implements CameraHelper {
             }
             SdpoLog.info("Stop capturing video");
             recorder.stop();
-            if(Objects.nonNull(layer)) layer.close();
+            if (Objects.nonNull(layer)) {
+                layer.close();
+            }
             recorder.release();
         } catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
             SdpoLog.error("Error capturing video:");
@@ -409,9 +411,7 @@ public class WindowsCameraHelper implements CameraHelper {
             SdpoLog.error("Frame or Image is empty");
         }
 
-        if (Sdpo.isConnection()) {
-            sendPhoto(photo);
-        }
+        sendPhoto(photo);
 
         return MultipartUtility.BACKEND_URL + "/get_file/photo/" + name + ".png";
     }
@@ -425,7 +425,7 @@ public class WindowsCameraHelper implements CameraHelper {
                 SdpoLog.info("Send photo in new thread with name: " + name);
                 MultipartUtility multipartUtility = new MultipartUtility("/send_file/", "UTF-8");
                 multipartUtility.addFormField("type_content", "photo");
-                multipartUtility.addFormField("name",  name);
+                multipartUtility.addFormField("name", name);
                 multipartUtility.addFilePart("filename", file);
                 multipartUtility.finish();
             } catch (Exception e) {
@@ -449,15 +449,9 @@ public class WindowsCameraHelper implements CameraHelper {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        if (Sdpo.isConnection()) {
-            sendVideo(video);
-        }else{
-            SdpoLog.error("Video driver is not connection!");
-        }
+        sendVideo(video);
 
         lastResultVideo = video;
-
-
     }
 
     public void sendVideo(File file) {
