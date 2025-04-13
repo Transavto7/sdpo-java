@@ -26,7 +26,6 @@ public class ProcessCloserListener {
     @EventListener
     public void handleStopRunProcessesEvent(StopRunProcessesEvent event) {
         TonometerResultTask tonometerResultTask = this.tonometerTaskRunner.getTonometerResultTask();
-        SdpoLog.info("!!! Current tonom status: " + tonometerResultTask.getCurrentStatus());
         if (!tonometerResultTask.getCurrentStatus().equals(StatusType.FREE)) {
             BluetoothDeviceService.stopPreviousTonometerApp();
             tonometerResultTask.setCurrentStatus(StatusType.STOP);

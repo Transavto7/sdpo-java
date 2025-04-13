@@ -31,7 +31,7 @@ public class WindowsPortService implements PortService {
             int exitCodeEnable = 0;
             int exitCodeRestart = 0;
             while (isDeviceInProblemState(deviceInstanceId)) {
-                SdpoLog.info("Alkometer port still has a problem before restarting: " + deviceInstanceId);
+                SdpoLog.info("Alkometer port has a problem before restarting: " + deviceInstanceId);
                 // Команда для отключения устройства
                 String[] pnpCommandDisable = {"cmd.exe", "/c", String.format("PNPUTIL /disable-device \"%s\"", deviceInstanceId)};
                 ProcessBuilder pnpPbDisable = new ProcessBuilder(pnpCommandDisable);
@@ -100,6 +100,9 @@ public class WindowsPortService implements PortService {
             }
         }
         pnpProcessCheckProblem.waitFor();
+        if (!problemDetected){
+            SdpoLog.warning("Check connection to Alcometer !!! InstanceId: " + deviceInstanceId);
+        }
         return problemDetected;
     }
 
@@ -133,7 +136,6 @@ public class WindowsPortService implements PortService {
 
                 String currentDeviceInstanceId = getDeviceInstanceId(deviceInfoData);
                 if (currentDeviceInstanceId != null && currentDeviceInstanceId.contains(vendorId)) {
-                    SdpoLog.info("Port is available. Device Instance Id: " + currentDeviceInstanceId);
                     return currentDeviceInstanceId;
                 }
             }

@@ -26,7 +26,7 @@ public class AlcometerResultTask implements Runnable {
 
     @Override
     public void run() {
-        SdpoLog.info("Alcometer run task: " + AlcometerResultTask.currentStatus.toString());
+        SdpoLog.info("AlcometerResultTask run|status : " + AlcometerResultTask.currentStatus.toString());
         while (stopFlag) {
             try {
                 Thread.sleep(1000);
