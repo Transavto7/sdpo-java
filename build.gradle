@@ -13,7 +13,7 @@ plugins {
 }
 
 group = 'ru.nozdratenko'
-version = '2.9.4'
+version = '2.10.1'
 sourceCompatibility = '11'
 
 repositories {

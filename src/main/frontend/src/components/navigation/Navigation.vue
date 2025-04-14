@@ -58,10 +58,10 @@ export default {
   },
   computed: {
     needButtonRedirectOnHomePage() {
-      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage || this.isSetNumberPhonePage;
+      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage || this.isSetNumberPhonePage || this.isEmployeePage;
     },
     isHomePage() {
-      return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage);
+      return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage || this.isEmployeePage);
     },
     isHelpPage() {
       return this.currentRouter.includes('/help');
@@ -77,6 +77,9 @@ export default {
     },
     isPrintPage() {
       return this.currentRouter.includes('/print');
+    },
+    isEmployeePage() {
+      return this.currentRouter.includes('/employee');
     },
     isSetNumberPhonePage() {
       return this.currentRouter.includes('/number-phone/add/');
@@ -102,8 +105,8 @@ export default {
     </div>
 
     <div v-if="isInspectionPage" class="nav__info animate__animated animate__fadeInDown">
-      {{ inspection.driver_fio }}
-      <span>{{ inspection.driver_id }}</span>
+      {{ inspection.driver_fio ||  inspection.person_fio }}
+      <span>{{ inspection.driver_id || inspection.person_id }}</span>
     </div>
 
     <div class="nav__buttons" v-if="needButtonRedirectOnHomePage">
@@ -119,6 +122,7 @@ export default {
     <div class="nav__buttons" v-if="isHomePage">
       <login-navigation @select-medic="$store.state.selectingMedic = true"
                         @get-help="$router.push('/help')"
+                        @employee-start="$router.push('/employee')"
                         @get-last-inspection="$router.push('/print/index')"
                         @print-qr="$router.push('/print/qr')"
                         @settings="$router.push('/login')"/>

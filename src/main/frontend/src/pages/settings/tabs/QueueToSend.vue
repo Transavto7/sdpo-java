@@ -52,7 +52,7 @@ export default {
       <div class="stamp__body">
         <div class="queue-to-send-box">
           <div class="queue-to-send-box__header">
-            <h2>Очередь на отправку</h2>
+            <h2>Очередь на отправку (Водители)</h2>
           </div>
           <div class="queue-to-send-box__content">
             <div class="queue-item"

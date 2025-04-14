@@ -6,9 +6,15 @@ export default {
         }
     },
     computed: {
-        inspection() {
-            return this.$store.state.inspection;
-        },
+      inspection() {
+          return this.$store.state.inspection;
+      },
+      identifier() {
+        return String(this.inspection?.driver_id || this.inspection?.person_id);
+      },
+      fio() {
+        return this.inspection?.driver_fio || this.inspection?.person_fio;
+      }
     }
 }
 </script>
@@ -21,7 +27,7 @@ export default {
                     Ваш идентификатор
                 </div>
                 <div class="step-1__id animate__animated animate__fadeInDown d-1">
-                    <span v-for="number in inspection?.driver_id?.split('') || []" :key="number">
+                    <span v-for="number in identifier?.split('') || []" :key="number">
                         {{ number }}
                     </span>
                 </div>
@@ -32,7 +38,7 @@ export default {
                     Ваше полное имя
                 </div>
                 <div class="step-1__name animate__animated animate__fadeInDown d-3">
-                    {{ inspection.driver_fio }}
+                    {{ fio }}
                 </div>
             </div>
         </div>

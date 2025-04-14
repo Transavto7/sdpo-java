@@ -212,8 +212,6 @@ export default {
             </div>
           </div>
         </div>
-        <!--          <div v-else class="step-result__buttons">-->
-
         <div class="step-result__buttons">
           <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
           <button v-if="this.admitted && this.canRetryPrint"

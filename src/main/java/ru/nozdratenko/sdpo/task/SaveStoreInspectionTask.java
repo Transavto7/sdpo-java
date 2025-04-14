@@ -4,18 +4,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Framework.SpringContext;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InternalServerError;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.Action.ChangeStatusUploadInspectionFromLocalStorageAction;
-import ru.nozdratenko.sdpo.InspectionManager.Offline.ResendStatusEnum;
-import ru.nozdratenko.sdpo.InspectionManager.Service.InspectionSenderService;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InspectionNotFound;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InternalServerError;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.Action.ChangeStatusUploadInspectionFromLocalStorageAction;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Offline.ResendStatusEnum;
+import ru.nozdratenko.sdpo.Inspections.Drivers.Service.InspectionSenderService;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
-import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-import java.io.File;
 import java.net.UnknownHostException;
 
 @Component

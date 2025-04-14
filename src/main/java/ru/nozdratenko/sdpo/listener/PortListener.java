@@ -4,6 +4,7 @@ import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
@@ -12,13 +13,10 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 
 @Component
 public class PortListener implements SerialPortEventListener {
+    @Setter
     SerialPort port;
     @Autowired
     AlcometerHelper alcometerHelper;
-
-    public void setPort(SerialPort serialPort) {
-        this.port = serialPort;
-    }
 
     @Override
     public void serialEvent(SerialPortEvent event) {

@@ -1,8 +1,12 @@
 package ru.nozdratenko.sdpo;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
+import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeInspectionStorage;
+import ru.nozdratenko.sdpo.Inspections.Employees.Storages.EmployeeStorage;
+import ru.nozdratenko.sdpo.Inspections.Employees.Tasks.SaveStoreEmployeesInspectionTask;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
@@ -11,10 +15,7 @@ import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
-import ru.nozdratenko.sdpo.storage.DriverStorage;
-import ru.nozdratenko.sdpo.storage.InspectionStorage;
-import ru.nozdratenko.sdpo.storage.MedicStorage;
-import ru.nozdratenko.sdpo.storage.StampStorage;
+import ru.nozdratenko.sdpo.storage.*;
 import ru.nozdratenko.sdpo.task.*;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.port.PortService.PortService;
@@ -36,13 +37,17 @@ public class Sdpo {
     public static FileConfiguration connectionConfig;
 
     public static DriverStorage driverStorage;
+    public static EmployeeStorage employeeStorage;
     public static MedicStorage medicStorage;
     public static StampStorage serviceDataStorage;
     public static InspectionStorage inspectionStorage;
+    public static EmployeeInspectionStorage employeeInspectionStorage;
 
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
+    public static final SaveStoreEmployeesInspectionTask saveStoreEmployeeInspectionTask = new SaveStoreEmployeesInspectionTask();
     public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
+    @Getter
     private static boolean connection = true;
 
     public void init() {
@@ -92,9 +97,13 @@ public class Sdpo {
 
     public void loadData() {
         saveStoreInspectionTask.start();
+        saveStoreEmployeeInspectionTask.start();
 
         driverStorage = new DriverStorage();
         driverStorage.save();
+
+        employeeStorage = new EmployeeStorage();
+        employeeStorage.save();
 
         medicStorage = new MedicStorage();
         medicStorage.saveToLocalStorage();
@@ -105,10 +114,16 @@ public class Sdpo {
         inspectionStorage = new InspectionStorage();
         inspectionStorage.save();
 
+        employeeInspectionStorage = new EmployeeInspectionStorage();
+        employeeInspectionStorage.save();
+
         new Thread(() -> {
             try {
                 driverStorage.load();
                 driverStorage.save();
+
+                employeeStorage.load();
+                employeeStorage.save();
 
                 medicStorage.getAllFromApi();
                 medicStorage.saveToLocalStorage();
@@ -140,10 +155,6 @@ public class Sdpo {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public static boolean isConnection() {
-        return connection;
     }
 
     public static void setConnection(boolean connection) {

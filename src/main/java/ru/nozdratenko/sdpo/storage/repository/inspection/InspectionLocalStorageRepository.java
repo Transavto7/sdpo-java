@@ -2,12 +2,14 @@ package ru.nozdratenko.sdpo.storage.repository.inspection;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.nozdratenko.sdpo.InspectionManager.Exception.InspectionNotFound;
+import org.springframework.stereotype.Repository;
+import ru.nozdratenko.sdpo.Inspections.Exceptions.InspectionNotFound;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 
+@Repository
 public class InspectionLocalStorageRepository implements InspectionRepositoryInterface, InspectionLocalStorage {
     @Override
     public JSONArray getInspectionsByDriverHashId(String driverHashId) throws IOException {

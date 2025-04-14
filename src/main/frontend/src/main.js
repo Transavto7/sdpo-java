@@ -40,6 +40,9 @@ router.beforeEach((to, from, next) => {
     if (to.name === 'home' && getSettings('alcometer_fast') && getSettings('alcometer_retry') && Number(store.state.inspection.alcometer_result) > 0) {
       store.state.inspection.photo = store.state.temp.photo;
       store.state.inspection.video = store.state.temp.video;
+      if (store.state.inspection.type === 'employee') {
+        return router.push({ name: 'step-result-employee'});
+      }
       return router.push({ name: 'step-result'});
     }
   }
@@ -50,13 +53,18 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.path.includes('/step/')) {
-    if (!store.state.inspection?.driver_id) {
+    if (!(store.state.inspection?.driver_id || store.state.inspection?.person_id )) {
       return router.push({ name: 'home'});
     }
+
     if (to.meta?.visible && store.state.config?.system) {
       if (!JSON.parse(store.state.config.system[to.meta.visible])) {
         if (from.meta?.number > to.meta.number) {
           return router.push({ name: to.meta.prev });
+        }
+
+        if (store.state.inspection.type === 'employee') {
+          return router.push({ name: to.meta.next_employee ?? to.meta.next });
         }
 
         return router.push({ name: to.meta.next });

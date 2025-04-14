@@ -36,9 +36,11 @@ export default {
       else
         this.$router.push({name: 'step-driver'});
     },
+
     updateDriverId(inputPassword) {
       this.driver_id = inputPassword;
     },
+
     async checkDriver() {
       this.$store.state.inspection = {};
       this.error = null;

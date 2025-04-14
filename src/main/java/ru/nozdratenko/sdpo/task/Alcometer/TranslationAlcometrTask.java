@@ -1,9 +1,6 @@
 package ru.nozdratenko.sdpo.task.Alcometer;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.websocket.RemoteEndpoint;
@@ -14,9 +11,6 @@ import java.io.IOException;
 public class TranslationAlcometrTask implements Runnable {
     private RemoteEndpoint.Basic basicRemote;
     private Session session;
-
-    @Autowired
-    private AlcometerTaskRunner alcometerTaskRunner;
 
     public TranslationAlcometrTask setSession(Session session) {
         this.session = session;

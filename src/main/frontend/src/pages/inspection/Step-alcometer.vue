@@ -61,7 +61,7 @@ export default {
     async runWebCam() {
       if (!this.recording) {
         this.recording = true;
-        const data = await makeMedia(this.$store.state.inspection.driver_id);
+        const data = await makeMedia(this.identifier);
         this.inspection.photo = data?.photo;
         this.inspection.video = data?.video;
         console.log("start media")
@@ -70,7 +70,7 @@ export default {
     async stopWebCam() {
       if (this.recording) {
         this.recording = false;
-        await stopMedia(this.$store.state.inspection.driver_id);
+        await stopMedia(this.identifier);
         console.log("stop media")
       }
     },
@@ -143,6 +143,9 @@ export default {
   computed: {
     inspection() {
       return this.$store.state.inspection;
+    },
+    identifier() {
+      return this.$store.state.inspection.driver_id || this.$store.state.inspection.person_id;
     },
     system() {
       return this.$store.state.config?.system || {};

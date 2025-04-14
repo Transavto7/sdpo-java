@@ -7,9 +7,10 @@ import Logo from "./tabs/Logo.vue";
 import Print from "@/pages/settings/tabs/Print";
 import {loadSettings} from "@/helpers/settings";
 import QueueToSend from "@/pages/settings/tabs/QueueToSend";
+import Employees from "@/pages/settings/tabs/Employees";
 
 export default {
-  components: {QueueToSend, Print, Testing, Tonometer, Password, MainSettings, Logo},
+  components: {QueueToSend, Print, Testing, Tonometer, Password, MainSettings, Logo, Employees},
   mounted() {
     loadSettings()
   },
@@ -47,6 +48,10 @@ export default {
               :class="{active: selected === 'queue_to_send'}">
         Очередь на отправку
       </button>
+      <button class="admin__tab animate__animated animate__fadeInDown d-3" @click="selected = 'employees'"
+              :class="{active: selected === 'employees'}">
+        Сотрудники
+      </button>
       <button class="admin__tab animate__animated animate__fadeInDown d-4" @click="selected = 'testing'"
               :class="{active: selected === 'testing'}">
         Тестирование
@@ -58,6 +63,7 @@ export default {
     <password v-if="selected === 'password'"/>
     <main-settings v-if="selected === 'main'"/>
     <queue-to-send v-if="selected === 'queue_to_send'"/>
+    <employees v-if="selected === 'employees'"/>
     <logo v-if="selected === 'logo'"/>
   </div>
 </template>
