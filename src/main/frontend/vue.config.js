@@ -8,6 +8,7 @@ const defineCfg = defineConfig({
 module.exports = {
   ...defineCfg,
   css: {
+    extract: false,
     loaderOptions: {
       sass: {
         prependData: '@import "@/assets/scss/style.scss";'
