@@ -103,8 +103,6 @@ public class DriverInspectionController {
 
     @PostMapping("inspection/save")
     public ResponseEntity inspectionSave(@RequestBody Map<String, String> json) {
-        Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") + 1);
-        Sdpo.settings.dynamicConfig.saveFile();
         try {
             DriverInspectionSaver inspectionSaver = DriverInspectionSaversBuilder.build();
             JSONObject inspection = inspectionSaver.save(json);
@@ -113,19 +111,13 @@ public class DriverInspectionController {
 
             return ResponseEntity.status(HttpStatus.OK).body(inspection.toMap());
         } catch (ApiException e) {
-            Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
-            Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse().toMap());
         } catch (Exception e) {
             SdpoLog.error("Error create inspection: " + e);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Ошибка запроса");
-            Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
-            Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(jsonObject);
         } catch (PrinterException e) {
-            Sdpo.settings.dynamicConfig.set("count_inspections", Sdpo.settings.systemConfig.getInt("count_inspections") - 1);
-            Sdpo.settings.dynamicConfig.saveFile();
             return ResponseEntity.status(500).body(e.getResponse());
         }
     }

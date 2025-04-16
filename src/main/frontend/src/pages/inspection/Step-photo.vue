@@ -11,7 +11,7 @@ export default {
         }
     },
     mounted() {
-        if (this.driver.photo || this.inspection.type === 'employee') {
+        if (this.driver.photo) {
             this.$router.push({ name: 'step-ride' });
             return;
         }
@@ -26,7 +26,7 @@ export default {
             return this.$store.state.inspection;
         },
         driver() {
-            return this.$store.state.driver ?? this.$store.state.employee ?? {};
+            return this.$store.state.driver ?? {};
         }
     },
     methods: {

@@ -13,13 +13,11 @@ import java.util.Optional;
 public class SettingsContainer {
     public final FileConfiguration mainConfig;
     public final FileConfiguration systemConfig;
-    public final FileConfiguration dynamicConfig;
     public final MemoryConfiguration temporaryConfig;
 
-    public SettingsContainer(FileConfiguration mainConfig, FileConfiguration systemConfig, FileConfiguration dynamicConfig, MemoryConfiguration temporaryConfig) {
+    public SettingsContainer(FileConfiguration mainConfig, FileConfiguration systemConfig, MemoryConfiguration temporaryConfig) {
         this.mainConfig = mainConfig;
         this.systemConfig = systemConfig;
-        this.dynamicConfig = dynamicConfig;
         this.temporaryConfig = temporaryConfig;
     }
 
@@ -39,7 +37,6 @@ public class SettingsContainer {
         return new SettingsContainer(
                 main,
                 SettingsFactory.makeSystem(defaultSettings.optJSONObject("system")),
-                SettingsFactory.makeDynamic(),
                 SettingsFactory.makeTemporary()
         );
     }

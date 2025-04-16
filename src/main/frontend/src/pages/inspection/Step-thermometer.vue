@@ -69,9 +69,6 @@ export default {
 
     <div class="step-buttons">
       <button @click="$router.push({ name: 'step-tonometer' })" class="btn opacity blue">Назад</button>
-      <button @click="$router.push({ name: 'step-alcometer' })"
-              v-if="JSON.parse(system.thermometer_skip)" class="btn">Продолжить
-      </button>
     </div>
   </div>
 </template>

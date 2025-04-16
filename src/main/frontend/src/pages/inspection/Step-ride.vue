@@ -9,17 +9,11 @@ export default {
     }
   },
   mounted() {
-    if (this.inspection.type === 'employee') {
-      this.$router.push({name: 'step-tonometer'});
-    }
     this.$store.state.inspection.type_view = '';
   },
   methods: {
     select(type) {
       this.$store.state.inspection.type_view = type;
-      if (this.inspection.type === 'employee') {
-        this.$store.state.inspection.type_anketa = type === 'Предрейсовый/Предсменный' ? 'open' : 'close';
-      }
 
       this.$router.push({name: 'step-tonometer'});
     },

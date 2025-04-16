@@ -4,18 +4,18 @@ export default {
 
     },
     computed: {
-        loseConnect() {
-            return this.$store.state.loseConnect;
+      connection() {
+            return this.$store.state.connection;
         }
     }
 }
 </script>
 
 <template>
-    <div v-if="loseConnect" class="alert-container">
+    <div v-if="!connection" class="alert-container">
         <div class="alert">
             <h2>Потеряна связь</h2>
-            Пожалуйста, перезапустите СДПО
+            Пожалуйста, убедитесь что есть подключение к интернету!
         </div>
     </div>
 </template>

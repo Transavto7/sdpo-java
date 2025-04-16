@@ -45,6 +45,7 @@ public class Sdpo {
         SdpoLog.info("Run project");
         this.initSettings();
         checkConnection();
+        loadData();
         runTasks();
         cameraHelper.initDimension();
         if (!this.portService.isAdmin() && !isAdmin()) {

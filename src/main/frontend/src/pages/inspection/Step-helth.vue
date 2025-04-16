@@ -11,16 +11,7 @@ export default {
   methods: {
     next(result) {
       this.$store.state.inspection.people_status = result;
-      if (this.inspection.type === 'employee') {
-        this.$router.push({name: 'step-result-employee'});
-        return;
-      }
       this.$router.push({name: 'step-result'});
-    }
-  },
-  mounted() {
-    if (this.inspection.type === 'employee') {
-      this.$router.push({name: 'step-result-employee'});
     }
   }
 }

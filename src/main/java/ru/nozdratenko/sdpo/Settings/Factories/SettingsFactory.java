@@ -57,15 +57,10 @@ public class SettingsFactory {
         FileConfiguration configuration = new FileConfiguration("configs/system.json");
 
         configuration.setDefault("driver_info", SettingsFactory.getValue(defaultSettings, "driver_info", false))
-            .setDefault("type_ride", SettingsFactory.getValue(defaultSettings, "type_ride", true))
-            .setDefault("question_sleep", SettingsFactory.getValue(defaultSettings, "question_sleep", false))
-            .setDefault("question_helth", SettingsFactory.getValue(defaultSettings, "question_helth", false))
-            .setDefault("alcometer_fast", SettingsFactory.getValue(defaultSettings, "alcometer_fast", true))
-            .setDefault("alcometer_skip", SettingsFactory.getValue(defaultSettings, "alcometer_skip", false))
-            .setDefault("alcometer_retry", SettingsFactory.getValue(defaultSettings, "alcometer_retry", true))
-            .setDefault("alcometer_visible", SettingsFactory.getValue(defaultSettings, "alcometer_visible", true))
-            .setDefault("tonometer_skip", SettingsFactory.getValue(defaultSettings, "tonometer_skip", false))
-            .setDefault("tonometer_visible", SettingsFactory.getValue(defaultSettings, "tonometer_visible", true))
+            .setDefault("date_verification", null)
+            .setDefault("cursor", false)
+            .setDefault("delay_before_retry_inspection", SettingsFactory.getValue(defaultSettings, "delay_before_retry_inspection", 5000))
+            .setDefault("delay_before_redirect_to_main_page", SettingsFactory.getValue(defaultSettings, "delay_before_redirect_to_main_page", 10000))
             .setDefault("tonometer_logs_visible", SettingsFactory.getValue(defaultSettings, "tonometer_logs_visible", true))
             .setDefault("camera_video", SettingsFactory.getValue(defaultSettings, "camera_video", true))
             .setDefault("check_phone_number", SettingsFactory.getValue(defaultSettings, "check_phone_number", true))
@@ -75,30 +70,25 @@ public class SettingsFactory {
             .setDefault("printer_write", SettingsFactory.getValue(defaultSettings, "printer_write", true))
             .setDefault("print_qr_check", SettingsFactory.getValue(defaultSettings, "print_qr_check", false))
             .setDefault("print_count", SettingsFactory.getValue(defaultSettings, "print_count", 1))
-            .setDefault("thermometer_skip", SettingsFactory.getValue(defaultSettings, "driver_info", false))
-            .setDefault("thermometer_visible", SettingsFactory.getValue(defaultSettings, "thermometer_visible", true))
-            .setDefault("manual_mode", SettingsFactory.getValue(defaultSettings, "manual_mode", false))
             .setDefault("auto_start", SettingsFactory.getValue(defaultSettings, "auto_start", true))
-            .setDefault("delay_day_in_offline_mod", SettingsFactory.getValue(defaultSettings, "delay_day_in_offline_mod", 30))
-            .setDefault("max_inspection_in_offline_mod", SettingsFactory.getValue(defaultSettings, "max_inspection_in_offline_mod", 300))
-            .setDefault("auto_send_to_crm", SettingsFactory.getValue(defaultSettings, "auto_send_to_crm", true))
-            .setDefault("date_verification", null)
-            .setDefault("cursor", false)
-            .setDefault("delay_before_retry_inspection", SettingsFactory.getValue(defaultSettings, "delay_before_retry_inspection", 5000))
-            .setDefault("delay_before_redirect_to_main_page", SettingsFactory.getValue(defaultSettings, "delay_before_redirect_to_main_page", 10000))
+
+
+            .setDefault("type_ride", SettingsFactory.getValue(defaultSettings, "type_ride", true)) // t
+            .setDefault("question_sleep", SettingsFactory.getValue(defaultSettings, "question_sleep", false)) // t
+            .setDefault("question_helth", SettingsFactory.getValue(defaultSettings, "question_helth", false)) // t
+            .setDefault("alcometer_fast", SettingsFactory.getValue(defaultSettings, "alcometer_fast", true)) // f
+            .setDefault("alcometer_skip", SettingsFactory.getValue(defaultSettings, "alcometer_skip", false)) // f
+            .setDefault("alcometer_retry", SettingsFactory.getValue(defaultSettings, "alcometer_retry", true)) // Количественный замер всегда
+            .setDefault("alcometer_visible", SettingsFactory.getValue(defaultSettings, "alcometer_visible", true)) // t
+            .setDefault("tonometer_skip", SettingsFactory.getValue(defaultSettings, "tonometer_skip", false)) // f
+            .setDefault("tonometer_visible", SettingsFactory.getValue(defaultSettings, "tonometer_visible", true)) // t
+            .setDefault("thermometer_skip", SettingsFactory.getValue(defaultSettings, "driver_info", false)) // f
+            .setDefault("thermometer_visible", SettingsFactory.getValue(defaultSettings, "thermometer_visible", true)) // t
+            .setDefault("manual_mode", SettingsFactory.getValue(defaultSettings, "manual_mode", false)) // t
+            .setDefault("delay_day_in_offline_mod", SettingsFactory.getValue(defaultSettings, "delay_day_in_offline_mod", 30)) // remove
+            .setDefault("max_inspection_in_offline_mod", SettingsFactory.getValue(defaultSettings, "max_inspection_in_offline_mod", 300)) // remove
+
             .mergeWithJson(defaultSettings)
-            .saveFile();
-
-        return configuration;
-    }
-
-    public static FileConfiguration makeDynamic() {
-        FileConfiguration configuration = new FileConfiguration("configs/dynamic.json");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String currentDate = dateFormat.format(new Date());
-
-        configuration.setDefault("last_online", currentDate)
-            .setDefault("count_inspections", 0)
             .saveFile();
 
         return configuration;

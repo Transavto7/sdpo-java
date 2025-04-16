@@ -11,7 +11,6 @@ public class GetSettingsQuery {
         json.put("main", Sdpo.settings.mainConfig.getJson());
         json.put("connection", Sdpo.connectionConfig.getJson());
         json.put("system", Sdpo.settings.systemConfig.getJson());
-        json.put("dynamic", Sdpo.settings.dynamicConfig.getJson());
         json.put("temporary", Sdpo.settings.temporaryConfig.getJson());
 
         return json;
