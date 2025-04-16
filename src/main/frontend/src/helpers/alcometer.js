@@ -20,17 +20,8 @@ export async function closeAlcometrSocket() {
     });
 }
 
-export async function enableFastModeAlcometer() {
-    return changeMode("fast");
-}
-
 export async function enableSlowModeAlcometer() {
        return changeMode("slow");
-}
-
-export async function enableModeFromSystemConfig(isFastMode) {
-    if (isFastMode) return enableFastModeAlcometer();
-    if (!isFastMode) return enableSlowModeAlcometer();
 }
 
 async function changeMode(modeName) {

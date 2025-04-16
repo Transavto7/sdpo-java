@@ -36,8 +36,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     if (from.name === 'step-alcometer') {
         closeAlcometer();
-        // TODO Разобраться зачем это тут
-        if (to.name === 'home' && getSettings('alcometer_fast') && getSettings('alcometer_retry') && Number(store.state.inspection.alcometer_result) > 0) {
+        if (to.name === 'home' && getSettings('alcometer_retry') && Number(store.state.inspection.alcometer_result) > 0) {
             store.state.inspection.photo = store.state.temp.photo;
             store.state.inspection.video = store.state.temp.video;
 
@@ -55,11 +54,23 @@ router.beforeEach((to, from, next) => {
             return router.push({name: 'home'});
         }
 
-        if (from.meta?.number > to.meta.number) {
-            return router.push({name: to.meta.prev});
+        if (to.meta?.visible === true) {
+            if (from.meta?.number > to.meta.number) {
+                return router.push({ name: to.meta.prev });
+            }
+
+            return router.push({ name: to.meta.next });
         }
 
-        return router.push({name: to.meta.next});
+        if (to.meta?.visible && store.state.config?.system) {
+            if (!JSON.parse(store.state.config.system[to.meta.visible])) {
+                if (from.meta?.number > to.meta.number) {
+                    return router.push({ name: to.meta.prev });
+                }
+
+                return router.push({ name: to.meta.next });
+            }
+        }
     }
 
     if (to.path.includes('/settings/')) {

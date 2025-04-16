@@ -18,27 +18,27 @@ export const routes = [
     },
     { 
         path: '/step/ride', component: () => import('./pages/inspection/Step-ride'), name: 'step-ride',
-        meta: {visible: 'type_ride', next: 'step-tonometer', prev: 'step-driver', number: 3 } 
+        meta: {visible: true, next: 'step-tonometer', prev: 'step-driver', number: 3 }
     },
     { 
         path: '/step/tonometer', component: () => import('./pages/inspection/Step-tonometer'), name: 'step-tonometer',
-        meta: {visible: 'tonometer_visible', next: 'step-thermometer', prev: 'step-ride', number: 4 } 
+        meta: {visible: true, next: 'step-thermometer', prev: 'step-ride', number: 4 }
     },
     { 
         path: '/step/thermometer', component: () => import('./pages/inspection/Step-thermometer'), name: 'step-thermometer',
-        meta: {visible: 'thermometer_visible', next: 'step-alcometer', prev: 'step-thermometer', number: 5 } 
+        meta: {visible: true, next: 'step-alcometer', prev: 'step-thermometer', number: 5 }
     },
     { 
         path: '/step/alcometer', component: () => import('./pages/inspection/Step-alcometer'), name: 'step-alcometer',
-        meta: {visible: 'alcometer_visible', next: 'step-sleep', prev: 'step-alcometer', number: 6 } 
+        meta: {visible: true, next: 'step-sleep', prev: 'step-alcometer', number: 6 }
     },
     { 
         path: '/step/sleep', component: () => import('./pages/inspection/Step-sleep'), name: 'step-sleep',
-        meta: {visible: 'question_sleep', next: 'step-helth', prev: 'step-alcometer', number: 7 } 
+        meta: {visible: true, next: 'step-helth', prev: 'step-alcometer', number: 7 }
     },
     { 
         path: '/step/helth', component: () => import('./pages/inspection/Step-helth'), name: 'step-helth',
-        meta: {visible: 'question_helth', next: 'step-result', next_employee: 'step-result-employee', prev: 'step-sleep', number: 8 }
+        meta: {visible: true, next: 'step-result', next_employee: 'step-result-employee', prev: 'step-sleep', number: 8 }
     },
     {
         path: '/step/result', component: () => import('./pages/inspection/Step-result'), name: 'step-result',

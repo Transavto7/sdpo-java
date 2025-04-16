@@ -49,7 +49,6 @@ public class AlcometrScreenCommand extends Command {
         }
 
         SdpoLog.info("Alcometr fast mode: " + fast);
-        Sdpo.settings.systemConfig.set("alcometer_fast", fast);
 
         for (int i = 1; i <= count; i++) {
             SdpoLog.info("------ Test " + i);

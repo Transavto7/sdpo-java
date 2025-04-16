@@ -172,27 +172,27 @@ export default {
                 {{ result.admitted || 'ожидание ответа' }}<br>
             </span></h3>
         <div class="step-result__cards">
-          <div v-if="system.tonometer_visible && inspection.hasOwnProperty('tonometer')" class="step-result__card animate__animated animate__fadeInUp d-1">
+          <div v-if="inspection.hasOwnProperty('tonometer')" class="step-result__card animate__animated animate__fadeInUp d-1">
             <span>Давление</span>
             {{ inspection.hasOwnProperty('tonometer') ? inspection.tonometer : 'Неизвестно' }}
           </div>
-          <div v-if="system.tonometer_visible && inspection.hasOwnProperty('pulse')" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="inspection.hasOwnProperty('pulse')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Пульс</span>
             {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
           </div>
-          <div v-if="system.alcometer_visible && inspection.hasOwnProperty('alcometer_result')" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="inspection.hasOwnProperty('alcometer_result')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Количество промилле</span>
             {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
           </div>
-          <div v-if="system.thermometer_visible && inspection.hasOwnProperty('t_people')" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="inspection.hasOwnProperty('t_people')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Температура тела</span>
             {{ inspection.hasOwnProperty('t_people') ? inspection.t_people + ' °C' : 'Неизвестно' }}
           </div>
-          <div v-if="system.question_sleep && inspection.hasOwnProperty('sleep_status')" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="inspection.hasOwnProperty('sleep_status')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Сонливость</span>
             {{ inspection.hasOwnProperty('sleep_status') ? getSleepStatus(inspection.sleep_status) : 'Неизвестно' }}
           </div>
-          <div v-if="system.question_helth && inspection.hasOwnProperty('people_status')" class="step-result__card animate__animated animate__fadeInUp d-2">
+          <div v-if="inspection.hasOwnProperty('people_status')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Самочувствие</span>
             {{ inspection.hasOwnProperty('people_status') ? getPeopleStatus(inspection.people_status) : 'Неизвестно' }}
           </div>
