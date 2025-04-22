@@ -8,9 +8,6 @@ import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.CoreConfigurations.MemoryConfiguration;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 @Component
 public class SettingsFactory {
     public static FileConfiguration makeMain(JSONObject defaultSettings) {
