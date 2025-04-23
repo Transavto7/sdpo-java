@@ -19,21 +19,7 @@ export default {
       recording: false
     }
   },
-  watch:  {
-    statusNow: async function () {
-      if (this.isChangeStatus("WAIT")) {
-        await this.runWebCam()
-
-      }
-      if ((this.isChangeStatus("RESULT") || this.isChangeStatus("ERROR") || this.isChangeStatus("FREE") || this.isChangeStatus("STOP")) && this.recording) {
-        await this.stopWebCam()
-      }
-    }
-  },
   methods: {
-    isChangeStatus(status) {
-       return (this.statusNow === status && this.statusPrev !== status)
-    },
     connect() {
       this.connection = new WebSocket("ws://localhost:8080/device/alcometer/status")
       this.connection.onmessage = async (event) => {
@@ -52,23 +38,6 @@ export default {
     async disconnect() {
       console.log('Disconnect websoket server');
       await closeAlcometrSocket();
-    },
-
-    async runWebCam() {
-      if (!this.recording) {
-        this.recording = true;
-        const data = await makeMedia(this.identifier);
-        this.inspection.photo = data?.photo;
-        this.inspection.video = data?.video;
-        console.log("start media")
-      }
-    },
-    async stopWebCam() {
-      if (this.recording) {
-        this.recording = false;
-        await stopMedia(this.identifier);
-        console.log("stop media")
-      }
     },
     nextStep() {
       this.$router.push({name: 'step-sleep'});
@@ -93,7 +62,6 @@ export default {
     await enableSlowModeAlcometer();
     await closeAlcometer();
     this.connect()
-    // await this.runWebCam();
     this.runCountdown()
 
     this.requestInterval = setInterval(async () => {
@@ -109,9 +77,6 @@ export default {
     }, 700);
   },
   unmounted() {
-    if (this.recording) {
-      this.stopWebCam();
-    }
     this.disconnect()
     clearInterval(this.requestInterval);
     clearInterval(this.timerInterval);
@@ -150,6 +115,7 @@ export default {
     </div>
     <div class="step-buttons">
       <button @click="prevStep()" class="btn opacity blue">Назад</button>
+      <button @click="$router.push({ name: 'step-sleep' })" class="btn">Продолжить</button>
     </div>
   </div>
 </template>

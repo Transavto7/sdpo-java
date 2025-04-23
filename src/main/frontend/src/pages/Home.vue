@@ -7,6 +7,7 @@ import InputPhoneNumber from "@/components/InputPhoneNumber";
 import InputAndSavePhone from "@/pages/driver/InputAndSavePhone";
 import store from "@/store";
 import {getSettings} from "@/helpers/settings";
+import {makeMedia, stopMedia} from "@/helpers/camera";
 
 export default {
   name: 'Home',
@@ -28,13 +29,21 @@ export default {
         return;
       }
 
+      this.$store.state.videoRecording = true;
+      const data = await makeMedia(driver.hash_id);
+      this.$store.state.inspection.photo = data?.photo;
+      this.$store.state.inspection.video = data?.video;
+      console.log("start media")
+
       this.$store.state.inspection.driver_id = driver.hash_id;
       this.$store.state.inspection.driver_fio = driver.fio;
 
-      if (this.needSetNumberPhone)
+      // TODO сделать страницу подтверждения номера телефона
+      if (this.needSetNumberPhone) {
         this.$router.push('/number-phone/add/')
-      else
+      } else {
         this.$router.push({name: 'step-driver'});
+      }
     },
 
     updateDriverId(inputPassword) {
@@ -104,12 +113,14 @@ export default {
       return this.$store.state.driver.phone && !this.error
     },
     needSetNumberPhone() {
-      return getSettings('check_phone_number')
-          && this.hasDriver
+      return this.hasDriver
           && !this.hasPhoneNumber
           && store.state.connection !== undefined;
     }
   },
+  async mounted() {
+    await stopMedia();
+  }
 }
 </script>
 

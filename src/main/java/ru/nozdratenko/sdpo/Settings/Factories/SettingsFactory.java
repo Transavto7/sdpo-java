@@ -61,7 +61,6 @@ public class SettingsFactory {
             .setDefault("delay_before_redirect_to_main_page", SettingsFactory.getValue(defaultSettings, "delay_before_redirect_to_main_page", 10000))
             .setDefault("tonometer_logs_visible", SettingsFactory.getValue(defaultSettings, "tonometer_logs_visible", true))
             .setDefault("camera_video", SettingsFactory.getValue(defaultSettings, "camera_video", true))
-            .setDefault("check_phone_number", SettingsFactory.getValue(defaultSettings, "check_phone_number", true))
             .setDefault("camera_photo", SettingsFactory.getValue(defaultSettings, "camera_photo", true))
             .setDefault("driver_photo", SettingsFactory.getValue(defaultSettings, "driver_photo", false))
             .setDefault("camera_dimension", cameraHelper.getDefaultSize())

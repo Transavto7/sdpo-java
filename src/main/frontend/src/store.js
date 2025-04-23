@@ -10,6 +10,7 @@ const store = createStore({
             config: {},
             admin: false,
             connection: false,
+            videoRecording: false,
             point: '',
             verification: {
                 serialNumberTerminal : '',

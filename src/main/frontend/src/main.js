@@ -9,11 +9,12 @@ import {routes} from './router'
 import Toast from "vue-toastification"
 import "vue-toastification/dist/index.css"
 import {getSettings, loadSettings} from './helpers/settings'
-import {checkConnect, saveInspection} from './helpers/api/api'
+import {checkConnect} from './helpers/api/api'
 import {closeAlcometer} from './helpers/alcometer'
 import 'animate.css'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import login from "@/pages/settings/Login.vue";
 
 axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
@@ -54,7 +55,7 @@ router.beforeEach((to, from, next) => {
             return router.push({name: 'home'});
         }
 
-        if (to.meta?.visible === true) {
+        if (to.meta?.visible === false) {
             if (from.meta?.number > to.meta.number) {
                 return router.push({ name: to.meta.prev });
             }
@@ -62,7 +63,7 @@ router.beforeEach((to, from, next) => {
             return router.push({ name: to.meta.next });
         }
 
-        if (to.meta?.visible && store.state.config?.system) {
+        if (typeof to.meta?.visible === 'string' && store.state.config?.system) {
             if (!JSON.parse(store.state.config.system[to.meta.visible])) {
                 if (from.meta?.number > to.meta.number) {
                     return router.push({ name: to.meta.prev });

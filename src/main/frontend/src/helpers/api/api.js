@@ -39,7 +39,6 @@ export async function saveInspection(inspection = store.state.inspection) {
         inspection.user_id = store.state.config.main.selected_medic.id;
     }
     return await axios.post(`inspection/save`, inspection).then(({data}) => {
-        store.state.config.dynamic.count_inspections = store.state.config?.dynamic.count_inspections + 1 || 1;
         return data;
     }).catch(defaultError);
 }
@@ -60,7 +59,6 @@ export async function checkConnect(address) {
     return await axios.post(`api/check`, {
         address
     }).then(({data}) => {
-        store.state.config.dynamic.count_inspections = 0;
         return data;
     }).catch((error) => {
         if (!error.response) {
@@ -91,22 +89,6 @@ export async function getVerification() {
 
 export async function getMedics() {
     return await axios.get('api/medics').then(({data}) => {
-        return data;
-    }).catch((error) => {
-        console.log(error);
-    });
-}
-
-export async function getStamps() {
-    return await axios.get('api/stamps').then(({data}) => {
-        return data;
-    }).catch((error) => {
-        console.log(error);
-    });
-}
-
-export async function saveStamp(stamp) {
-    return await axios.post('api/stamp/save', stamp).then(({data}) => {
         return data;
     }).catch((error) => {
         console.log(error);
@@ -178,23 +160,34 @@ export async function printInspectionQr(inspectionId) {
     });
 }
 
-export async function sendFeedbackAfterInspection(feedback, inspectionId) {
-    return await axios.post('/inspection/feedback',
-        {
-            id: inspectionId,
-            feedback: feedback
-        }).then(({data}) => {
-        return data;
-    }).catch((error) => {
-        return error;
-    });
+export async function getWishMessage() {
+    return await axios.get(`api/wish-message`)
+        .then(({data}) => {
+            return data;
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 }
 
-export async function getWishMessage() {
-    return await axios.get(`api/wish-message`).then(({data}) => {
+export async function sendVerification(driverId) {
+    return await axios.get(`/inspection/verify?driver_id=${driverId}`).then(({data}) => {
         return data;
     }).catch((error) => {
         console.log(error);
+    });
+}
+
+
+
+export async function checkVerification(verificationId, code) {
+    return await axios.post('/inspection/verify', {
+        verification_id: verificationId,
+        code
+    }).then(({data}) => {
+        return data;
+    }).catch((error) => {
+        return error;
     });
 }
 

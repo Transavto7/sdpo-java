@@ -23,10 +23,8 @@ export async function makeMedia(driver_id) {
     }).catch(defaultError);
 }
 
-export async function stopMedia(driver_id) {
-    return await axios.post(`device/media/stop`, {
-        driver_id,
-    }).then(async ({data}) => {
+export async function stopMedia() {
+    return await axios.post(`device/media/stop`).then(async ({data}) => {
         store.state.temp.photo = store.state.inspection.photo;
         store.state.temp.video = store.state.inspection.video;
         await startWaitTimerRecordMedia()

@@ -27,9 +27,6 @@ export default {
        return this.$store.state.config;
     }
    },
-   mounted() {
-    
-   },
    watch: {
         password: function (val) {
             this.login();

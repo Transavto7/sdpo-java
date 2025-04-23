@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Profile("production")
 public class DefaultVerificationService implements VerificationService {
-    public Verification createVerification() throws IOException, ApiException {
+    public Verification createVerification(String driverId) throws IOException, ApiException {
         Request response = new Request("sdpo/verification");
-        String result = response.sendPost();
+        String result = response.sendPost((new JSONObject()).put("driver_id", driverId).toString());
         JSONObject resultJson = new JSONObject(result);
         SdpoLog.info("!!! Verification object: " + resultJson);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

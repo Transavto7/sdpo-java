@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public interface VerificationService {
-    Verification createVerification() throws IOException, ApiException;
+    Verification createVerification(String driverId) throws IOException, ApiException;
     boolean verify(UUID verificationId, String code) throws IOException, ApiException;
     void addAttempt(UUID verificationId) throws IOException, ApiException;
 }

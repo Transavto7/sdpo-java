@@ -57,13 +57,6 @@ export default {
         </label>
       </div>
       <div class="admin__system-card__item">
-        <span>Проверять номер телефона</span>
-        <label class="switch">
-          <input type="checkbox" v-model="system.check_phone_number">
-          <div class="slider round"></div>
-        </label>
-      </div>
-      <div class="admin__system-card__item">
         <span>Переход в начало</span>
         <label class="switch">
           <input type="checkbox" v-model="system.auto_start">

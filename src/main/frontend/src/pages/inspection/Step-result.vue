@@ -2,20 +2,25 @@
 import {
   saveInspection,
   replayPrint,
-  replayPrintQr,
-  sendFeedbackAfterInspection,
-  getPhrase,
-  getWishMessage
+  replayPrintQr, sendVerification, checkVerification, getWishMessage,
 } from '@/helpers/api/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
 import {getSettings} from "@/helpers/settings";
+import InputPersonalNumberForm from "@/components/InputPersonalNumberForm.vue";
+import {stopMedia} from "@/helpers/camera";
 
 export default {
-  components: {Loader, ResultRepeat},
+  components: {InputPersonalNumberForm, Loader, ResultRepeat},
   data() {
     return {
       backTimeout: null,
+
+      verified: false,
+      verifyCode: '',
+      verifyPending: false,
+      verification: {},
+
       result: {},
       conclusion: {
         admitted: '',
@@ -29,7 +34,6 @@ export default {
   },
   async mounted() {
     this.$data.loading = true;
-    await this.getWishMessage();
 
     let global = this;
     let checker = async function () {
@@ -49,14 +53,6 @@ export default {
     clearTimeout(this.backTimeout);
   },
   methods: {
-    sendFeedbackToServer() {
-      if (this.hasResult && this.feedback !== null) {
-        sendFeedbackAfterInspection(this.feedback, this.result.id);
-      }
-    },
-    saveFeedback(feedback) {
-      this.feedback = feedback;
-    },
     getSleepStatus(status) {
       return status === 'Да' ? 'Выспались' : 'Не выспались';
     },
@@ -68,13 +64,13 @@ export default {
     },
     async save() {
       this.result = await saveInspection();
+      console.log(this.result)
       this.conclusion.admitted = this.result.admitted ?? '';
       this.conclusion.comments = this.result.comments ?? '';
     },
     async replayPrint() {
       await replayPrint();
     },
-
     async replayPrintQr() {
       await replayPrintQr();
     },
@@ -92,16 +88,30 @@ export default {
       if (this.result.admitted === this.notIdentified) {
         return setTimeout(this.redirectRepeat, this.system.delay_before_retry_inspection);
       }
-      return setTimeout(this.redirectHome, this.system.delay_before_redirect_to_main_page);
+
+      if (this.verified) {
+        return setTimeout(this.redirectHome, this.system.delay_before_redirect_to_main_page);
+      } else {
+        return setTimeout(this.setTimeoutAndRedirect, 5000);
+      }
     },
-  }
-  ,
-  watch: {
-    feedback: function (val) {
-      this.sendFeedbackToServer();
+    updateVerifyCode(input) {
+      this.verifyCode = input;
+      this.checkVerificationCode();
     },
-    result: function (val) {
-      this.sendFeedbackToServer();
+    async sendVerify(){
+      this.verifyPending = true;
+      this.verification = await sendVerification(this.inspection.driver_id)
+    },
+    async checkVerificationCode() {
+      if (this.verifyCode.length === 6) {
+        this.verified = await checkVerification(this.verification.id, this.verifyCode);
+        if (this.verified) {
+          this.$store.state.videoRecording = false;
+          await stopMedia();
+          console.log("stop media")
+        }
+      }
     }
   },
   computed: {
@@ -118,10 +128,6 @@ export default {
     ,
     getComment() {
       return this.result.comments ?? '';
-    }
-    ,
-    hasResult() {
-      return this.result.admitted !== undefined;
     },
     inspection() {
       return this.$store.state.inspection;
@@ -130,18 +136,11 @@ export default {
     system() {
       return this.$store.state.config?.system || {};
     },
+    driverPhone() {
+      return this.$store.state.driver?.phone || 'Ошибка номера!';
+    },
     drawReaction() {
-      if (!this.hasReaction) {
-        return "Пожалуйста, оцените осмотр"
-      }
       return this.phrase || "Хорошего дня!";
-    },
-    hasReaction() {
-      return this.feedback !== null
-    },
-    hasPhrase() {
-      console.log(this.phrase !== null)
-      return this.phrase !== null
     },
     canRetryPrint() {
       return getSettings('printer_write')
@@ -167,10 +166,16 @@ export default {
     <div v-if="!loading" class="step-result">
       <div style="text-align: center;">
         <!--    <div class="step-result">-->
-        <h3 class="step-result__header_with_result animate__animated animate__fadeInDown">Результаты осмотра:
+        <h3 class="step-result__header_with_result animate__animated animate__fadeInDown" v-if="verified">Результаты осмотра:
           <span class="step-result__text animate__animated animate__fadeInUp">
                 {{ result.admitted || 'ожидание ответа' }}<br>
-            </span></h3>
+            </span>
+        </h3>
+        <h3 class="step-result__header_with_result animate__animated animate__fadeInDown" v-if="!verified">
+          <span class="step-result__text animate__animated animate__fadeInUp">
+                Подписание осмотра<br>
+            </span>
+        </h3>
         <div class="step-result__cards">
           <div v-if="inspection.hasOwnProperty('tonometer')" class="step-result__card animate__animated animate__fadeInUp d-1">
             <span>Давление</span>
@@ -199,20 +204,7 @@ export default {
         </div>
       </div>
       <div class="step-result__footer">
-        <div class="feedback-after-inspection">
-          <div v-if="hasReaction">
-            <span class="header">Спасибо за оценку! <br> Ваше мнение важно для нас!</span>
-          </div>
-          <div v-else>
-            <span class="header">Как прошел осмотр?</span>
-            <div class="like-box">
-              <span class="like bad" @click="saveFeedback('negative')"><img
-                  src="@/assets/images/like.svg"></span>
-              <span class=" like awesome" @click="saveFeedback('positive')"><img src="@/assets/images/like.svg"></span>
-            </div>
-          </div>
-        </div>
-        <div class="step-result__buttons">
+        <div class="step-result__buttons" v-if="verified">
           <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
           <button v-if="this.admitted && this.canRetryPrint"
                   @click="replayPrint()"
@@ -221,6 +213,25 @@ export default {
           <button v-if="connection && this.admitted && this.canRetryPrintQR"
                   @click="replayPrintQr()"
                   class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
+          </button>
+        </div>
+        <div class="step-result__verify" v-if="verifyPending && !verified">
+          <div class="driver-form__input">
+          <input type="number"
+                 class="animate__animated animate__fadeIn d-5"
+                 v-model="verifyCode"/>
+          </div>
+          <input-personal-number-form
+              style="margin-bottom: 10px"
+              @password=" (input) => updateVerifyCode(input)"
+          />
+          SMS для подтверждения отправлено на номер {{ driverPhone }}
+        </div>
+        <div v-if="!verifyPending">
+          <button
+              @click="sendVerify"
+              class="btn opacity animate__animated animate__fadeInUp">
+            Согласен с результатами измерений. Отправить SMS для подтверждения
           </button>
         </div>
       </div>
@@ -236,3 +247,11 @@ export default {
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.step-result__verify{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>
