@@ -104,7 +104,7 @@ export default {
       this.verification = await sendVerification(this.inspection.driver_id)
     },
     async checkVerificationCode() {
-      if (this.verifyCode.length === 6) {
+      if (this.verifyCode.length === 5) {
         this.verified = await checkVerification(this.verification.id, this.verifyCode);
         if (this.verified) {
           this.$store.state.videoRecording = false;

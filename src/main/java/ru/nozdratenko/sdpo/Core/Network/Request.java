@@ -40,7 +40,7 @@ public class Request {
     }
 
     public String sendGet(Map<String, String> parameters) throws IOException, ApiException {
-        this.url = new URL(this.url.toString() + ParameterStringBuilder.getParamsString(parameters));
+        this.url = new URL(this.url.toString() + ParameterStringBuilder.buildQueryString(parameters));
 
         this.connection = this.getConnection(this.url);
         connection.setRequestMethod("GET");

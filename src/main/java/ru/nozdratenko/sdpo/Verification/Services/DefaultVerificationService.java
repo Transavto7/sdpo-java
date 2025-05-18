@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.Verification.Entities.Verification;
 import ru.nozdratenko.sdpo.exception.ApiException;
+import ru.nozdratenko.sdpo.exception.ApiNotFoundException;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class DefaultVerificationService implements VerificationService {
         String result = response.sendPost((new JSONObject()).put("driver_id", driverId).toString());
         JSONObject resultJson = new JSONObject(result);
         SdpoLog.info("!!! Verification object: " + resultJson);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return new Verification(
             UUID.fromString(resultJson.getString("id")),
@@ -33,15 +34,20 @@ public class DefaultVerificationService implements VerificationService {
             resultJson.getInt("attempts")
         );
     }
-    
+
     public boolean verify(UUID verificationId, String code) throws IOException, ApiException {
-        Request response = new Request("sdpo/verification");
-        String result = response.sendGet(Map.of("id", verificationId.toString(), "code", code));
-        JSONObject resultJson = new JSONObject(result);
+        try {
+            Request response = new Request("sdpo/verification");
+            String result = response.sendGet(Map.of("id", verificationId.toString(), "code", code));
+            JSONObject resultJson = new JSONObject(result);
 
-        SdpoLog.info("!!! Verification result: " + resultJson + " for verification id: " + verificationId.toString() + " code: " + code);
+            SdpoLog.info("!!! Verification result: " + resultJson + " for verification id: " + verificationId.toString() + " code: " + code);
 
-        return resultJson.getBoolean("verify");
+            return resultJson.getBoolean("verify");
+        } catch (ApiNotFoundException e) {
+            SdpoLog.error(e);
+            return false;
+        }
     }
 
     public void addAttempt(UUID verificationId) throws IOException, ApiException {

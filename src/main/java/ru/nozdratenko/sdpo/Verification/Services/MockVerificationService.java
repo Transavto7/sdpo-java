@@ -19,7 +19,7 @@ public class MockVerificationService implements VerificationService {
     public Verification createVerification(String driverId){
         Verification verification = new Verification(
             UUID.randomUUID(),
-            "123456",
+            "12345",
             LocalDateTime.now(),
             0
         );

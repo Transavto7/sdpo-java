@@ -2,23 +2,23 @@ package ru.nozdratenko.sdpo.Core.Network;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ParameterStringBuilder {
-    public static String getParamsString(Map<String, String> params)
-            throws UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            result.append("&");
+    public static String buildQueryString(Map<String, String> params) {
+        if (params == null || params.isEmpty()) {
+            return "";
         }
 
-        String resultString = result.toString();
-        return resultString.length() > 0
-                ? resultString.substring(0, resultString.length() - 1)
-                : resultString;
+        return "?" + params.entrySet().stream()
+            .filter(entry -> entry.getKey() != null && entry.getValue() != null)
+            .map(entry -> encodeParam(entry.getKey()) + "=" + encodeParam(entry.getValue()))
+            .collect(Collectors.joining("&"));
+    }
+
+    private static String encodeParam(String param) {
+        return URLEncoder.encode(param, StandardCharsets.UTF_8);
     }
 }
