@@ -33,40 +33,12 @@ public class PackInspectionSaver implements DriverInspectionSaver {
         SdpoLog.info("!!! Saved inspectionSavePack response: " + resultJson);
 
         if (resultJson.has("id")) {
-            int timeout = 20;
-
-            if (resultJson.has("timeout")) {
-                timeout = resultJson.getInt("timeout");
-            }
-
-            Long start = new Date().getTime();
-            boolean timing = true;
-
-            while (true) {
-                Long current = new Date().getTime();
-                long left = (current - start) / 1000;
-                if (left > timeout) {
-                    break;
-                }
-
+            do {
                 response = new Request("sdpo/anketa/" + resultJson.getInt("id"));
                 result = response.sendGet();
                 resultJson = new JSONObject(result);
 
-                if (!resultJson.getString("type_anketa").equals("pak_queue")) {
-                    timing = false;
-                    break;
-                }
-            }
-
-            if (timing) {
-                String rs = new Request("sdpo/anketa/" + resultJson.getInt("id"))
-                        .sendPost();
-            }
-
-            response = new Request("sdpo/anketa/" + resultJson.getInt("id"));
-            result = response.sendGet();
-            resultJson = new JSONObject(result);
+            } while (resultJson.getString("type_anketa").equals("pak_queue"));
         }
 
         if (Sdpo.settings.systemConfig.getBoolean("printer_write")) {
