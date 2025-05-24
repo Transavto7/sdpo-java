@@ -291,7 +291,7 @@ public class WindowsCameraHelper implements CameraHelper {
         String path = FileBase.concatPath(FileBase.getMainFolderUrl(), "video", name + ".mp4");
         SdpoLog.info("Make video with path: " + path);
         new File(path).getParentFile().mkdirs();
-        recordScreen(path, 120);
+        recordScreen(path, 600);
         return path;
     }
 

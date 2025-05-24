@@ -27,27 +27,9 @@ export default {
         comments: '',
       },
       notIdentified: 'Не идентифицирован',
-      loading: false,
       feedback: null,
-      phrase: '',
+      phrase: 'Пожалуйста, подтвердите результаты осмотра.',
     }
-  },
-  async mounted() {
-    this.$data.loading = true;
-
-    let global = this;
-    let checker = async function () {
-      if (global.$store.state.waitRecordMedia) {
-        setTimeout(checker, 1000);
-      } else {
-        global.loading = false;
-        await global.save();
-        if (global.autoStart) {
-          global.backTimeout = global.setTimeoutAndRedirect();
-        }
-      }
-    }
-    setTimeout(checker, 1000);
   },
   unmounted() {
     clearTimeout(this.backTimeout);
@@ -58,6 +40,20 @@ export default {
     },
     getPeopleStatus(status) {
       return status === 'Да' ? 'Хорошее' : 'Плохое';
+    },
+    async sendInspection() {
+      let global = this;
+      let checker = async function () {
+        if (global.$store.state.waitRecordMedia) {
+          setTimeout(checker, 1000);
+        } else {
+          await global.save();
+          if (global.autoStart) {
+            global.backTimeout = global.setTimeoutAndRedirect();
+          }
+        }
+      }
+      setTimeout(checker, 1000);
     },
     async getWishMessage() {
       this.phrase = (await getWishMessage()).wish_message ?? null;
@@ -110,6 +106,8 @@ export default {
           this.$store.state.videoRecording = false;
           await stopMedia();
           console.log("stop media")
+          await this.sendInspection();
+          await this.getWishMessage();
         }
       }
     }
@@ -157,13 +155,13 @@ export default {
 </script>
 
 <template>
-  <loader v-model:loading="loading"/>
+<!--  <loader v-model:loading="loading"/>-->
   <result-repeat v-model:visible="showRetryModal"
                  v-model:message-content="getComment"
                  @accept="redirectRepeat()"
   ></result-repeat>
   <div style="display: flex; ">
-    <div v-if="!loading" class="step-result">
+    <div class="step-result">
       <div style="text-align: center;">
         <!--    <div class="step-result">-->
         <h3 class="step-result__header_with_result animate__animated animate__fadeInDown" v-if="verified">Результаты осмотра:
@@ -236,7 +234,7 @@ export default {
         </div>
       </div>
     </div>
-    <div v-if="!loading" class="madam-t7 animate__fadeInUpBig">
+    <div class="madam-t7 animate__fadeInUpBig">
       <div class="madam-t7-text-box animate__animated animate__fadeInUp">
         <div class="wish">
           <span class="animate__fadeInUp"> {{ drawReaction }}</span>

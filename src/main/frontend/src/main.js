@@ -15,6 +15,7 @@ import 'animate.css'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import login from "@/pages/settings/Login.vue";
+import {makeMedia} from "@/helpers/camera";
 
 axios.defaults.baseURL = 'http://localhost:8080/';
 window.axios = axios;
@@ -34,7 +35,7 @@ const router = createRouter({
     },
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach( (to, from, next) => {
     if (from.name === 'step-alcometer') {
         closeAlcometer();
         if (to.name === 'home' && getSettings('alcometer_retry') && Number(store.state.inspection.alcometer_result) > 0) {
@@ -47,6 +48,13 @@ router.beforeEach((to, from, next) => {
 
     if (to.name === 'step-retry') {
         from.meta.number = 0;
+        store.state.videoRecording = true;
+        makeMedia(store.state.inspection.driver_id).then((data) => {
+            store.state.inspection.photo = data?.photo;
+            store.state.inspection.video = data?.video;
+            console.log("start media")
+        });
+
         return router.push({name: to.meta.next});
     }
 

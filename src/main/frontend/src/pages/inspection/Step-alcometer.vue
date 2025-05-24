@@ -4,7 +4,6 @@ import {
   enableSlowModeAlcometer,
   getAlcometerResult
 } from '@/helpers/alcometer';
-import {makeMedia, stopMedia} from '@/helpers/camera';
 
 export default {
   data() {
@@ -97,8 +96,8 @@ export default {
 <template>
   <div class="step-alcometer__outer">
     <div class="step-alcometer">
-      <h3  class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
-      <div  class="step-alcometer__items">
+      <h3 class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
+      <div class="step-alcometer__items">
         <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
           <span style="min-height: 30px">3</span>
           <img style="padding-right: 20px" width="80" src="@/assets/images/precise.png">
