@@ -1,20 +1,20 @@
 package ru.nozdratenko.sdpo.helper;
 
 import jssc.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.nozdratenko.sdpo.lib.COMPortsServices.COMPorts;
 import ru.nozdratenko.sdpo.util.SdpoLog;
+import ru.nozdratenko.sdpo.util.port.PortManager;
 
 @Service
-public class ThermometerHelper {
+@RequiredArgsConstructor
+public class ThermometerHelper implements DeviceHelper{
     public static String PORT = null;
     private final COMPorts comPorts;
-
-    @Autowired
-    public ThermometerHelper(COMPorts comPorts) {
-        this.comPorts = comPorts;
-    }
+    private final PortManager portManager;
 
     public double getTemp() {
         if (PORT == null) {
@@ -70,5 +70,21 @@ public class ThermometerHelper {
             ThermometerHelper.PORT = thermometerPort;
             SdpoLog.info("Thermometer set port: " + ThermometerHelper.PORT);
         }
+    }
+
+    @Override
+    public boolean isDeviceConnected() {
+        SdpoLog.info(String.format("Request Thermometer InstanceId for vendor: %s", "VID_10C4"));
+        String deviceInstanceId = this.portManager.getDeviceInstanceId("VID_10C4");
+        if (StringUtils.hasText(deviceInstanceId)){
+            SdpoLog.info("Thermometer InstanceId: " + deviceInstanceId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String name() {
+        return "Thermometer";
     }
 }

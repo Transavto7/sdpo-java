@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.Core.FileSystem.FileBase;
 import ru.nozdratenko.sdpo.Core.Network.MultipartUtility;
+import ru.nozdratenko.sdpo.helper.DeviceHelper;
 import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Profile("production")
-public class WindowsCameraHelper implements CameraHelper {
+public class WindowsCameraHelper implements CameraHelper, DeviceHelper {
     public File lastResultVideo = null;
     private FrameGrabber workWebcam = null;
     private transient boolean isCameraWorked = false;
@@ -470,5 +471,15 @@ public class WindowsCameraHelper implements CameraHelper {
                 SdpoLog.error(e);
             }
         }).start();
+    }
+
+    @Override
+    public boolean isDeviceConnected() {
+        return Webcam.getDefault() != null;
+    }
+
+    @Override
+    public String name() {
+        return "Camera";
     }
 }

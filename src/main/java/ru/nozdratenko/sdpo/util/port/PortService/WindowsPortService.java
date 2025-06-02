@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.port.Cfgmgr32;
 import ru.nozdratenko.sdpo.util.port.SetupApi;
+import ru.nozdratenko.sdpo.util.thread.ThreadUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,100 +21,102 @@ import java.io.InputStreamReader;
 @Service
 @Profile("production")
 public class WindowsPortService implements PortService {
-    public static final int DIGCF_PRESENT = 0x00000002;
-    public static final int DIGCF_DEVICEINTERFACE = 0x00000010;
-    private static final int TOKEN_QUERY = 0x0008;
-    private static final int TokenElevation = 20;
+    private static final int DIGCF_PRESENT = 0x00000002;
+    private static final int DIGCF_DEVICEINTERFACE = 0x00000010;
+    private static final int MAX_ATTEMPTS = 5;
 
+    int checkDeviceStateCounter = 0;
+
+    @Override
     public boolean reinitializePort(String deviceInstanceId) {
         try {
-            int exitCodeDisable = 0;
-            int exitCodeEnable = 0;
-            int exitCodeRestart = 0;
             while (isDeviceInProblemState(deviceInstanceId)) {
-                SdpoLog.info("Alkometer port still has a problem before restarting: " + deviceInstanceId);
-                // Команда для отключения устройства
-                String[] pnpCommandDisable = {"cmd.exe", "/c", String.format("PNPUTIL /disable-device \"%s\"", deviceInstanceId)};
-                ProcessBuilder pnpPbDisable = new ProcessBuilder(pnpCommandDisable);
-                Process pnpProcessDisable = pnpPbDisable.start();
-                logProcessOutput(pnpProcessDisable);
-                exitCodeDisable = pnpProcessDisable.waitFor();
-                if (exitCodeDisable != 0) {
-                    SdpoLog.info("Disable command exit code: " + exitCodeDisable);
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                if (checkDeviceStateCounter > MAX_ATTEMPTS) {
+                    SdpoLog.error("Reached maximum attempts to reinit port: " + deviceInstanceId);
+                    return false;
                 }
 
-                String[] pnpCommandEnable = {"cmd.exe", "/c", String.format("PNPUTIL /enable-device \"%s\"", deviceInstanceId)};
-                ProcessBuilder pnpPbEnable = new ProcessBuilder(pnpCommandEnable);
-                Process pnpProcessEnable = pnpPbEnable.start();
-                logProcessOutput(pnpProcessEnable);
-                exitCodeEnable = pnpProcessEnable.waitFor();
-                if (exitCodeEnable != 0) {
-                    SdpoLog.info("Enable command exit code: " + exitCodeEnable);
+                SdpoLog.info("Alkometer port has a problem before restarting: " + deviceInstanceId);
+
+                if (!consoleCommandExecution("Disable", deviceInstanceId)) {
+                    SdpoLog.info("Disable command failed for device: " + deviceInstanceId);
+                    return false;
                 }
 
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                ThreadUtil.suspendCurrentAction(1000L);
+
+                if (!consoleCommandExecution("Enable", deviceInstanceId)) {
+                    SdpoLog.info("Enable command failed for device: " + deviceInstanceId);
+                    return false;
                 }
 
-                String[] pnpCommandRestart = {"cmd.exe", "/c", String.format("PNPUTIL /restart-device \"%s\"", deviceInstanceId)};
-                ProcessBuilder pnpPbRestart = new ProcessBuilder(pnpCommandRestart);
-                Process pnpProcessRestart = pnpPbRestart.start();
-                logProcessOutput(pnpProcessRestart);
-                exitCodeRestart = pnpProcessRestart.waitFor();
-                if (exitCodeRestart != 0) {
-                    SdpoLog.info("Restart command exit code: " + exitCodeRestart);
+                ThreadUtil.suspendCurrentAction(3000L);
+
+                if (!consoleCommandExecution("Restart", deviceInstanceId)) {
+                    SdpoLog.info("Restart command failed for device: " + deviceInstanceId);
+                    return false;
                 }
 
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                ThreadUtil.suspendCurrentAction(3000L);
+                checkDeviceStateCounter = 0;
+                return true;
             }
-            return exitCodeDisable == 0 && exitCodeEnable == 0 && exitCodeRestart == 0;
         } catch (Exception e) {
-            e.printStackTrace();
+            SdpoLog.error(e);
         }
+        SdpoLog.info("Failed to reinit port for device: " + deviceInstanceId);
         return false;
     }
 
-    private boolean isDeviceInProblemState(String deviceInstanceId) throws IOException, InterruptedException {
-        String[] pnpCommandCheckProblem = {"cmd.exe", "/c", "PNPUTIL /enum-devices /problem"};
-        ProcessBuilder pnpPbCheckProblem = new ProcessBuilder(pnpCommandCheckProblem);
-        Process pnpProcessCheckProblem = pnpPbCheckProblem.start();
+    private boolean consoleCommandExecution(String command, String deviceInstanceId) throws IOException, InterruptedException {
+        String[] pnpCommand = {"cmd.exe", "/c", String.format("PNPUTIL /%s-device \"%s\"", command.toLowerCase(), deviceInstanceId)};
+        ProcessBuilder processBuilder = new ProcessBuilder(pnpCommand);
+        Process pnpProcess = processBuilder.start();
+        logProcessOutput(pnpProcess);
+        int exitCode = pnpProcess.waitFor();
+        if (exitCode != 0) {
+            SdpoLog.info(String.format("%s command exit code: %s", command, exitCode));
+        }
+        return exitCode == 0;
+    }
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(pnpProcessCheckProblem.getInputStream()));
-        String line;
-        boolean problemDetected = false;
-        while ((line = reader.readLine()) != null) {
+    private boolean isDeviceInProblemState(String deviceInstanceId) throws IOException, InterruptedException {
+    String[] pnpCommandCheckProblem = {"cmd.exe", "/c", "PNPUTIL /enum-devices /problem"};
+    ProcessBuilder processBuilder = new ProcessBuilder(pnpCommandCheckProblem);
+    Process process = processBuilder.start();
+
+    boolean problemDetected = false;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
 //            SdpoLog.info("isDeviceInProblemState: " + line);
-            if (line.contains(deviceInstanceId)) {
-                problemDetected = true;
-                break;
+                if (line.contains(deviceInstanceId)) {
+                    problemDetected = true;
+                    break;
+                }
             }
         }
-        pnpProcessCheckProblem.waitFor();
+        process.waitFor();
+        if (checkDeviceStateCounter == 0 && !problemDetected){
+            SdpoLog.warning("Check connection to Alcometer !!! InstanceId: " + deviceInstanceId);
+        }
+        checkDeviceStateCounter++;
         return problemDetected;
     }
 
     private void logProcessOutput(Process process) throws IOException {
         String line;
-        BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        while ((line = errorReader.readLine()) != null) {
-            SdpoLog.info("ERROR: " + line);
+        try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            while ((line = errorReader.readLine()) != null) {
+                SdpoLog.info("ERROR: " + line);
+            }
         }
     }
 
 
+    @Override
     public String getDeviceInstanceId(String guidString, String vendorId) {
-        SdpoLog.info("getDeviceInstanceId for vendorId: " + vendorId);
         GUID guid = new GUID(guidString);
         HANDLE deviceInfoSet = ru.nozdratenko.sdpo.util.port.SetupApi.INSTANCE.SetupDiGetClassDevs(guid, null, null, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
@@ -155,21 +158,6 @@ public class WindowsPortService implements PortService {
             return devId;
         }
         return null;
-    }
-
-    public boolean isAdmin() {
-        HANDLE processHandle = Kernel32.INSTANCE.GetCurrentProcess();
-        WinNT.HANDLEByReference tokenHandle = new WinNT.HANDLEByReference();
-
-        if (Advapi32.INSTANCE.OpenProcessToken(processHandle, TOKEN_QUERY, tokenHandle)) {
-            WinNT.TOKEN_ELEVATION elevation = new WinNT.TOKEN_ELEVATION();
-            IntByReference tokenInformationLength = new IntByReference(elevation.size());
-
-            boolean result = Advapi32.INSTANCE.GetTokenInformation(tokenHandle.getValue(), TokenElevation, elevation, elevation.size(), tokenInformationLength);
-            return result && elevation.TokenIsElevated != 0;
-        }
-
-        return false;
     }
 
 }

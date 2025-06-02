@@ -4,30 +4,35 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
-import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
+import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
 import ru.nozdratenko.sdpo.exception.ApiException;
+import ru.nozdratenko.sdpo.helper.AdminHelper;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
+import ru.nozdratenko.sdpo.helper.DeviceHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
-import ru.nozdratenko.sdpo.storage.*;
-import ru.nozdratenko.sdpo.task.*;
+import ru.nozdratenko.sdpo.storage.MedicStorage;
+import ru.nozdratenko.sdpo.storage.StampStorage;
+import ru.nozdratenko.sdpo.task.MediaMakeTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
-import ru.nozdratenko.sdpo.util.port.PortService.PortService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class Sdpo {
     private final AlcometerHelper alcometerHelper;
-    private final PortService portService;
-    private final BrowserHelper browserHelper;
     private final ThermometerHelper thermometerHelper;
+    private final List<DeviceHelper> helpers;
+    private final BrowserHelper browserHelper;
     private final CameraHelper cameraHelper;
 
     public static SettingsContainer settings;
@@ -40,21 +45,66 @@ public class Sdpo {
 
     @Getter
     private static boolean connection = true;
+    @Getter
+    private static boolean initialized = true;
 
-    public void init() {
+    private List<String> toBlockDevices;
+
+    public boolean init() {
         SdpoLog.info("Run project");
+
         this.initSettings();
-        checkConnection();
-        loadData();
-        runTasks();
-        cameraHelper.initDimension();
-        if (!this.portService.isAdmin() && !isAdmin()) {
-            SdpoLog.error("The program has been started without admin role !!!");
-        }
+
         alcometerHelper.init();
-        alcometerHelper.setDeviceInstanceId();
+
+        if (!AdminHelper.isAdmin()) {
+            SdpoLog.warning("The program has been started without Admin role.");
+            System.out.println("Программа была запущена без прав Администратора.");
+            initialized = false;
+            return false;
+        }
+
+        checkServerConnection();
+
+        if (!checkDeviceConnections()) {
+            String disconnected = String.join(",", toBlockDevices);
+            SdpoLog.warning(String.format("Please contact support, %s should be blocked.", disconnected));
+            System.out.printf("Обратитесь в ТП, при этом %s в блокировку.", disconnected);
+            initialized = false;
+            return false;
+        }
+
         alcometerHelper.setComPort();
         thermometerHelper.setComPort();
+        cameraHelper.initDimension();
+
+        runTasks();
+
+        return initialized;
+    }
+
+    public Map<String, Boolean> getDeviceStatuses() {
+        return helpers.stream()
+                .collect(Collectors.toMap(DeviceHelper::name, DeviceHelper::isDeviceConnected));
+    }
+
+    private boolean checkDeviceConnections() {
+        Map<String, Boolean> deviceStatuses = getDeviceStatuses();
+        boolean allConnected = true;
+
+        for (Map.Entry<String, Boolean> entry : deviceStatuses.entrySet()) {
+            if (!entry.getValue()) {
+                SdpoLog.info(String.format("%s is disconnected", entry.getKey()));
+                toBlockDevices.add(entry.getKey());
+                allConnected = false;
+            }
+        }
+
+        if (allConnected) {
+            SdpoLog.info("All devices are connected");
+        }
+
+        return allConnected;
     }
 
     public void initSettings() {
@@ -62,7 +112,7 @@ public class Sdpo {
         settings = SettingsContainer.init();
     }
 
-    private void checkConnection() {
+    private void checkServerConnection() {
         try {
             String address = Sdpo.connectionConfig.getString("url");
 
@@ -72,15 +122,14 @@ public class Sdpo {
 
             Request request = new Request(new URL(address + "sdpo/check"));
             String response = request.sendGet();
-            if (response.equals("true")) {
-                Sdpo.setConnection(true);
-                return;
-            }
+            boolean connected = response.equals("true");
+            Sdpo.setConnection(connected);
+            SdpoLog.info(String.format("Root Server is %s", connected ? "connected" : "disconnected"));
+
         } catch (UnknownHostException ignored) {
         } catch (Exception | ApiException e) {
             SdpoLog.error(e);
         }
-        Sdpo.setConnection(false);
     }
 
     public void runTasks() {
@@ -117,16 +166,6 @@ public class Sdpo {
             }
             this.browserHelper.openUrl("http://localhost:8080");
         }).start();
-    }
-
-    public boolean isAdmin() {
-        try {
-            Process process = new ProcessBuilder("net", "session").start();
-            process.waitFor();
-            return process.exitValue() == 0;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public static void setConnection(boolean connection) {

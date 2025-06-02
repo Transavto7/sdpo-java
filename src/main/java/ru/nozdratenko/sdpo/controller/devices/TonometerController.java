@@ -47,7 +47,6 @@ public class TonometerController {
     @PostMapping(value = "/device/tonometer/connect")
     @ResponseBody
     public ResponseEntity tonometerConnect(@RequestBody Map<String, String> json) throws InterruptedException {
-        SdpoLog.info("!!! TonometerController.tonometerConnect.json: " + json);
         if (json.containsKey("status") && json.get("status").equals("stop")) {
             this.tonometerTaskRunner.getTonometerConnectTask().currentStatus = StatusType.STOP;
             SdpoLog.info("Stop connecting tonometer");

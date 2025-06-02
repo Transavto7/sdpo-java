@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.scheduling.annotation.EnableAsync;
 import ru.nozdratenko.sdpo.commands.Command;
 
 import java.awt.image.BufferedImage;
@@ -31,12 +30,14 @@ public class SdpoApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        sdpo.init();
-        if (args.length > 0) {
-            Command.execute(args[0], Arrays.copyOfRange(args, 1, args.length));
-            return;
+        if (sdpo.init()) {
+            if (args.length > 0) {
+                Command.execute(args[0], Arrays.copyOfRange(args, 1, args.length));
+                return;
+            }
+            sdpo.loadData();
+            sdpo.openBrowser();
         }
-        sdpo.openBrowser();
     }
 
     @Bean

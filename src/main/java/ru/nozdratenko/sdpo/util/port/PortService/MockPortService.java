@@ -30,9 +30,4 @@ public class MockPortService implements PortService {
         SdpoLog.info("MockPortService::getDeviceInstanceId");
         return null;
     }
-
-    public boolean isAdmin() {
-        SdpoLog.info("MockPortService::isAdmin");
-        return true;
-    }
 }

@@ -4,7 +4,6 @@ import jssc.SerialPortException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -26,7 +25,7 @@ public class AlcometerResultTask implements Runnable {
 
     @Override
     public void run() {
-        SdpoLog.info("Alcometer run task: " + AlcometerResultTask.currentStatus.toString());
+        SdpoLog.info("AlcometerResultTask|status : " + AlcometerResultTask.currentStatus.toString());
         while (stopFlag) {
             try {
                 Thread.sleep(1000);

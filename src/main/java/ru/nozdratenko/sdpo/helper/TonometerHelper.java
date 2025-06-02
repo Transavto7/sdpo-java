@@ -5,11 +5,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nozdratenko.sdpo.lib.BluetoothServices.Bluetooth;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.util.HashMap;
 
 @Service
-public class TonometerHelper {
+public class TonometerHelper implements DeviceHelper{
     private final Bluetooth bluetooth;
 
     @Autowired
@@ -36,5 +37,20 @@ public class TonometerHelper {
             e.printStackTrace();
         }
         return json;
+    }
+
+    @Override
+    public boolean isDeviceConnected() {
+        JSONObject scan = scan();
+        if (!scan.isEmpty() && !scan.getJSONArray("devices").isEmpty()){
+            SdpoLog.info("Tonometer's Data: " + scan.getJSONArray("devices"));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String name() {
+        return "Tonometer";
     }
 }

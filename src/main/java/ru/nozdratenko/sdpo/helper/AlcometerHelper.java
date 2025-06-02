@@ -4,36 +4,35 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.AlcometerException;
 import ru.nozdratenko.sdpo.lib.COMPortsServices.COMPorts;
 import ru.nozdratenko.sdpo.listener.PortListener;
-import ru.nozdratenko.sdpo.task.Alcometer.RerunTask.RerunEventPublisher;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 import ru.nozdratenko.sdpo.util.port.PortManager;
+import ru.nozdratenko.sdpo.util.thread.ThreadUtil;
 
 import java.io.UnsupportedEncodingException;
 
 @Service
-public class AlcometerHelper {
+public class AlcometerHelper implements DeviceHelper{
     public static String PORT = null;
     private static SerialPort serialPort = null;
+    private String cashedSerialPortInfo;
     private static String DEVICE_INSTANCE_ID;
     private static int ALCOMETER_REINIT_PORT_COUNT;
     private static final String VENDOR_ID = "VID_0483";
     private static int reinitPortCount = 0;
     private final PortManager portManager;
-    private final RerunEventPublisher rerunEventPublisher;
     private final COMPorts comPorts;
 
     @Autowired
     public AlcometerHelper(
             PortManager portManager,
-            RerunEventPublisher rerunEventPublisher,
             COMPorts comPorts
     ) {
         this.portManager = portManager;
-        this.rerunEventPublisher = rerunEventPublisher;
         this.comPorts = comPorts;
     }
 
@@ -65,6 +64,7 @@ public class AlcometerHelper {
             } catch (SerialPortException e){
                 SdpoLog.error(e);
                 if (e.getExceptionType().contains("Port not found")) {
+                    SdpoLog.info("Reinit Alcometer port during open()");
                     reinitPort();
                 }
             }
@@ -148,7 +148,7 @@ public class AlcometerHelper {
         SdpoLog.info("Reset Alcometer...");
         SerialPort serialPort = getSerialPort();
         if (serialPort == null) {
-            SdpoLog.info(String.format("SerialPort is not defined. ComPort: %s", PORT));
+            SdpoLog.error(String.format("SerialPort is not defined. ComPort: %s", PORT));
             throw new AlcometerException("Порт не найден");
         }
 
@@ -178,9 +178,11 @@ public class AlcometerHelper {
     }
 
     private static boolean initSerialPort() throws SerialPortException, UnsupportedEncodingException {
-        boolean succeed = false;
         try {
             serialPort.openPort();
+
+            String bufferContent = serialPort.readString();
+            SdpoLog.info("Clean SerialPort buffer... " + (bufferContent != null && bufferContent.isEmpty() ? "Empty" : "Done"));
 
             serialPort.setParams(4800,
                     SerialPort.DATABITS_8,
@@ -200,42 +202,40 @@ public class AlcometerHelper {
             portListener.setPort(serialPort);
             serialPort.addEventListener(portListener);
             SdpoLog.info(String.format("Successful init SerialPort: %s", serialPort.getPortName()));
-            succeed = true;
+            return true;
         } catch (SerialPortException e) {
             SdpoLog.error(String.format("Failed to init SerialPort: %s", serialPort.getPortName()));
             throw new SerialPortException(serialPort, "initSerialPort", e.getExceptionType());
         }
-        return succeed;
     }
 
-    public void reinitPort() {
+    public boolean reinitPort() {
         reinitPortCount++;
-        if (DEVICE_INSTANCE_ID != null && reinitPortCount <= 2) {
-            SdpoLog.info(reinitPortCount + ".Attempt to reinitialize SerialPort for InstanceId: " + DEVICE_INSTANCE_ID);
-
+        if (DEVICE_INSTANCE_ID != null && reinitPortCount <= 5) {
+            SdpoLog.info(reinitPortCount + String.format(". Attempt to reinit SerialPort for InstanceId: %s, PORT = %s", DEVICE_INSTANCE_ID, PORT));
+            ThreadUtil.suspendCurrentAction(1000L * reinitPortCount);
             if (this.portManager.reinitializePort(DEVICE_INSTANCE_ID)) {
-                AlcometerHelper.PORT = null;// не убирать ,т.к. без него не будет вызван reset в setComPort
-                this.setComPort();// не убирать, т.к. без него в reset не будут фиксироваться данные с алкометра
-                reinitPortCount = 0;
-                if (PORT != null) {
-                    try {
-                        this.stop();
-                        this.getSerialPort();
-                        this.close();
-                        ALCOMETER_REINIT_PORT_COUNT++;
-                        Sdpo.settings.systemConfig.set("alcometer_reinit_port_count", ALCOMETER_REINIT_PORT_COUNT).saveFile();
-                        SdpoLog.info("Succeed reinitialize SerialPort");
-                        this.rerunEventPublisher.publish();
-                        this.setComPort();
-                    } catch (UnsupportedEncodingException | SerialPortException | AlcometerException e) {
-                        SdpoLog.info("Failed to reinitialize SerialPort");
-                        SdpoLog.error(e);
+                PORT = null;
+                serialPort = null;
+                try {
+                    setComPort();
+                    if (getSerialPort() != null) {
+                        Sdpo.settings.systemConfig.set("alcometer_reinit_port_count", ++ALCOMETER_REINIT_PORT_COUNT).saveFile();
+                        SdpoLog.info("reinitPort|Succeed reinit SerialPort: " + getSerialPort().getPortName());
+                        SdpoLog.info("reinitPort|Alcometer Reinit Port Count: " + ALCOMETER_REINIT_PORT_COUNT);
+                        reinitPortCount = 0;
+                        return true;
                     }
+                } catch (Exception e) {
+                    SdpoLog.error(String.format("Error while reinit port. PORT: %s, SerialPort: %s, \nError: %s", PORT, getSerialPort().getPortName(), e));
                 }
             }
         } else {
-            SdpoLog.error("Check Alcometer Port Connection !");
+            SdpoLog.error("reinitPort|Check Alcometer Port Connection !");
+            PORT = null;
+            serialPort = null;
         }
+        return false;
     }
 
     public void close() throws AlcometerException {
@@ -252,7 +252,18 @@ public class AlcometerHelper {
 
     public SerialPort getSerialPort() {
         if (serialPort != null) {
-//            SdpoLog.info("getSerialPort: " + serialPort.getPortName() + ", isOpened:" + serialPort.isOpened());
+            String portInfo = String.format("getSerialPort: %s, isOpened: %s, PORT: %s", serialPort.getPortName(), serialPort.isOpened(), PORT);
+            if (cashedSerialPortInfo == null || !cashedSerialPortInfo.equals(portInfo)) {
+                cashedSerialPortInfo = portInfo;
+                SdpoLog.info(cashedSerialPortInfo);
+            }
+
+            if (PORT != null && !serialPort.getPortName().equals(PORT)) {
+                SdpoLog.info(String.format("PORT and serialPort.Name are different: %s | %s", PORT, serialPort.getPortName()));
+                PORT = null;
+                serialPort = null;
+            }
+
         } else if (PORT != null) {
             serialPort = new SerialPort(PORT);
         }
@@ -277,20 +288,36 @@ public class AlcometerHelper {
         SdpoLog.info("Alcometer set port: " + AlcometerHelper.PORT);
     }
 
-    public void setDeviceInstanceId() {
-        SdpoLog.info("Request InstanceId alcometer...");
+    @Override
+    public boolean isDeviceConnected() {
+        SdpoLog.info(String.format("Request Alcometer InstanceId for vendor: %s", VENDOR_ID));
         String deviceInstanceId = this.portManager.getDeviceInstanceId(VENDOR_ID);
-        if (deviceInstanceId != null) {
-            if (DEVICE_INSTANCE_ID == null || !DEVICE_INSTANCE_ID.equals(deviceInstanceId)) {
-                DEVICE_INSTANCE_ID = deviceInstanceId;
-                Sdpo.settings.systemConfig.set("alcometer_instance_id", deviceInstanceId).saveFile();
-                SdpoLog.info("Alcometer set Instance Id: " + deviceInstanceId);
-            }
-        } else if (DEVICE_INSTANCE_ID == null) {
-            SdpoLog.warning("Can't get Alcometer Instance Id");
-        } else {
-            reinitPort();
+        if (StringUtils.hasText(deviceInstanceId)) {
+            setLocalDeviceInstanceId(deviceInstanceId);
+            SdpoLog.info("Alcometer InstanceId: " + deviceInstanceId);
+            return true;
+        } else if (!StringUtils.hasText(DEVICE_INSTANCE_ID)) {
+            SdpoLog.warning("Can't get Alcometer InstanceId. Check connection.");
+            return false;
+        } else if (PORT == null){
+            SdpoLog.info("Reinit Alcometer port during init Sdpo");
+            return reinitPort();
         }
-        SdpoLog.info("Alcometer Reinit Port Count: " + ALCOMETER_REINIT_PORT_COUNT);
+        return false;
     }
+
+    @Override
+    public String name() {
+        return "Alcometer";
+    }
+
+    public void setLocalDeviceInstanceId(String deviceInstanceId) {
+        if (DEVICE_INSTANCE_ID == null || !DEVICE_INSTANCE_ID.equals(deviceInstanceId)) {
+            SdpoLog.info("Current Local Alcometer Instance Id: " + DEVICE_INSTANCE_ID);
+            DEVICE_INSTANCE_ID = deviceInstanceId;
+            Sdpo.settings.systemConfig.set("alcometer_instance_id", deviceInstanceId).saveFile();
+            SdpoLog.info("Set Local Alcometer Instance Id: " + DEVICE_INSTANCE_ID);
+        }
+    }
+
 }
