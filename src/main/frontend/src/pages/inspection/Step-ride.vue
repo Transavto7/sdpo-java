@@ -32,13 +32,13 @@ export default {
     <div class="step-2">
       <h3 class="animate__animated animate__fadeInDown">Выберите тип осмотра</h3>
       <div class="step-2__select">
-        <button class="step-2__item animate__animated animate__fadeInDown d-1"
+        <button class="step-2__item animate__animated animate__fadeInDown d-1 blue"
                 :class="{active: inspection.type_view === 'Предрейсовый/Предсменный'}"
                 @click="select('Предрейсовый/Предсменный')"
         >
           Предрейсовый / Предсменный
         </button>
-        <button class="step-2__item animate__animated animate__fadeInDown d-2"
+        <button class="step-2__item animate__animated animate__fadeInDown d-2 red"
                 :class="{active: inspection.type_view === 'Послерейсовый/Послесменный'}"
                 @click="select('Послерейсовый/Послесменный')"
         >
@@ -52,3 +52,7 @@ export default {
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+
+</style>
