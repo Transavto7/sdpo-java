@@ -332,7 +332,7 @@ html.disable-mouse * {
 @media screen and (max-height: 800px) {
     .footer {
         &__point-version {
-            align-items: start;
+            align-items: flex-start;
             width: fit-content;
         }
     }
