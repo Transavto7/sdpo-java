@@ -184,8 +184,8 @@ export default {
             {{ inspection.hasOwnProperty('pulse') ? inspection.pulse : 'Неизвестно' }}
           </div>
           <div v-if="inspection.hasOwnProperty('alcometer_result')" class="step-result__card animate__animated animate__fadeInUp d-2">
-            <span>Количество промилле</span>
-            {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' ‰' : 'Неизвестно' }}
+            <span>Алкоголь</span>
+            {{ inspection.hasOwnProperty('alcometer_result') ? inspection.alcometer_result + ' мг/л' : 'Неизвестно' }}
           </div>
           <div v-if="inspection.hasOwnProperty('t_people')" class="step-result__card animate__animated animate__fadeInUp d-2">
             <span>Температура тела</span>
@@ -213,18 +213,6 @@ export default {
                   class="btn opacity animate__animated animate__fadeInUp">Повтор печати QR
           </button>
         </div>
-        <div class="step-result__verify" v-if="verifyPending && !verified">
-          <div class="driver-form__input">
-          <input type="number"
-                 class="animate__animated animate__fadeIn d-5"
-                 v-model="verifyCode"/>
-          </div>
-          <input-personal-number-form
-              style="margin-bottom: 10px"
-              @password=" (input) => updateVerifyCode(input)"
-          />
-          SMS для подтверждения отправлено на номер {{ driverPhone }}
-        </div>
         <div v-if="!verifyPending">
           <button
               @click="sendVerify"
@@ -234,15 +222,29 @@ export default {
         </div>
       </div>
     </div>
-    <div class="madam-t7 animate__fadeInUpBig">
-      <div class="madam-t7-text-box animate__animated animate__fadeInUp">
-        <div class="wish">
-          <span class="animate__fadeInUp"> {{ drawReaction }}</span>
-        </div>
-        <img width="300" src="@/assets/images/madam-t7-say.svg">
+    <div class="step-result__verify" v-if="verifyPending && !verified">
+      <div class="driver-form__input">
+        <input type="number"
+               class="animate__animated animate__fadeIn d-5"
+               v-model="verifyCode"/>
       </div>
-      <img width="300" height="500" src="@/assets/images/madam-t7.svg">
+      <input-personal-number-form
+          style="margin-bottom: 10px"
+          @password=" (input) => updateVerifyCode(input)"
+      />
+      SMS для подтверждения отправлено на номер {{ driverPhone }}
     </div>
+    <transition name="madam">
+      <div v-if="!verifyPending || verified" class="madam-t7 animate__fadeInUpBig">
+        <div class="madam-t7-text-box animate__animated animate__fadeInUp">
+          <div class="wish">
+            <span class="animate__fadeInUp"> {{ drawReaction }}</span>
+          </div>
+          <img width="300" src="@/assets/images/madam-t7-say.svg">
+        </div>
+        <img width="300" height="500" src="@/assets/images/madam-t7.svg">
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -251,5 +253,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 10px;
 }
 </style>

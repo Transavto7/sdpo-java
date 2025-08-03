@@ -1,18 +1,22 @@
-package ru.nozdratenko.sdpo.helper;
+package ru.nozdratenko.sdpo.helper.AdminHelpers;
 
 import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
-public class AdminHelper {
+@Component
+@Profile("production")
+public class WindowsAdminHelper implements AdminHelper {
     private static final int TOKEN_QUERY = 0x0008;
     private static final int TokenElevation = 20;
 
-    public static boolean isAdmin() {
-        boolean viaNetSession = isAdminByNetSession();
-        boolean viaTokenElevation = isAdminByTokenElevation();
+    public boolean isAdmin() {
+        boolean viaNetSession = this.isAdminByNetSession();
+        boolean viaTokenElevation = this.isAdminByTokenElevation();
         if (!viaNetSession) {
             SdpoLog.error("Net session check isAdmin failed.");
         }
@@ -22,7 +26,7 @@ public class AdminHelper {
         return viaNetSession && viaTokenElevation;
     }
 
-    public static boolean isAdminByNetSession() {
+    public boolean isAdminByNetSession() {
         try {
             Process process = new ProcessBuilder("net", "session").start();
             process.waitFor();
@@ -32,7 +36,7 @@ public class AdminHelper {
         }
     }
 
-    private static boolean isAdminByTokenElevation() {
+    private boolean isAdminByTokenElevation() {
         WinNT.HANDLE processHandle = Kernel32.INSTANCE.GetCurrentProcess();
         WinNT.HANDLEByReference tokenHandle = new WinNT.HANDLEByReference();
 

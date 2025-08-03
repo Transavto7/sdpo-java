@@ -2,13 +2,14 @@ package ru.nozdratenko.sdpo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.Settings.CoreConfigurations.FileConfiguration;
 import ru.nozdratenko.sdpo.Settings.Factories.SettingsFactory;
 import ru.nozdratenko.sdpo.Settings.SettingsContainer;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.helper.AdminHelper;
+import ru.nozdratenko.sdpo.helper.AdminHelpers.AdminHelper;
 import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
@@ -22,6 +23,7 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,6 +36,8 @@ public class Sdpo {
     private final List<DeviceHelper> helpers;
     private final BrowserHelper browserHelper;
     private final CameraHelper cameraHelper;
+    private final AdminHelper adminHelper;
+    private Environment env;
 
     public static SettingsContainer settings;
     public static FileConfiguration connectionConfig;
@@ -57,22 +61,26 @@ public class Sdpo {
 
         alcometerHelper.init();
 
-        if (!AdminHelper.isAdmin()) {
+        if (!adminHelper.isAdmin()) {
             SdpoLog.warning("The program has been started without Admin role.");
             System.out.println("Программа была запущена без прав Администратора.");
             initialized = false;
             return false;
         }
 
-        checkServerConnection();
+        if (!Arrays.asList(env.getActiveProfiles()).contains("develop")) {
+            checkServerConnection();
 
-        if (!checkDeviceConnections()) {
-            String disconnected = String.join(",", toBlockDevices);
-            SdpoLog.warning(String.format("Please contact support, %s should be blocked.", disconnected));
-            System.out.printf("Обратитесь в ТП, при этом %s в блокировку.", disconnected);
-            initialized = false;
-            return false;
+            if (!checkDeviceConnections()) {
+                String disconnected = String.join(",", toBlockDevices);
+                SdpoLog.warning(String.format("Please contact support, %s should be blocked.", disconnected));
+                System.out.printf("Обратитесь в ТП, при этом %s в блокировку.", disconnected);
+                initialized = false;
+                return false;
+            }
         }
+
+
 
         alcometerHelper.setComPort();
         thermometerHelper.setComPort();
