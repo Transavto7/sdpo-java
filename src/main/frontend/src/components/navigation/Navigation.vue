@@ -58,10 +58,10 @@ export default {
   },
   computed: {
     needButtonRedirectOnHomePage() {
-      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage || this.isSetNumberPhonePage || this.isEmployeePage;
+      return this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isPrintPage || this.isSetNumberPhonePage || this.isEmployeePage || this.isTechnicalPage;
     },
     isHomePage() {
-      return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage || this.isEmployeePage);
+      return !(this.isHelpPage || this.isInspectionPage || this.isLoginPage || this.isAdminPage || this.isPrintPage || this.isSetNumberPhonePage || this.isEmployeePage || this.isTechnicalPage);
     },
     isHelpPage() {
       return this.currentRouter.includes('/help');
@@ -80,6 +80,9 @@ export default {
     },
     isEmployeePage() {
       return this.currentRouter.includes('/employee');
+    },
+    isTechnicalPage() {
+      return this.currentRouter.includes('/technical');
     },
     isSetNumberPhonePage() {
       return this.currentRouter.includes('/number-phone/add/');
@@ -121,6 +124,7 @@ export default {
     </div>
     <div class="nav__buttons" v-if="isHomePage">
       <login-navigation @select-medic="$store.state.selectingMedic = true"
+                        @technical-start="$router.push('/technical')"
                         @get-help="$router.push('/help')"
                         @employee-start="$router.push('/employee')"
                         @get-last-inspection="$router.push('/print/index')"

@@ -9,7 +9,7 @@ export async function getEmployee(id) {
     return await axios.post(`employees/inspection/${id}`)
         .then(({data}) => {
         return data;
-    });
+    }).catch(defaultError);
 }
 
 export async function saveEmployeeInspection(inspection = store.state.inspection) {

@@ -79,6 +79,7 @@ public class SettingsFactory {
             .setDefault("thermometer_visible", SettingsFactory.getValue(defaultSettings, "thermometer_visible", true))
             .setDefault("manual_mode", SettingsFactory.getValue(defaultSettings, "manual_mode", false))
             .setDefault("auto_start", SettingsFactory.getValue(defaultSettings, "auto_start", true))
+            .setDefault("technical_inspection", SettingsFactory.getValue(defaultSettings, "technical_inspection", false))
             .setDefault("delay_day_in_offline_mod", SettingsFactory.getValue(defaultSettings, "delay_day_in_offline_mod", 30))
             .setDefault("max_inspection_in_offline_mod", SettingsFactory.getValue(defaultSettings, "max_inspection_in_offline_mod", 300))
             .setDefault("auto_send_to_crm", SettingsFactory.getValue(defaultSettings, "auto_send_to_crm", true))
