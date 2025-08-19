@@ -6,6 +6,8 @@ const store = createStore({
     state() {
         return {
             inspection: {},
+            technical: {},
+            car: null,
             driver: {},
             config: {},
             admin: false,

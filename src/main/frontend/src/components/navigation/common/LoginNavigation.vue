@@ -7,6 +7,9 @@ export default {
     employeeStart() {
       this.$emit('employee-start')
     },
+    technicalStart() {
+      this.$emit('technical-start')
+    },
     selectMedic() {
       this.$emit('selectMedic')
     },
@@ -33,6 +36,7 @@ export default {
 </script>
 
 <template>
+  <button @click="technicalStart()" class="btn opacity animate__animated animate__fadeInDown">ТО</button>
   <button @click="employeeStart()" class="btn opacity animate__animated animate__fadeInDown">Смена</button>
   <button @click="selectMedic()" class="btn opacity animate__animated animate__fadeInDown">Мед
     работник
