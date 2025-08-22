@@ -1,8 +1,6 @@
-package ru.nozdratenko.sdpo.Cars.ViewModels;
+package ru.nozdratenko.sdpo.Inspections.Technical.Controllers.ViewModels;
 
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class Car {

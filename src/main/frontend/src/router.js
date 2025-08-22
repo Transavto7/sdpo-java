@@ -9,6 +9,7 @@ export const routes = [
     { path: '/number-phone/add', component: () => import('./pages/driver/InputAndSavePhone') },
     { path: '/test/result', component: () => import('./pages/inspection/Step-result') },
 
+    { path: '/technical-mo', component: () => import('./pages/techical-inspection/TechnicalMedicalLogin'),  name: 'technical-login-mo', },
     { path: '/technical', component: () => import('./pages/techical-inspection/TechnicalLogin'),  name: 'technical-login', },
     { path: '/technical/odometer', component: () => import('./pages/techical-inspection/TechnicalOdometerStep'),  name: 'technical-odometer', },
     { path: '/technical/result', component: () => import('./pages/techical-inspection/TechnicalResultStep'),  name: 'technical-result', },

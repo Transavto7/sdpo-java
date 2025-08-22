@@ -31,6 +31,4 @@ public class PrintQrTask extends Book {
         paper.setImageableArea(10, 0, 155, 80);
         return paper;
     }
-
-
 }

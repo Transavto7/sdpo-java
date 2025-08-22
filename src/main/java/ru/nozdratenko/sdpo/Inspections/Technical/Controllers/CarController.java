@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.Cars.Http;
+package ru.nozdratenko.sdpo.Inspections.Technical.Controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.nozdratenko.sdpo.Cars.ViewModels.Car;
+import ru.nozdratenko.sdpo.Inspections.Technical.Controllers.Bodies.FindCarByHashOrNumberBody;
+import ru.nozdratenko.sdpo.Inspections.Technical.Controllers.ViewModels.Car;
 import ru.nozdratenko.sdpo.Core.Network.ApiResponse;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class CarController {
 
     @PostMapping("api/car/by-number-or-hash")
-    public ResponseEntity<ApiResponse<Car>> getCarByNumberOrHash(@RequestBody FindCarByHashOrNumberBody request) throws IOException {
+    public ResponseEntity<ApiResponse<?>> getCarByNumberOrHash(@RequestBody FindCarByHashOrNumberBody request) throws IOException {
         if (Sdpo.isConnection()) {
             Request response = new Request("sdpo/cars/by-hash-or-number");
             try {
@@ -36,7 +37,7 @@ public class CarController {
                 );
             } catch (ApiException e) {
                 SdpoLog.error(e);
-                return ResponseEntity.status(303).body(new ApiResponse<>(false, e.getResponse().toString(), null));
+                return ResponseEntity.status(303).body(new ApiResponse<>(false, null, e.getResponse().toMap()));
             }
         }
 

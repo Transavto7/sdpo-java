@@ -16,6 +16,11 @@ export default {
       loading: false,
     }
   },
+  mounted() {
+    if (!this.$store.state.technical.driver_id) {
+      this.$router.push({name: 'technical-login-mo'});
+    }
+  },
   methods: {
     start() {
       this.$store.state.car = this.car;
@@ -44,6 +49,7 @@ export default {
           this.error = 'Автомобиль не найден';
         }
       } catch (error) {
+        console.log(error)
         this.error = error.response?.data?.message || 'Неизвестная ошибка';
       }
 
@@ -97,7 +103,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 70px);
   flex-direction: column;
   margin: 0 auto;
 

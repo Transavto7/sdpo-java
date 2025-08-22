@@ -19,6 +19,9 @@ export default {
       loading: false,
     }
   },
+  mounted() {
+    this.$store.state.technical = {};
+  },
   methods: {
     async start() {
       const driver = await getDriver(this.driver_id);

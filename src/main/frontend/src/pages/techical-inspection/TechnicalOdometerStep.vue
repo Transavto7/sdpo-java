@@ -15,10 +15,17 @@ export default {
       toast: useToast(),
     }
   },
+  mounted() {
+    if (!this.$store.state.technical.car_id) {
+      this.$router.push({name: 'technical-login'});
+    }
+  },
   methods: {
     next() {
       this.$store.state.technical.odometer = this.odometerValue;
-      this.$store.state.technical.carHashId = this.car.hashId;
+      this.$store.state.technical.car_id = this.car.hashId;
+
+      console.log(this.$store.state.technical);
 
       this.$router.push({name: 'technical-result'});
     },
@@ -121,7 +128,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 70px);
   flex-direction: column;
   margin: 0 auto;
 

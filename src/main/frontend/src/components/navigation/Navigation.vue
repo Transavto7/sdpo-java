@@ -124,7 +124,7 @@ export default {
     </div>
     <div class="nav__buttons" v-if="isHomePage">
       <login-navigation @select-medic="$store.state.selectingMedic = true"
-                        @technical-start="$router.push('/technical')"
+                        @technical-start="$router.push('/technical-mo')"
                         @get-help="$router.push('/help')"
                         @employee-start="$router.push('/employee')"
                         @get-last-inspection="$router.push('/print/index')"

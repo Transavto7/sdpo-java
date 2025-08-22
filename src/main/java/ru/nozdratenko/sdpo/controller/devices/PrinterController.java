@@ -104,6 +104,7 @@ public class PrinterController {
 
             PDDocument document = PDDocument.load(result);
             this.printerHelper.printFromPDF(document);
+            document.close();
         } catch (IOException | ApiException e) {
                 SdpoLog.error(e);
         } catch (Exception e) {
