@@ -12,6 +12,7 @@ import ru.nozdratenko.sdpo.task.print.PrintTask;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
+import javax.print.PrintService;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
@@ -19,6 +20,7 @@ import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.PrinterResolution;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.io.IOException;
 
 @Service
@@ -105,12 +107,19 @@ public class MockPrinterHelper implements PrinterHelper {
     }
 
     public void printFromPDF (PDDocument document) throws PrinterException, IOException {
+        File file = new File("test-pdfs/printFromPDF.pdf");
+        if (file.getParentFile().mkdirs()) {
+            document.save(file);
+        }
         SdpoLog.info("PrinterHelper::printFromPDF " + document.getDocumentId());
     }
 
     public void printFromPDFRotate (PDDocument document) throws PrinterException, IOException {
+        File file = new File("test-pdfs/printFromPDFRotate.pdf");
+        if (file.getParentFile().mkdirs()) {
+            document.save(file);
+        }
         SdpoLog.info("PrinterHelper::printFromPDFRotate " + document.getDocumentId());
-
     }
 
 }

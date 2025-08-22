@@ -68,6 +68,7 @@ export default {
     },
     async save() {
       this.result = await saveInspection();
+      console.log(this.result)
       this.conclusion.admitted = this.result.admitted ?? '';
       this.conclusion.comments = this.result.comments ?? '';
     },
@@ -94,6 +95,24 @@ export default {
       }
       return setTimeout(this.redirectHome, this.system.delay_before_redirect_to_main_page);
     },
+    startTechnical() {
+      const medicalDate = new Date(Date.parse(this.result.date));
+      const MINUTE = 60 * 1000;
+      const date = new Date(medicalDate.getTime() + 5 * MINUTE);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+
+
+      this.$store.state.technical.driver_id = this.result.driver_id;
+      this.$store.state.technical.type_view = this.result.type_view;
+      this.$store.state.technical.date = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      this.$router.push({name: 'technical-login-mo'});
+    }
   }
   ,
   watch: {
@@ -214,6 +233,7 @@ export default {
         </div>
         <div class="step-result__buttons">
           <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
+          <button v-if="this.admitted" @click="startTechnical" class="btn blue animate__animated animate__fadeInUp">Распечатать ТО</button>
           <button v-if="this.admitted && this.canRetryPrint"
                   @click="replayPrint()"
                   class="btn opacity animate__animated animate__fadeInUp">Повтор печати

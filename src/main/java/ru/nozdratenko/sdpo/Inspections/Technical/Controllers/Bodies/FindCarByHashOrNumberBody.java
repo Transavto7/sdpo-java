@@ -1,4 +1,4 @@
-package ru.nozdratenko.sdpo.Cars.Http;
+package ru.nozdratenko.sdpo.Inspections.Technical.Controllers.Bodies;
 
 import lombok.Data;
 

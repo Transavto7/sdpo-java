@@ -1,22 +1,16 @@
 <script>
 import {
-  saveInspection,
-  replayPrint,
-  replayPrintQr,
-  sendFeedbackAfterInspection,
-  getPhrase,
   getWishMessage
 } from '@/helpers/api/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
-import {getSettings} from "@/helpers/settings";
-import {now} from "@vue/devtools-api";
+import {saveTechnicalInspection} from "@/helpers/api/technical";
 
 export default {
   components: {Loader, ResultRepeat},
   data() {
     return {
-      result: {},
+      saved: false,
       conclusion: {
         admitted: '',
         comments: '',
@@ -28,9 +22,12 @@ export default {
     }
   },
   async mounted() {
+    if (!this.$store.state.technical.odometer) {
+      this.$router.push({name: 'technical-odometer'});
+    }
+
     this.$data.loading = true;
     await this.getWishMessage();
-    await this.save();
     this.$data.loading = false;
   },
   methods: {
@@ -38,12 +35,14 @@ export default {
       this.phrase = (await getWishMessage()).wish_message ?? null;
     },
     async save() {
-      // this.result = await saveInspection();
-      // this.conclusion.admitted = this.result.admitted ?? '';
-      // this.conclusion.comments = this.result.comments ?? '';
-      console.log('save TO');
+      this.$store.state.technical.point_reys_control = 'Пройден';
+
+      await saveTechnicalInspection(this.$store.state.technical);
+      await this.print();
+      this.saved = true;
     },
     async print() {
+      // await this.save();
       // await replayPrint();
       console.log('print')
     },
@@ -62,17 +61,19 @@ export default {
       return this.$store.state.connection || false;
     },
     datetime() {
-      const today = this.inspection.datetime ?? new Date();
+      const today = this.inspection.date ? new Date(Date.parse(this.inspection.date)) : new Date();
       const yyyy = today.getFullYear();
       let mm = today.getMonth() + 1;
       let dd = today.getDate();
+      let HH = today.getHours();
+      let MM = today.getMinutes();
 
       if (dd < 10) dd = '0' + dd;
       if (mm < 10) mm = '0' + mm;
+      if (HH < 10) HH = '0' + HH;
+      if (MM < 10) MM = '0' + MM;
 
-      const formattedToday = dd + '.' + mm + '.' + yyyy + ', ' + today.getHours() + ':' + today.getMinutes();
-
-      return this.inspection.datetime ?? formattedToday;
+      return dd + '.' + mm + '.' + yyyy + ', ' + HH + ':' + MM;
     }
   }
 }
@@ -110,7 +111,10 @@ export default {
       <div class="step-result__footer">
         <div class="step-result__buttons">
           <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
-          <button @click="print()"
+          <button v-if="!this.saved" @click="save"
+                  class="btn opacity animate__animated animate__fadeInUp">Сохранить и напечатать
+          </button>
+          <button v-if="this.saved" @click="save"
                   class="btn opacity animate__animated animate__fadeInUp">Печать
           </button>
         </div>
@@ -155,5 +159,10 @@ export default {
     text-align: center;
     border-radius: 10px 10px 0 0;
   }
+}
+
+.footer__serial-number_date-notification {
+  bottom: 10px;
+  right: 20px;
 }
 </style>

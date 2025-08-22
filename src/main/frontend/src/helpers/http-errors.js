@@ -8,6 +8,8 @@ export function defaultError(error) {
         toast.error(data.message);
     } else if (error.response) {
         switch (error?.response?.status) {
+            case 303:
+                break;
             case 400:
                 toast.error('Ошибка авторизации запроса');
                 break;
@@ -21,4 +23,6 @@ export function defaultError(error) {
         // store.state.loseConnect = true;
     }
     console.log(error);
+
+    return error;
 }
