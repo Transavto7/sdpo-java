@@ -31,3 +31,10 @@ export async function saveTechnicalInspection(inspection = store.state.technical
         }).catch(defaultError);
 }
 
+export async function replayTechnicalPrint() {
+    return await axios.post(`technical/inspection/reprint`)
+        .then(({data}) => {
+            return data;
+        }).catch(defaultError);
+}
+

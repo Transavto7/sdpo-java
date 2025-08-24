@@ -13,6 +13,7 @@ import ru.nozdratenko.sdpo.commands.Command;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.awt.image.BufferedImage;
+import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.util.Arrays;
 
