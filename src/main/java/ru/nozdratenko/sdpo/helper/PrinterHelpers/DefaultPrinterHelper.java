@@ -1,5 +1,6 @@
 package ru.nozdratenko.sdpo.helper.PrinterHelpers;
 
+import lombok.Getter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,21 +10,30 @@ import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.task.print.PrintQrRotateTask;
 import ru.nozdratenko.sdpo.task.print.PrintQrTask;
 import ru.nozdratenko.sdpo.task.print.PrintTask;
+import ru.nozdratenko.sdpo.task.print.TechnicalPrintTask;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
+import javax.print.PrintService;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.PrinterResolution;
+import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 @Profile("production")
 public class DefaultPrinterHelper implements PrinterHelper {
     public JSONObject lastPrint = null;
+    @Getter
+    public JSONObject lastTechnicalPrint = null;
     public String lastQRPath = "";
     public String head = null;
     public String licence = null;
@@ -99,8 +109,6 @@ public class DefaultPrinterHelper implements PrinterHelper {
     }
 
     public void print(String name, String result, String type, String admit, String date, String signature, String medicName, String validity) {
-        PrinterJob pj = PrinterJob.getPrinterJob();
-
         PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
         aset.add(new PrinterResolution(72, 72, PrinterResolution.DPI));
 
@@ -132,10 +140,58 @@ public class DefaultPrinterHelper implements PrinterHelper {
             licence = stamp.getString("stamp_licence");
         }
 
-        pj.setPrintable(new PrintTask(name, result, type, admit, date, signature, medicName, head, licence, validity));
+        this.sendPrintTask(new PrintTask(name, result, type, admit, date, signature, medicName, head, licence, validity), aset);
+    }
+
+    public void printTechnical(JSONObject json) throws PrintException, IOException, ru.nozdratenko.sdpo.exception.PrinterException, ParseException {
+        lastTechnicalPrint = json;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = sdf.parse("0000-00-00 00:00:00");
+        String signature = "неизвестная-подпись";
+        String technicName = "неизвестный сотрудник";
+        String validity = "";
+        JSONObject technic = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_technic");
 
         try {
-            pj.print(aset);
+            signature = technic.getString("eds");
+            technicName = technic.getString("name");
+        } catch (JSONException e) {
+            SdpoLog.error("Error get medic id");
+        }
+        try {
+            validity = "Срок действия с " + technic.get("validity_eds_start") + " по " + technic.get("validity_eds_end");
+        } catch (JSONException e) {
+            SdpoLog.error("Error get medic eds validity");
+        }
+
+        if (json.has("date")) {
+            date = sdf.parse(json.getString("date"));
+        }
+
+        PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+        aset.add(new PrinterResolution(72, 72, PrinterResolution.DPI));
+
+        int count = 1;
+        try {
+            count = Sdpo.settings.systemConfig.getInt("print_count");
+        } catch (IllegalArgumentException | IllegalStateException | JSONException e) {
+            //
+        }
+
+        aset.add(new Copies(count));
+        aset.add(new MediaPrintableArea(0f, 0f, 160 / 72f, 280 / 72f, MediaPrintableArea.INCH));
+
+        this.sendPrintTask(new TechnicalPrintTask(date, signature, technicName, validity), aset);
+    }
+
+    public void sendPrintTask(Printable task, PrintRequestAttributeSet attributes)
+    {
+        try {
+            PrinterJob pj = PrinterJob.getPrinterJob();
+
+            pj.setPrintable(task);
+
+            pj.print(attributes);
         } catch (PrinterException ex) {
             ex.printStackTrace();
         }

@@ -4,7 +4,7 @@ import {
 } from '@/helpers/api/api';
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
-import {saveTechnicalInspection} from "@/helpers/api/technical";
+import {replayTechnicalPrint, saveTechnicalInspection} from "@/helpers/api/technical";
 
 export default {
   components: {Loader, ResultRepeat},
@@ -15,7 +15,6 @@ export default {
         admitted: '',
         comments: '',
       },
-      notIdentified: 'Не идентифицирован',
       loading: false,
       feedback: null,
       phrase: '',
@@ -37,14 +36,14 @@ export default {
     async save() {
       this.$store.state.technical.point_reys_control = 'Пройден';
 
-      await saveTechnicalInspection(this.$store.state.technical);
-      await this.print();
+      const data = await saveTechnicalInspection(this.$store.state.technical);
+      if (data.response?.status === 500) {
+        return;
+      }
       this.saved = true;
     },
-    async print() {
-      // await this.save();
-      // await replayPrint();
-      console.log('print')
+    async reprint() {
+      await replayTechnicalPrint();
     },
   },
   computed: {
@@ -114,7 +113,7 @@ export default {
           <button v-if="!this.saved" @click="save"
                   class="btn opacity animate__animated animate__fadeInUp">Сохранить и напечатать
           </button>
-          <button v-if="this.saved" @click="save"
+          <button v-if="this.saved" @click="reprint"
                   class="btn opacity animate__animated animate__fadeInUp">Печать
           </button>
         </div>

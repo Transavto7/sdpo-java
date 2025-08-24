@@ -14,17 +14,22 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.PrinterResolution;
+import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
+import java.text.ParseException;
 
 public interface PrinterHelper {
     void print(JSONObject json) throws PrintException, IOException, ru.nozdratenko.sdpo.exception.PrinterException;
+    void printTechnical(JSONObject json) throws PrintException, IOException, ru.nozdratenko.sdpo.exception.PrinterException, ParseException;
     void print(String name, String result, String type, String admit, String date, String signature, String medicName, String validity);
     void printFromPDF (PDDocument document) throws PrinterException, IOException;
     void printFromPDFRotate (PDDocument document) throws PrinterException, IOException;
     JSONObject getLastPrint();
+    JSONObject getLastTechnicalPrint();
     String getLastQRPath();
     void setLastQRPath(String path);
+    void sendPrintTask(Printable task, PrintRequestAttributeSet attributes);
 }
 

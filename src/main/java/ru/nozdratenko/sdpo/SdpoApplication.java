@@ -10,8 +10,10 @@ import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import ru.nozdratenko.sdpo.commands.Command;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.awt.image.BufferedImage;
+import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.util.Arrays;
 
