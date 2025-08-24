@@ -34,6 +34,21 @@ public class DriverInspectionController {
     private final ApplicationEventPublisher eventPublisher;
     private final PrinterHelper printerHelper;
 
+    @PostMapping("inspection/get-driver/{id}")
+    public ResponseEntity inspectionGetDriver(@PathVariable String id) throws IOException {
+        Request response = new Request("sdpo/driver/" + id);
+        try {
+            String result = response.sendGet();
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (ApiException e) {
+            SdpoLog.error(e);
+
+            return ResponseEntity.status(303).body(e.getResponse().toMap());
+        }
+    }
+
+
     @PostMapping("inspection/{id}")
     public ResponseEntity inspectionStart(@PathVariable String id) throws IOException {
         String dateEdsEndRaw = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end").toString();
@@ -46,7 +61,7 @@ public class DriverInspectionController {
             return ResponseEntity.status(303).body(map);
         }
 
-        Request response = new Request("sdpo/driver/" + id);
+        Request response = new Request("sdpo/driver/check-block/" + id);
         try {
             String result = response.sendGet();
 

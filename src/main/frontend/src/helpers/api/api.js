@@ -14,6 +14,12 @@ export async function getCar(id) {
 }
 
 export async function getDriver(id) {
+    return await axios.post(`inspection/get-driver/${id}`).then(({data}) => {
+        return data;
+    });
+}
+
+export async function checkDriverBlocks(id) {
     return await axios.post(`inspection/${id}`).then(({data}) => {
         return data;
     });

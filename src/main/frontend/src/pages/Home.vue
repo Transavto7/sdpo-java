@@ -1,5 +1,5 @@
 <script>
-import {getDriver, savePhone} from '@/helpers/api/api';
+import {checkDriverBlocks, getDriver, savePhone} from '@/helpers/api/api';
 import {useToast} from "vue-toastification";
 import MedicSelect from '@/components/MedicSelect.vue';
 import InputPersonalNumberForm from "@/components/InputPersonalNumberForm";
@@ -22,7 +22,26 @@ export default {
   },
   methods: {
     async start() {
-      const driver = await getDriver(this.driver_id);
+      this.loading = true;
+      let driver;
+      try {
+        driver = await checkDriverBlocks(this.driver_id);
+        if (driver) {
+          this.error = null;
+        } else {
+          this.error = 'Водитель не найден';
+          this.loading = false;
+          return;
+        }
+      } catch (error) {
+        console.log(error.response?.data?.message);
+        this.error = error.response?.data?.message || 'Неизвестная ошибка';
+        this.$store.state.inspection = {};
+        this.loading = false;
+        return;
+      }
+      this.loading = false;
+
       if (!driver) {
         this.driver_id = '';
         this.toast.error('Водитель с указаным ID не найден');
@@ -75,7 +94,6 @@ export default {
         this.error = error.response?.data?.message || 'Неизвестная ошибка';
         this.$store.state.inspection = {};
       }
-
       this.loading = false;
     }
   },
