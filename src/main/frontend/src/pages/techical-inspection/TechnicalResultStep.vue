@@ -18,6 +18,7 @@ export default {
       loading: false,
       feedback: null,
       phrase: '',
+      showModal: false,
     }
   },
   async mounted() {
@@ -45,6 +46,9 @@ export default {
     async reprint() {
       await replayTechnicalPrint();
     },
+    toggleModal() {
+      this.showModal = !this.showModal;
+    }
   },
   computed: {
     inspection() {
@@ -110,6 +114,7 @@ export default {
       <div class="step-result__footer">
         <div class="step-result__buttons">
           <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
+          <button @click="toggleModal" class="btn blue animate__animated animate__fadeInUp">Изменить дату и время</button>
           <button v-if="!this.saved" @click="save"
                   class="btn opacity animate__animated animate__fadeInUp">Сохранить и напечатать
           </button>
@@ -127,6 +132,12 @@ export default {
         <img width="300" src="@/assets/images/madam-t7-say.svg">
       </div>
       <img width="300" height="500" src="@/assets/images/madam-t7.svg">
+    </div>
+    <div v-if="showModal" class="alert-container">
+      <div class="alert">
+        <h2>Эта функция еще в разработке</h2>
+        <button @click="toggleModal" class="btn blue animate__animated animate__fadeInUp">Назад</button>
+      </div>
     </div>
   </div>
 </template>
@@ -163,5 +174,43 @@ export default {
 .footer__serial-number_date-notification {
   bottom: 10px;
   right: 20px;
+}
+
+.alert-container {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .edit-datetime-modal {
+    font-weight: 600;
+    border-radius: 10px;
+    align-items: center;
+    gap: 10px;
+    h2 {
+      padding: 0;
+      margin: 0;
+    }
+
+    padding: 20px 20px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    i {
+      font-size: 22px;
+      font-weight: 400;
+    }
+
+    &.red {
+      background-color: rgba(#c53936, 0.9);
+      color: #fff;
+    }
+  }
 }
 </style>
