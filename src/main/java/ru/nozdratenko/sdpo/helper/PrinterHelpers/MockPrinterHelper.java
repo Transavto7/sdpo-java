@@ -44,6 +44,8 @@ public class MockPrinterHelper implements PrinterHelper {
     @Setter
     public String lastQRPath = "";
 
+    private boolean testingPrint = false;
+
     public void print(JSONObject json) throws PrintException, IOException, ru.nozdratenko.sdpo.exception.PrinterException {
         lastPrint = json;
 
@@ -97,7 +99,7 @@ public class MockPrinterHelper implements PrinterHelper {
             validity = json.getString("validity");
         }
 
-        if (admit.equals("допущен")) {
+        if (admit.equals("допущен") && this.testingPrint) {
             this.print(name, result, type, admit, date, signature, medicName, validity);
         }
     }
@@ -184,6 +186,10 @@ public class MockPrinterHelper implements PrinterHelper {
     }
 
     public void sendPrintTask(Printable task, PrintRequestAttributeSet attributes) {
+        if (!this.testingPrint) {
+            return;
+        }
+
         try {
             PrinterJob pj = PrinterJob.getPrinterJob();
 
