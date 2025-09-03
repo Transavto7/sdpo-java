@@ -15,6 +15,7 @@ import ru.nozdratenko.sdpo.websocket.AlcometrStatusEndPoint;
 
 import javax.websocket.Session;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -28,24 +29,21 @@ public class AlcometerController {
     @PostMapping(value = "/device/alcometer")
     @ResponseBody
     public ResponseEntity alcometer() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("result", null);
+
         if (AlcometerResultTask.currentStatus == StatusType.FREE) {
             AlcometerResultTask.currentStatus = StatusType.REQUEST;
-
-            return ResponseEntity.ok().body("next");
-        }
-
-        if (!AlcometerResultTask.currentStatus.skip) {
-            return ResponseEntity.ok().body("next");
         }
 
         if (AlcometerResultTask.currentStatus == StatusType.RESULT) {
             AlcometerResultTask.currentStatus = StatusType.FREE;
-            return ResponseEntity.ok().body(AlcometerResultTask.result);
+            map.put("result", AlcometerResultTask.result);
         }
 
-        JSONObject json = new JSONObject();
-        json.put("message", "Не удалось получить статус");
-        return ResponseEntity.status(500).body(json);
+        map.put("status", AlcometerResultTask.currentStatus.toString());
+
+        return ResponseEntity.ok().body(map);
     }
 
     @PostMapping(value = "/device/alcometer/close")

@@ -1,7 +1,6 @@
 <script>
 import {
-  closeAlcometer, closeAlcometrSocket,
-  enableSlowModeAlcometer,
+  closeAlcometer,
   getAlcometerResult
 } from '@/helpers/alcometer';
 
@@ -12,32 +11,11 @@ export default {
       seconds: 5,
       needRetry: false,
       showRetry: false,
-      statusAlcometer: "",
-      statusPrev: "prev",
-      statusNow: "now",
-      recording: false
+      statusAlcometer: "FREE",
+      recording: false,
     }
   },
   methods: {
-    connect() {
-      this.connection = new WebSocket("ws://localhost:8080/device/alcometer/status")
-      this.connection.onmessage = async (event) => {
-        this.statusPrev = this.statusNow;
-        this.statusNow = event.data;
-      }
-
-      this.connection.onopen = (event) => {
-        console.log("Successfully connected to the echo websocket server...")
-      }
-
-      this.connection.error = (error) => {
-        console.log(error);
-      }
-    },
-    async disconnect() {
-      console.log('Disconnect websoket server');
-      await closeAlcometrSocket();
-    },
     nextStep() {
       this.$router.push({name: 'step-sleep'});
     },
@@ -45,7 +23,7 @@ export default {
       this.$router.push({name: 'step-thermometer'});
     },
     hasResult(result) {
-      return !(result === undefined || result === null || result === 'next');
+      return result !== null
     },
     runCountdown() {
       this.seconds = 5;
@@ -58,13 +36,12 @@ export default {
     },
   },
   async mounted() {
-    await enableSlowModeAlcometer();
     await closeAlcometer();
-    this.connect()
     this.runCountdown()
 
     this.requestInterval = setInterval(async () => {
-      const result = await getAlcometerResult();
+      const { status, result} = await getAlcometerResult();
+      this.statusAlcometer = status;
 
       if (!this.hasResult(result)) {
         return;
@@ -76,7 +53,6 @@ export default {
     }, 700);
   },
   unmounted() {
-    this.disconnect()
     clearInterval(this.requestInterval);
     clearInterval(this.timerInterval);
   },
@@ -98,17 +74,19 @@ export default {
     <div class="step-alcometer">
       <h3 class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
       <div class="step-alcometer__items">
-        <div class="step-alcometer__item animate__animated animate__fadeInUp d-1">
-          <span style="min-height: 30px">3</span>
-          <img style="padding-right: 20px" width="80" src="@/assets/images/precise.png">
-          Установите мундштук
-        </div>
+          <img style="padding-right: 20px" width="500" src="@/assets/images/alcometer-instraction.png">
         <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
-          Установите индивидуальный мундштук<br><br>
-          Дождитесь ГОТОВ на экране алкометра<br><br>
-          Начните дуть с умеренной силой до<br>
-          окончания звукового сигнала.<br><br>
-          Снимите индивидуальный мундштук<br><br>
+          <h4 v-if="statusAlcometer === 'REQUEST' || statusAlcometer === 'WAIT' || statusAlcometer === 'STOP' || statusAlcometer === 'FREE'">Алкотестер запускается. <br>
+            Готовьтесь к продуву.</h4>
+          <h4 v-if="statusAlcometer === 'READY'">Алкотестер готов. <br>
+            Дуйте в мундштук <br>
+            5 секунд до щелчка.</h4>
+          <h4 v-if="statusAlcometer === 'ANALYSE' || statusAlcometer === 'RESULT'">Анализ продува. <br>
+            Ожидайте перехода <br>
+            к следующему этапу.</h4>
+          <h4 v-if="statusAlcometer === 'ERROR'">Ошибка продува. <br>
+            Перезапускаем алкотестер. <br>
+            Подождите.</h4>
         </div>
       </div>
     </div>
@@ -118,3 +96,9 @@ export default {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.step-alcometer__text{
+  font-size: 30px;
+}
+</style>

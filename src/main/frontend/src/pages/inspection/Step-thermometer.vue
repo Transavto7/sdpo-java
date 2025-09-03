@@ -64,7 +64,10 @@ export default {
       <div v-if="error.show" class="alert alert-danger">
         {{ error.message }}
       </div>
-      <img class="animate__animated animate__fadeInUp d-1" src="@/assets/images/pirometer2.png">
+      <img class="animate__animated animate__fadeInUp" width="430" src="@/assets/images/thermometer-instruction.png">
+      <div class="animate__animated animate__fadeInUp">
+        <p>Поднесите лод к верхней левой части терминала на расстояние 3-5 см и нажмите кнопку замер</p>
+      </div>
     </div>
 
     <div class="step-buttons">
@@ -85,6 +88,13 @@ export default {
   width: 50%;
   height: 5%;
   justify-content: center;
+}
+.step-4__outer img {
+  margin: 0;
+}
+
+.step-4 h3 {
+  margin-bottom: 10px;
 }
 
 .alert-danger {
