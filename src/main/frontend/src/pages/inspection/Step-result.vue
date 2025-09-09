@@ -10,6 +10,7 @@ import {
 import ResultRepeat from "@/components/ResultRepeat";
 import Loader from "@/components/common/Loader";
 import {getSettings} from "@/helpers/settings";
+import store from "@/store";
 
 export default {
   components: {Loader, ResultRepeat},
@@ -171,6 +172,9 @@ export default {
     connection() {
       return this.$store.state.connection || false;
     },
+    technicalIsActivated() {
+      return store.state.config?.system?.technical_inspection;
+    }
   }
   ,
 }
@@ -233,7 +237,7 @@ export default {
         </div>
         <div class="step-result__buttons">
           <button @click="$router.push('/')" class="btn blue animate__animated animate__fadeInUp">В начало</button>
-          <button v-if="this.admitted" @click="startTechnical" class="btn blue animate__animated animate__fadeInUp">Распечатать ТО</button>
+          <button v-if="this.admitted && technicalIsActivated" @click="startTechnical" class="btn blue animate__animated animate__fadeInUp">Распечатать ТО</button>
           <button v-if="this.admitted && this.canRetryPrint"
                   @click="replayPrint()"
                   class="btn opacity animate__animated animate__fadeInUp">Повтор печати
