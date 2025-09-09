@@ -29,14 +29,16 @@ export default {
   computed: {
     connection() {
       return store.state.connection
-
+    },
+    technicalIsActivated() {
+      return store.state.config?.system?.technical_inspection;
     }
   }
 }
 </script>
 
 <template>
-  <button @click="technicalStart()" class="btn opacity animate__animated animate__fadeInDown">ТО</button>
+  <button v-if="technicalIsActivated" @click="technicalStart()" class="btn opacity animate__animated animate__fadeInDown">ТО</button>
   <button @click="employeeStart()" class="btn opacity animate__animated animate__fadeInDown">Смена</button>
   <button @click="selectMedic()" class="btn opacity animate__animated animate__fadeInDown">Мед
     работник
