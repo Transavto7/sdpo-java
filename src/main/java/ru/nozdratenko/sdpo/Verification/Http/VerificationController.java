@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.Verification.Entities.Verification;
 import ru.nozdratenko.sdpo.Verification.Services.VerificationService;
 import ru.nozdratenko.sdpo.exception.ApiException;
-import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.io.IOException;
 import java.util.Map;

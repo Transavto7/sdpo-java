@@ -12,10 +12,20 @@
   }
 
   &__items {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    justify-content: center;
-    gap: 20px;
+    grid-gap: 20px;
+
+    .step-alcometer__grid-item {
+      &:first-child {
+        justify-self: end;
+      }
+
+      &:last-child {
+        justify-self: start;
+      }
+    }
   }
 
   &__item {

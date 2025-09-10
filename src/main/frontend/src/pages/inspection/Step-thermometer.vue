@@ -64,9 +64,9 @@ export default {
       <div v-if="error.show" class="alert alert-danger">
         {{ error.message }}
       </div>
-      <img class="animate__animated animate__fadeInUp" width="430" src="@/assets/images/thermometer-instruction.png">
-      <div class="animate__animated animate__fadeInUp">
-        <p>Поднесите лод к верхней левой части терминала на расстояние 3-5 см и нажмите кнопку замер</p>
+      <img class="animate__animated animate__fadeInUp" width="650" src="@/assets/images/thermometer-instruction.png">
+      <div class="step-thermometer__text animate__animated animate__fadeInUp">
+        <p >Поднесите лоб к верхней левой части терминала на расстояние 3-5 см и нажмите кнопку замер</p>
       </div>
     </div>
 
@@ -91,6 +91,10 @@ export default {
 }
 .step-4__outer img {
   margin: 0;
+}
+
+.step-thermometer__text{
+  font-size: 25px;
 }
 
 .step-4 h3 {

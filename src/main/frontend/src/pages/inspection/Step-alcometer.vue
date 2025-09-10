@@ -74,19 +74,23 @@ export default {
     <div class="step-alcometer">
       <h3 class="animate__animated animate__fadeInDown">Количественное определение алкоголя</h3>
       <div class="step-alcometer__items">
-          <img style="padding-right: 20px" width="500" src="@/assets/images/alcometer-instraction.png">
-        <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
-          <h4 v-if="statusAlcometer === 'REQUEST' || statusAlcometer === 'WAIT' || statusAlcometer === 'STOP' || statusAlcometer === 'FREE'">Алкотестер запускается. <br>
-            Готовьтесь к продуву.</h4>
-          <h4 v-if="statusAlcometer === 'READY'">Алкотестер готов. <br>
-            Дуйте в мундштук <br>
-            5 секунд до щелчка.</h4>
-          <h4 v-if="statusAlcometer === 'ANALYSE' || statusAlcometer === 'RESULT'">Анализ продува. <br>
-            Ожидайте перехода <br>
-            к следующему этапу.</h4>
-          <h4 v-if="statusAlcometer === 'ERROR'">Ошибка продува. <br>
-            Перезапускаем алкотестер. <br>
-            Подождите.</h4>
+        <div class="step-alcometer__grid-item">
+          <img style="padding-right: 20px" width="650" src="@/assets/images/alcometer-instraction.png">
+        </div>
+        <div class="step-alcometer__grid-item">
+          <div class="step-alcometer__text  animate__animated animate__fadeInUp d-2">
+            <h4 v-if="statusAlcometer === 'REQUEST' || statusAlcometer === 'WAIT' || statusAlcometer === 'STOP' || statusAlcometer === 'FREE'">Алкотестер запускается. <br>
+              Готовьтесь к продуву.</h4>
+            <h4 v-if="statusAlcometer === 'READY'">Алкотестер готов. <br>
+              Дуйте в мундштук <br>
+              5 секунд до щелчка.</h4>
+            <h4 v-if="statusAlcometer === 'ANALYSE' || statusAlcometer === 'RESULT'">Анализ продува. <br>
+              Ожидайте перехода <br>
+              к следующему этапу.</h4>
+            <h4 v-if="statusAlcometer === 'ERROR'">Ошибка продува. <br>
+              Перезапускаем алкотестер. <br>
+              Подождите.</h4>
+          </div>
         </div>
       </div>
     </div>
