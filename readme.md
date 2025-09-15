@@ -13,6 +13,7 @@ git clone https://github.com/Transavto7/sdpo-java.git
     ![edit_configuration.png](docs/edit_configuration.png)
     3) Далее выбираем `+` -> `Gradle` и в поле `Run` вставляем `bootRun -Dprofile=develop`  
     ![boot_config.png](docs/boot_config.png)
+    4) Сохраните настройки и можно запускать приложение для разработки с этим конфигом
 - Запуск из терминала (Непроверенный вариант)
     1) Установите java-21
     2) Перейдите в директорию с проектом
@@ -20,8 +21,7 @@ git clone https://github.com/Transavto7/sdpo-java.git
      ```bash
        ./gradlew bootRun -Dprofile=develop # gradlew.bat для windows пользователей
      ``` 
-- Сохраните настройки можно запускать приложение для разработки с этим конфигом  
-По умолчанию приложение попытается подключится к тестовому домену  
+- По умолчанию приложение попытается подключится к тестовому домену  
 Для изменения домена подключения необходимо уточнить домен и токен  
 Далее либо ввести данные в настройках, либо изменить напрямую конфигурации  
 `~/sdpo/configs/connect.json` для Linux пользователей или `C:\Users\<Your Username>\AppData\Roaming\sdpo\configs\connect.json` для Windows пользователей
