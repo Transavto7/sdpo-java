@@ -45,7 +45,7 @@ public class Sdpo {
 
     public static final SaveStoreInspectionTask saveStoreInspectionTask = new SaveStoreInspectionTask();
     public static final SaveStoreEmployeesInspectionTask saveStoreEmployeeInspectionTask = new SaveStoreEmployeesInspectionTask();
-    public static final MediaMakeTask mediaMakeTask = new MediaMakeTask();
+    public static MediaMakeTask mediaMakeTask = new MediaMakeTask();
 
     @Getter
     private static boolean connection = true;
@@ -54,7 +54,7 @@ public class Sdpo {
         SdpoLog.info("Run project");
         this.initSettings();
         checkConnection();
-        runTasks();
+        runMediaTasks();
         cameraHelper.initDimension();
         if (!this.portService.isAdmin() && !isAdmin()) {
             SdpoLog.error("The program has been started without admin role !!!");
@@ -90,9 +90,13 @@ public class Sdpo {
         Sdpo.setConnection(false);
     }
 
-    public void runTasks() {
+    public static void runMediaTasks() {
+        if (mediaMakeTask != null) {
+            mediaMakeTask.shutdown();
+        }
+
+        mediaMakeTask = new MediaMakeTask();
         mediaMakeTask.start();
-//        runScannerTask();
     }
 
     public void loadData() {

@@ -320,6 +320,7 @@ public class WindowsCameraHelper implements CameraHelper {
         } catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
             SdpoLog.error("Error capturing video:");
             SdpoLog.error(e);
+            Sdpo.runMediaTasks();
             closeCam();
             openCam();
         }

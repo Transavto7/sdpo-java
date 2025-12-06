@@ -18,6 +18,12 @@ public class MediaMakeTask extends Thread {
     private static final Queue<String> medias = new PriorityQueue<>();
     private static final Lock cameraLock = new ReentrantLock();
     public static boolean skip = false;
+    private volatile boolean running = true;
+
+    public void shutdown() {
+        running = false;
+        this.interrupt();
+    }
 
     public static void record(String name) {
         medias.offer(name);
@@ -32,24 +38,28 @@ public class MediaMakeTask extends Thread {
     @Override
     public void run() {
         CameraHelper cameraHelper = SpringContext.getBean(CameraHelper.class);
-        while (true) {
+        SdpoLog.info("MediaMakeTask started.");
 
-            if (MediaMakeTask.medias.isEmpty()) {
+        while (running) {
+
+            if (medias.isEmpty()) {
                 try {
                     Thread.sleep(3);
                 } catch (InterruptedException e) {
-                    /* ignored */
-                }finally {
-                    continue;
+                    if (!running) {
+                        break;
+                    }
                 }
-            }else {
-                SdpoLog.info("Start media task");
-                cameraHelper.openCam();
+                continue;
             }
 
+            SdpoLog.info("Start media task");
+            cameraHelper.openCam();
+
             cameraLock.lock();
-            String name = MediaMakeTask.medias.element();
             try {
+                String name = medias.element();
+
                 if (Sdpo.settings.systemConfig.getBoolean("camera_photo")) {
                     cameraHelper.makePhoto(name);
                 }
@@ -58,14 +68,20 @@ public class MediaMakeTask extends Thread {
                     cameraHelper.makeVideo(name);
                 }
 
-                MediaMakeTask.medias.remove();
+                medias.remove();
+
             } catch (Exception e) {
-                SdpoLog.error("Error recording media " + name);
+                SdpoLog.error("Error recording media");
                 SdpoLog.error(e);
+            } finally {
+                cameraLock.unlock();
             }
-            cameraLock.unlock();
         }
+
+        SdpoLog.info("MediaMakeTask stopped.");
     }
+
+
     public static int size() {
         return medias.size();
     }

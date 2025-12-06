@@ -8,8 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.scheduling.annotation.EnableAsync;
+import ru.nozdratenko.sdpo.Core.Network.PortWorker;
 import ru.nozdratenko.sdpo.commands.Command;
+import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -25,6 +26,12 @@ public class SdpoApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) throws IOException, SerialPortException {
+        if (!PortWorker.isFree()) {
+            SdpoLog.info("Порт занят. Пробуем убить процесс...");
+            boolean killed = PortWorker.killProcessOnPort();
+
+            SdpoLog.info(killed ? "Процесс убит" : "Не удалось убить процесс");
+        }
 
         SpringApplication.run(SdpoApplication.class, args);
     }
