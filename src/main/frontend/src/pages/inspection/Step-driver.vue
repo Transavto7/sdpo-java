@@ -21,6 +21,11 @@ export default {
 
 <template>
     <div class="step-1__outer">
+      <div class="message">
+        <h2>Проверьте свои личные данные</h2>
+        <span>Если всё верно - нажмите далее</span>
+        <span>Если найдена ошибка - обратитесь в технический поддержку</span>
+      </div>
         <div class="step-1">
             <div class="step-1__item">
                 <div class="step-1__label animate__animated animate__fadeInDown">
@@ -49,3 +54,35 @@ export default {
         </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.step-1 {
+  flex-direction: row;
+  height: 0;
+}
+.step-1__id {
+  span {
+    width: 65px;
+    text-align: center;
+    padding: 20px 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.05);
+    font-size: 45px;
+    font-weight: 500;
+  }
+}
+.message {
+  margin-top: 1vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2em;
+  h2 {
+    font-size: 45px;
+  }
+  span {
+    font-size: 30px;
+  }
+}
+</style>

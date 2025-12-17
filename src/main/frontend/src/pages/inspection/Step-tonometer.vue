@@ -71,8 +71,9 @@ export default {
             </div>
 
             <div class="step-3__subtext animate__animated animate__fadeInDown d-5">
-                Не двигайтесь, пока идет измерение.<br>
-                После окончания измерения снимите манжету
+              <span class="mb-2">Не двигайтесь, пока идет измерение.</span>
+              <span>После спуска воздуха из манжеты, ожидайте перехода на этап температуры.</span>
+              <span>Выключать тонометр запрещено.</span>
             </div>
         </div>
 
@@ -83,3 +84,20 @@ export default {
         </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.step-3__outer {
+  padding-top: 20px;
+}
+.step-3__subtext {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  span {
+    font-size: 30px;
+  }
+}
+.mb-2 {
+  margin-bottom: 10px;
+}
+</style>

@@ -24,7 +24,7 @@ import java.net.URLConnection;
  */
 public class MultipartUtility {
     private final String boundary;
-    public static final String BACKEND_URL = "https://sdpo.ta-7.ru";
+    public static final String BACKEND_URL = "https://registration.storage.ta-7.ru";
     private final String BACKEND_TOKEN = "v0jcCj0XNBJtaipT5odUP0HhVXzJ2FosCpVxe6SqmO2Uc7jVLvRMFZTfC5Ct0H8Nv2mMtPUT27";
     private static final String LINE_FEED = "\r\n";
     private HttpURLConnection httpConn;
