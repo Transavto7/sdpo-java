@@ -24,7 +24,6 @@ public class SdpoApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) throws IOException, SerialPortException {
-
         SpringApplication.run(SdpoApplication.class, args);
     }
 

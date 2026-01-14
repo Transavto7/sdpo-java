@@ -87,7 +87,9 @@ dependencies {
     implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
     implementation group: 'org.springframework', name: 'spring-websocket'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.20'
+    implementation 'com.fazecast:jSerialComm:2.10.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'

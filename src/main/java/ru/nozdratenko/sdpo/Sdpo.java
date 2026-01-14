@@ -14,6 +14,7 @@ import ru.nozdratenko.sdpo.helper.AlcometerHelper;
 import ru.nozdratenko.sdpo.helper.BrowserHelpers.BrowserHelper;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.helper.DeviceHelper;
+import ru.nozdratenko.sdpo.helper.EnvironmentMonitorHelpers.EnvironmentMonitorHelper;
 import ru.nozdratenko.sdpo.helper.ThermometerHelper;
 import ru.nozdratenko.sdpo.storage.MedicStorage;
 import ru.nozdratenko.sdpo.storage.StampStorage;
@@ -37,6 +38,7 @@ public class Sdpo {
     private final BrowserHelper browserHelper;
     private final CameraHelper cameraHelper;
     private final AdminHelper adminHelper;
+    private final EnvironmentMonitorHelper environmentMonitorHelper;
     private Environment env;
 
     public static SettingsContainer settings;
@@ -60,6 +62,7 @@ public class Sdpo {
         this.initSettings();
 
         alcometerHelper.init();
+        environmentMonitorHelper.init();
 
         if (!adminHelper.isAdmin()) {
             SdpoLog.warning("The program has been started without Admin role.");

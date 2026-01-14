@@ -136,7 +136,7 @@ public class Request {
                 }
             } catch (Exception e) {
             }
-            SdpoLog.error("Failed to send response to url: " + this.url);
+            SdpoLog.error("Failed to send response to url: " + this.url + ". With message: " + message);
             throw new ApiException(message);
         }
 

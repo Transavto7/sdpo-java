@@ -8,24 +8,26 @@ import ru.nozdratenko.sdpo.Core.Network.Request;
 import ru.nozdratenko.sdpo.Sdpo;
 import ru.nozdratenko.sdpo.exception.ApiException;
 import ru.nozdratenko.sdpo.exception.PrinterException;
+import ru.nozdratenko.sdpo.helper.EnvironmentMonitorHelpers.EnvironmentMonitorHelper;
 import ru.nozdratenko.sdpo.helper.PrinterHelpers.PrinterHelper;
 import ru.nozdratenko.sdpo.services.device.PrintService;
 import ru.nozdratenko.sdpo.util.SdpoLog;
 
 import javax.print.PrintException;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class PackInspectionSaver implements DriverInspectionSaver {
     private final PrinterHelper printerHelper;
+    private final EnvironmentMonitorHelper environmentMonitorHelper;
 
     @Override
     public JSONObject save(Map<String, String> json) throws PrintException, IOException, PrinterException, ApiException, java.awt.print.PrinterException {
         JSONObject inspection = new JSONObject(json);
         inspection.put("type_anketa", "pak_queue");
+        inspection.put("sensor_data", environmentMonitorHelper.getEnvironmentData().toJsonObject());
         SdpoLog.info("!!! inspectionSavePack.inspection: " + inspection);
         Request response = new Request("sdpo/anketa");
         String result = response.sendPost(inspection.toString());
