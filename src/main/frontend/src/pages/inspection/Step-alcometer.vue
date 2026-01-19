@@ -96,7 +96,6 @@ export default {
     </div>
     <div class="step-buttons">
       <button @click="prevStep()" class="btn opacity blue">Назад</button>
-      <button @click="$router.push({ name: 'step-sleep' })" class="btn">Продолжить</button>
     </div>
   </div>
 </template>
