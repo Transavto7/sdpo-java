@@ -177,7 +177,7 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .start-buttons {
   display: flex;
   flex-direction: row;
