@@ -17,6 +17,7 @@ export default {
       error: '',
       toast: useToast(),
       loading: false,
+      resetPassword: false,
     }
   },
   mounted() {
@@ -38,6 +39,10 @@ export default {
         this.$router.push('/number-phone/add/')
       else
         this.$router.push({name: 'step-driver'});
+    },
+
+    clearDriverId() {
+      this.resetPassword = true;
     },
 
     updateDriverId(inputPassword) {
@@ -117,8 +122,9 @@ export default {
 </script>
 
 <template>
-  <medic-select/>
   <div class="home">
+    <medic-select/>
+
     <div v-if="terminalIsLocked" style="width: 100%; justify-content: center; display: flex">
       <div class="driver-form__not-found animate__animated animate__fadeInUp">
         Работа терминала приостановлена.
@@ -146,16 +152,37 @@ export default {
       </div>
 
       <input-personal-number-form
+          :reset-password="resetPassword"
           @password=" (inputPassword) => updateDriverId(inputPassword)"
+          @password-cleaned="resetPassword=false"
       />
-      <button v-if="hasDriver"
-              @click="start"
-              class="btn animate__animated animate__fadeInUp">
-        начать осмотр
-      </button>
+      <div v-if="hasDriver" class="start-buttons">
+        <button
+            @click="clearDriverId"
+            class="btn animate__animated animate__fadeInUp"
+        >
+          Это не я
+        </button>
+        <button
+            @click="start"
+            class="btn green animate__animated animate__fadeInUp">
+          начать осмотр
+        </button>
+      </div>
+
       <div v-else-if="error"
            class="driver-form__not-found animate__animated animate__fadeInUp">{{ error }}
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.start-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  width: 100%;
+  gap: 2rem;
+}
+</style>

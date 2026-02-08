@@ -33,9 +33,14 @@ export default {
 <template>
   <navigation/>
   <error-modal/>
-  <transition name="fade">
-    <router-view></router-view>
-  </transition>
+<!--  <transition name="fade">-->
+<!--    <router-view></router-view>-->
+<!--  </transition>-->
+  <router-view v-slot="{ Component }">
+    <transition name="fade">
+      <component :is="Component" />
+    </transition>
+  </router-view>
   <div class="footer">
     <div class="footer__point-version">
       {{ point || 'Незвестный пункт выпуска' }}

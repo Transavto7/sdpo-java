@@ -89,6 +89,27 @@ html.disable-mouse * {
             }
         }
     }
+
+    &.green {
+        background-color: #389e35;
+        color: #fff;
+        border-color: #389e35;
+
+        &:hover:not([disabled]) {
+            background-color: rgba(0, 0, 0, 0);
+            color: #389e35;
+        }
+
+        &.opacity {
+            background-color: rgba(0, 0, 0, 0);
+            color: #389e35;
+
+            &:hover:not([disabled]) {
+                background-color: #389e35;
+                color: #fff;
+            }
+        }
+    }
 }
 
 .step-progress {

@@ -1,39 +1,69 @@
 <script>
-import InputNumber from "@/components/InputNumber";
+import { ref, watch } from 'vue'
+import InputNumber from '@/components/InputNumber'
+
+const EVENTS = Object.freeze({
+  PASSWORD: 'password',
+  PASSWORD_CLEANED: 'password-cleaned'
+})
+
 export default {
-  name: "InputPersonalNumberForm",
-  components: {InputNumber},
-  data() {
+  name: 'InputPersonalNumberForm',
+
+  components: { InputNumber },
+
+  props: {
+    resetPassword: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  emits: Object.values(EVENTS),
+
+  setup(props, { emit }) {
+    const password = ref('')
+
+    const pushChar = (char) => {
+      password.value += char
+    }
+
+    const popChar = () => {
+      password.value = password.value.slice(0, -1)
+    }
+
+    const clearPassword = () => {
+      password.value = ''
+    }
+
+    const emitPassword = () => {
+      emit(EVENTS.PASSWORD, password.value)
+    }
+
+    watch(password, emitPassword)
+
+    watch(
+        () => props.resetPassword,
+        () => {
+          clearPassword()
+          emitPassword()
+          emit(EVENTS.PASSWORD_CLEANED)
+        }
+    )
+
     return {
-      password: '',
+      pushChar,
+      popChar,
+      clearPassword
     }
-  },
-  methods: {
-    pushCharIntoPassword(char) {
-      this.password += char;
-    },
-    extractLastCharIntoPassword() {
-      this.password = this.password.slice(0, -1)
-    },
-    clearPassword() {
-      this.password = '';
-    },
-    emitPass() {
-      this.$emit('password', this.password);
-    }
-  },
-  watch: {
-    password: function () {
-      this.emitPass();
-    }
-  },
+  }
 }
 </script>
 
 <template>
-  <input-number
-      @pushIntoNumber="(char) => pushCharIntoPassword(char)"
-      @popIntoNumber="() => extractLastCharIntoPassword()"
-      @clearNumber="() => clearPassword()"
+  <InputNumber
+      @pushIntoNumber="pushChar"
+      @popIntoNumber="popChar"
+      @clearNumber="clearPassword"
   />
 </template>
