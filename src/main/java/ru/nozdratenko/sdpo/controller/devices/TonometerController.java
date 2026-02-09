@@ -74,4 +74,57 @@ public class TonometerController {
         this.tonometerTaskRunner.getTonometerResultTask().setCurrentStatus(StatusType.STOP);
         return ResponseEntity.ok().body("next");
     }
+
+    @PostMapping(value = "/device/tonometer/test")
+    @ResponseBody
+    public ResponseEntity tonometerTest(@RequestBody Map<String, Integer> json) {
+        try {
+            if (!json.containsKey("systolic") || !json.containsKey("diastolic") || !json.containsKey("pulse")) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Missing required parameters: systolic, diastolic, pulse");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            int systolic = json.get("systolic");
+            int diastolic = json.get("diastolic");
+            int pulse = json.get("pulse");
+
+            // Валидация значений
+            if (systolic < 50 || systolic > 250) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Systolic pressure must be between 50 and 250");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            if (diastolic < 30 || diastolic > 150) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Diastolic pressure must be between 30 and 150");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            if (pulse < 30 || pulse > 200) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Pulse must be between 30 and 200");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            this.tonometerTaskRunner.getTonometerResultTask().setTestValues(systolic, diastolic, pulse);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Test values set successfully");
+            response.put("systolic", systolic);
+            response.put("diastolic", diastolic);
+            response.put("pulse", pulse);
+
+            SdpoLog.info(String.format("Test tonometer endpoint called: %d/%d, pulse: %d", systolic, diastolic, pulse));
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            SdpoLog.error("Error in tonometer test endpoint: " + e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Internal server error: " + e.getMessage());
+            return ResponseEntity.status(500).body(error);
+        }
+    }
 }

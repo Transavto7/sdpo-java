@@ -170,4 +170,23 @@ public class TonometerResultTask implements Runnable {
             return 0;
         }
     }
+
+    /**
+     * Устанавливает тестовые значения тонометра для режима разработки
+     * @param systolic систолическое (верхнее) давление
+     * @param diastolic диастолическое (нижнее) давление
+     * @param pulse пульс
+     */
+    public void setTestValues(int systolic, int diastolic, int pulse) {
+        try {
+            clear();
+            json.put("systolic", systolic);
+            json.put("diastolic", diastolic);
+            json.put("pulse", pulse);
+            this.currentStatus = StatusType.RESULT;
+            SdpoLog.info(String.format("Test tonometer values set: %d/%d, pulse: %d", systolic, diastolic, pulse));
+        } catch (JSONException e) {
+            SdpoLog.error("Failed to set test tonometer values: " + e);
+        }
+    }
 }

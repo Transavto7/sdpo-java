@@ -27,3 +27,16 @@ export async function checkDevices() {
         console.log(error);
     });
 }
+
+export async function setTestValues(systolic, diastolic, pulse) {
+    return await axios.post('device/tonometer/test', {
+        systolic,
+        diastolic,
+        pulse
+    }).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+        throw error;
+    });
+}

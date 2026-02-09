@@ -143,4 +143,14 @@ public class AlcometerResultTask implements Runnable {
         this.stopFlag = false;
         Thread.currentThread().interrupt();
     }
+
+    /**
+     * Устанавливает тестовое значение алкометра для режима разработки
+     * @param value значение в промилле (например, "0.0", "0.5", "1.2")
+     */
+    public void setTestValue(String value) {
+        AlcometerResultTask.result = value;
+        AlcometerResultTask.currentStatus = StatusType.RESULT;
+        SdpoLog.info(String.format("Test alcometer value set: %s ‰", value));
+    }
 }

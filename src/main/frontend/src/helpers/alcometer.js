@@ -38,3 +38,14 @@ async function changeMode(modeName) {
         return data;
     }).catch(defaultError);
 }
+
+export async function setTestValue(value) {
+    return await axios.post('device/alcometer/test', {
+        value
+    }).then(({ data }) => {
+        return data;
+    }).catch((error) => {
+        console.log(error);
+        throw error;
+    });
+}
