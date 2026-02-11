@@ -40,8 +40,17 @@ public class AlcometerController {
         }
 
         if (AlcometerResultTask.currentStatus == StatusType.RESULT) {
-            AlcometerResultTask.currentStatus = StatusType.FREE;
+            // В тестовом режиме не сбрасываем статус, чтобы значение держалось
+            if (!AlcometerResultTask.isTestMode()) {
+                AlcometerResultTask.currentStatus = StatusType.FREE;
+            }
             return ResponseEntity.ok().body(AlcometerResultTask.result);
+        }
+
+        if (AlcometerResultTask.currentStatus == StatusType.ERROR) {
+            // Возвращаем ошибку, но не 500, а объект с ошибкой
+            // Статус уже будет сброшен в FREE в методе run()
+            return ResponseEntity.ok().body("error");
         }
 
         JSONObject json = new JSONObject();

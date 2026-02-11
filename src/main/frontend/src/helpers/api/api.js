@@ -198,3 +198,12 @@ export async function getWishMessage() {
     });
 }
 
+export async function getVersion() {
+    return await axios.get('setting/version').then(({data}) => {
+        return data.version;
+    }).catch((error) => {
+        console.log(error);
+        return 'unknown';
+    });
+}
+

@@ -8,8 +8,10 @@ import {
 import {makeMedia, stopMedia} from '@/helpers/camera';
 import {getSettings} from "@/helpers/settings";
 import {closeDriverPhoto} from "@/helpers/api/api";
+import Modal from "@/components/Modal.vue";
 
 export default {
+  components: {Modal},
   data() {
     return {
       interval: null,
@@ -19,7 +21,10 @@ export default {
       statusAlcometer: "",
       statusPrev: "prew",
       statusNow: "now",
-      recording: false
+      recording: false,
+      showErrorModal: false,
+      attemptCount: 0,
+      lastResult: null,
     }
   },
   watch:  {
@@ -108,6 +113,45 @@ export default {
         }
       }, 1000);
     },
+    async retryMeasurement() {
+      // Закрываем модалку
+      this.showErrorModal = false;
+      this.lastResult = null;
+
+      // Если включен режим количественного замера - переключаемся на него
+      if (getSettings('alcometer_retry')) {
+        await enableSlowModeAlcometer();
+      }
+
+      // Сбрасываем алкометр
+      await closeAlcometer();
+
+      // Перезапускаем таймер обратного отсчета
+      this.runCountdown();
+
+      // Перезапускаем интервал опроса результата
+      this.requestInterval = setInterval(async () => {
+        const result = await getAlcometerResult();
+
+        if (!this.hasResult(result)) {
+          return;
+        }
+
+        // Если получена ошибка от устройства - продолжаем ждать
+        if (this.hasError(result)) {
+          return;
+        }
+
+        const resultValue = Number(result) || 0;
+        this.lastResult = resultValue;
+
+        // На второй попытке с положительным результатом переходим на результат
+        clearInterval(this.requestInterval);
+        this.inspection.alcometer_result = resultValue;
+        this.inspection.alcometer_mode = getSettings('alcometer_fast') ? '0' : '1';
+        this.$router.push({name: 'step-result'});
+      }, 700);
+    },
   },
   async mounted() {
     this.connect()
@@ -121,12 +165,35 @@ export default {
         return;
       }
 
-      if (this.checkRetry(result)) {
-        this.inspection.alcometer_result = result;
-        await this.retry();
+      // Если получена ошибка от устройства - продолжаем ждать
+      if (this.hasError(result)) {
         return;
       }
-      this.inspection.alcometer_result = Number(result) || 0;
+
+      const resultValue = Number(result) || 0;
+      this.lastResult = resultValue;
+
+      // Проверяем пороги алкометра (> 0 = положительный результат)
+      if (resultValue > 0) {
+        clearInterval(this.requestInterval);
+        this.attemptCount++;
+
+        // Если это первая попытка - показываем модалку
+        if (this.attemptCount === 1) {
+          this.inspection.alcometer_result = resultValue;
+          this.showErrorModal = true;
+          return;
+        }
+
+        // Если это вторая попытка с положительным результатом - переходим на результат
+        this.inspection.alcometer_result = resultValue;
+        this.inspection.alcometer_mode = getSettings('alcometer_fast') ? '0' : '1';
+        this.$router.push({name: 'step-result'});
+        return;
+      }
+
+      // Если результат отрицательный (0) - продолжаем
+      this.inspection.alcometer_result = resultValue;
       this.inspection.alcometer_mode = getSettings('alcometer_fast') ? '0' : '1';
       this.nextStep();
     }, 700);
@@ -217,5 +284,90 @@ export default {
       <button @click="prevStep()" class="btn opacity blue">Назад</button>
       <button @click="nextStep()" v-if="JSON.parse(system.alcometer_skip)" class="btn">Продолжить</button>
     </div>
+
+    <!-- Модальное окно ошибки измерения -->
+    <Modal
+        :visible="showErrorModal"
+        :show-close-button="false"
+        :close-on-overlay-click="false">
+
+      <div class="alcometer-error">
+        <!-- Иконка ошибки -->
+        <div class="alcometer-error__icon-wrapper">
+          <div class="alcometer-error__icon">
+            <i class="ri-error-warning-line"></i>
+          </div>
+        </div>
+
+        <!-- Текст и кнопка -->
+        <div class="alcometer-error__content">
+          <h2 class="alcometer-error__title">Повторите замер!</h2>
+          <p v-if="lastResult !== null" class="alcometer-error__result">
+            Результат: <strong>{{ lastResult.toFixed(2) }}</strong>
+          </p>
+          <p v-if="JSON.parse(system.alcometer_retry)" class="alcometer-error__info">
+            При повторном замере будет использован количественный режим
+          </p>
+          <p v-else class="alcometer-error__info">
+            Повторный замер будет в том же режиме
+          </p>
+          <button @click="retryMeasurement" class="btn blue">Начать</button>
+        </div>
+      </div>
+
+    </Modal>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.alcometer-error {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  text-align: center;
+}
+
+.alcometer-error__icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alcometer-error__icon {
+  color: #c53936;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6em;
+  line-height: 1;
+}
+
+.alcometer-error__content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.alcometer-error__title {
+  margin: 0;
+  font-size: 2em;
+  font-weight: 500;
+  color: #3c495c;
+}
+
+.alcometer-error__result {
+  margin: 0;
+  font-size: 1.3em;
+  color: #3c495c;
+}
+
+.alcometer-error__info {
+  margin: 0;
+  font-size: 1.1em;
+  color: #666;
+  line-height: 1.6;
+  max-width: 400px;
+}
+</style>

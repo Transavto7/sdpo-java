@@ -22,6 +22,7 @@ const store = createStore({
             waitRecordMedia: false,
             timerRecordMedia: null,
             temp: {},
+            version: 'Загрузка...'
         }
     },
     getters: {

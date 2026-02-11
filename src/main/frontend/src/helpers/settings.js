@@ -1,6 +1,6 @@
 import store from '@/store';
 import axios from 'axios';
-import {getPoint, getVerification} from './api/api';
+import {getPoint, getVerification, getVersion} from './api/api';
 
 export async function loadSettings() {
     await axios.post('/setting/load').then(({ data }) => {
@@ -15,6 +15,7 @@ export async function loadSettings() {
 
     store.state.point = await getPoint();
     store.state.verification = await getVerification();
+    store.state.version = await getVersion();
 }
 
 export async function syncSettings() {

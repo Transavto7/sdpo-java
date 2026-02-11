@@ -13,7 +13,7 @@ plugins {
 }
 
 group = 'ru.nozdratenko'
-version = '2.11.1'
+version = '2.12.0'
 sourceCompatibility = '11'
 
 repositories {
@@ -32,6 +32,21 @@ ext {
 
 bootRun {
     systemProperty "spring.profiles.active", System.getProperty("profile", "production")
+    dependsOn 'bootBuildInfo'
+}
+
+springBoot {
+    buildInfo {
+        properties {
+            additional = [
+                'description': 'SDPO Application'
+            ]
+        }
+    }
+}
+
+processResources {
+    dependsOn 'bootBuildInfo'
 }
 
 pmd {

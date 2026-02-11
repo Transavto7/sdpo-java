@@ -23,6 +23,9 @@ export default {
     serialNumber() {
       return this.$store.state.verification.serialNumberTerminal
     },
+    version() {
+      return this.$store.state.version;
+    }
   },
   mounted() {
     loadSettings()
@@ -44,7 +47,7 @@ export default {
   <div class="footer">
     <div class="footer__point-version">
       {{ point || 'Незвестный пункт выпуска' }}
-      <span>Версия: 2.11.1</span>
+      <span>Версия: {{ version }}</span>
     </div>
   </div>
   <div class="footer__serial-number_date-notification">

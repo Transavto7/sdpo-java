@@ -106,6 +106,12 @@ export default {
           return;
         }
 
+        // Если это вторая попытка и показатели не в норме - переходим на результат
+        if (!isThresholdsOk) {
+          this.$router.push({name: 'step-result'});
+          return;
+        }
+
         // Иначе переходим на следующий шаг
         this.$router.push({name: 'step-thermometer'});
       }, 1000);
@@ -208,8 +214,8 @@ export default {
 
         <!-- Текст и кнопка -->
         <div class="tonometer-error__content">
-          <h2 class="tonometer-error__title">Ошибка измерения</h2>
-          <button @click="retryMeasurement" class="btn blue">Перемерить</button>
+          <h2 class="tonometer-error__title">Повторите замер!</h2>
+          <button @click="retryMeasurement" class="btn blue">Начать</button>
         </div>
       </div>
 

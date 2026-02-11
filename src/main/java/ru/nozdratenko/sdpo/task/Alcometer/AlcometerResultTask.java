@@ -1,6 +1,7 @@
 package ru.nozdratenko.sdpo.task.Alcometer;
 
 import jssc.SerialPortException;
+import lombok.Getter;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,13 @@ public class AlcometerResultTask implements Runnable {
     private boolean flow = false;
     public static StatusType currentStatus = StatusType.FREE;
     private volatile boolean stopFlag = true;
+    /**
+     * -- GETTER --
+     *  Проверяет, находится ли алкометр в тестовом режиме
+     *
+     */
+    @Getter
+    private static boolean isTestMode = false;
 
     @Autowired
     private AlcometerHelper alcometerHelper;
@@ -31,6 +39,11 @@ public class AlcometerResultTask implements Runnable {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {}
+
+            // В тестовом режиме не выполняем операции с реальным устройством
+            if (isTestMode) {
+                continue;
+            }
 
             if (AlcometerResultTask.currentStatus == StatusType.FREE) {
                 continue;
@@ -134,6 +147,7 @@ public class AlcometerResultTask implements Runnable {
     }
 
     public void close() {
+        isTestMode = false;
         AlcometerResultTask.currentStatus = StatusType.STOP;
     }
 
@@ -149,6 +163,7 @@ public class AlcometerResultTask implements Runnable {
      * @param value значение в промилле (например, "0.0", "0.5", "1.2")
      */
     public void setTestValue(String value) {
+        isTestMode = true;
         AlcometerResultTask.result = value;
         AlcometerResultTask.currentStatus = StatusType.RESULT;
         SdpoLog.info(String.format("Test alcometer value set: %s ‰", value));

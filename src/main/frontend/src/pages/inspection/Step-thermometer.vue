@@ -52,9 +52,9 @@ export default {
             return;
           }
 
-          // Если это вторая попытка - продолжаем независимо от результата
+          // Если это вторая попытка и показатели не в норме - переходим на результат
           this.inspection.t_people = result;
-          this.$router.push({name: 'step-alcometer'});
+          this.$router.push({name: 'step-result'});
           return;
         }
 
@@ -120,8 +120,8 @@ export default {
 
         <!-- Текст и кнопка -->
         <div class="thermometer-error__content">
-          <h2 class="thermometer-error__title">Ошибка измерения</h2>
-          <button @click="retryMeasurement" class="btn blue">Перемерить</button>
+          <h2 class="thermometer-error__title">Повторите замер!</h2>
+          <button @click="retryMeasurement" class="btn blue">Начать</button>
         </div>
       </div>
 

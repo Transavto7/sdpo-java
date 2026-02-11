@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nozdratenko.sdpo.Sdpo;
+import ru.nozdratenko.sdpo.Settings.Queries.GetAppVersionQuery;
 import ru.nozdratenko.sdpo.Settings.Queries.GetSettingsQuery;
 import ru.nozdratenko.sdpo.helper.CameraHelpers.CameraHelper;
 import ru.nozdratenko.sdpo.util.SdpoLog;
@@ -15,10 +16,21 @@ import ru.nozdratenko.sdpo.util.SdpoLog;
 import java.util.Map;
 
 @RestController
-@AllArgsConstructor
 public class SettingsController {
     private final CameraHelper cameraHelper;
     private final GetSettingsQuery getSettingsQuery;
+    private final GetAppVersionQuery getAppVersionQuery;
+
+    @Autowired
+    public SettingsController(
+        CameraHelper cameraHelper,
+        GetSettingsQuery getSettingsQuery,
+        GetAppVersionQuery getAppVersionQuery
+    ) {
+        this.cameraHelper = cameraHelper;
+        this.getSettingsQuery = getSettingsQuery;
+        this.getAppVersionQuery = getAppVersionQuery;
+    }
 
     @PostMapping("/setting/load")
     @ResponseBody
@@ -113,5 +125,11 @@ public class SettingsController {
     public void setCursor(@RequestBody Map<String, Object> json) {
         Sdpo.settings.systemConfig.set("cursor", json.get("cursor"));
         Sdpo.settings.systemConfig.saveFile();
+    }
+
+    @GetMapping("/setting/version")
+    @ResponseBody
+    public ResponseEntity getVersion() {
+        return ResponseEntity.status(HttpStatus.OK).body(getAppVersionQuery.handle().toMap());
     }
 }
