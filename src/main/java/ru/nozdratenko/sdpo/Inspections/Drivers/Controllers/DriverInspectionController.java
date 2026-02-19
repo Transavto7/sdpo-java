@@ -40,9 +40,14 @@ public class DriverInspectionController {
 
     @PostMapping("inspection/{id}")
     public ResponseEntity inspectionStart(@PathVariable String id) throws IOException {
-        String dateEdsEndRaw = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end").toString();
+        Object dateEdsEndValue = Sdpo.settings.mainConfig.getJson().getJSONObject("selected_medic").get("validity_eds_end");
+        if (dateEdsEndValue == null || dateEdsEndValue.equals(JSONObject.NULL)) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("message", "У выбранного медика не указана дата окончания ЭЦП!");
+            return ResponseEntity.status(303).body(map);
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate dateEdsEnd = LocalDate.parse(dateEdsEndRaw, formatter);
+        LocalDate dateEdsEnd = LocalDate.parse(dateEdsEndValue.toString(), formatter);
 
         if (dateEdsEnd.isBefore(LocalDate.now())) {
             HashMap<String, String> map = new HashMap<>();

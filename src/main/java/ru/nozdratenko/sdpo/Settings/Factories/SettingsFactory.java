@@ -106,7 +106,7 @@ public class SettingsFactory {
     }
 
     private static String getValue(JSONObject defaultSettings, String key, String defaultValue) {
-        if (defaultSettings != null && defaultSettings.has(key)) {
+        if (defaultSettings != null && defaultSettings.has(key) && !defaultSettings.isNull(key)) {
             return defaultSettings.getString(key);
         }
 
@@ -114,7 +114,7 @@ public class SettingsFactory {
     }
 
     private static int getValue(JSONObject defaultSettings, String key, int defaultValue) {
-        if (defaultSettings != null && defaultSettings.has(key)) {
+        if (defaultSettings != null && defaultSettings.has(key) && !defaultSettings.isNull(key)) {
             return defaultSettings.getInt(key);
         }
 
@@ -122,7 +122,7 @@ public class SettingsFactory {
     }
 
     private static boolean getValue(JSONObject defaultSettings, String key, boolean defaultValue) {
-        if (defaultSettings != null && defaultSettings.has(key)) {
+        if (defaultSettings != null && defaultSettings.has(key) && !defaultSettings.isNull(key)) {
             return defaultSettings.getBoolean(key);
         }
 
