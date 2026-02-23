@@ -1,5 +1,6 @@
 <script>
 import {getTemp} from '@/helpers/thermometer';
+import {getSettings} from "@/helpers/settings";
 import Modal from "@/components/Modal.vue";
 
 export default {
@@ -43,6 +44,14 @@ export default {
         const thresholdsOk = this.checkTemperatureThresholds(result);
 
         if (!thresholdsOk) {
+          // В ручном режиме - переходим на следующий шаг при любом результате
+          if (getSettings('manual_mode')) {
+            this.inspection.t_people = result;
+            clearInterval(this.interval);
+            this.$router.push({name: 'step-alcometer'});
+            return;
+          }
+
           clearInterval(this.interval);
           this.attemptCount++;
 

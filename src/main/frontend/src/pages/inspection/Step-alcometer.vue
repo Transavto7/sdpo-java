@@ -173,6 +173,19 @@ export default {
       const resultValue = Number(result) || 0;
       this.lastResult = resultValue;
 
+      // В ручном режиме - старое поведение
+      if (getSettings('manual_mode')) {
+        if (this.checkRetry(result)) {
+          this.inspection.alcometer_result = result;
+          await this.retry();
+          return;
+        }
+        this.inspection.alcometer_result = resultValue;
+        this.inspection.alcometer_mode = getSettings('alcometer_fast') ? '0' : '1';
+        this.nextStep();
+        return;
+      }
+
       // Проверяем пороги алкометра (> 0 = положительный результат)
       if (resultValue > 0) {
         clearInterval(this.requestInterval);

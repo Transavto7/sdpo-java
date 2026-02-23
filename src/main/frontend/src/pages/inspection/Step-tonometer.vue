@@ -1,6 +1,7 @@
 <script>
 import {getPressure} from '@/helpers/tonometer';
 import {disableTonometer} from '@/helpers/tonometer';
+import {getSettings} from "@/helpers/settings";
 import Modal from "@/components/Modal.vue";
 
 export default {
@@ -96,6 +97,12 @@ export default {
         }
 
         clearInterval(this.interval);
+
+        // В ручном режиме - старое поведение без проверки порогов
+        if (getSettings('manual_mode')) {
+          this.$router.push({name: 'step-thermometer'});
+          return;
+        }
 
         // Проверяем пороги давления и пульса
         const isThresholdsOk = this.checkPressureThresholds(systolic, diastolic, pulse);
