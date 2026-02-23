@@ -159,13 +159,13 @@ export default {
       <div v-if="hasDriver" class="start-buttons">
         <button
             @click="clearDriverId"
-            class="btn animate__animated animate__fadeInUp"
+            class="btn animate__animated animate__fadeInUp start-buttons__secondary"
         >
           Это не я
         </button>
         <button
             @click="start"
-            class="btn green animate__animated animate__fadeInUp">
+            class="btn green animate__animated animate__fadeInUp start-buttons__primary">
           начать осмотр
         </button>
       </div>
@@ -184,5 +184,13 @@ export default {
   justify-content: start;
   width: 100%;
   gap: 2rem;
+
+  &__secondary {
+    flex: 1;
+  }
+
+  &__primary {
+    flex: 2;
+  }
 }
 </style>
