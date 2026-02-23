@@ -121,6 +121,9 @@ export default {
         <!-- Текст и кнопка -->
         <div class="thermometer-error__content">
           <h2 class="thermometer-error__title">Повторите замер!</h2>
+          <p v-if="lastResult !== null" class="thermometer-error__result">
+            Выявлено отклонение от нормы: {{ lastResult }} °C
+          </p>
           <button @click="retryMeasurement" class="btn blue">Начать</button>
         </div>
       </div>
@@ -181,6 +184,12 @@ export default {
   margin: 0;
   font-size: 2em;
   font-weight: 500;
+  color: #3c495c;
+}
+
+.thermometer-error__result {
+  margin: 0;
+  font-size: 1.3em;
   color: #3c495c;
 }
 </style>

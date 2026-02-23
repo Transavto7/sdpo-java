@@ -303,7 +303,7 @@ export default {
         <div class="alcometer-error__content">
           <h2 class="alcometer-error__title">Повторите замер!</h2>
           <p v-if="lastResult !== null" class="alcometer-error__result">
-            Результат: <strong>{{ lastResult.toFixed(2) }}</strong>
+            Выявлено отклонение от нормы: <strong>{{ lastResult.toFixed(2) }}</strong>
           </p>
           <p v-if="JSON.parse(system.alcometer_retry)" class="alcometer-error__info">
             При повторном замере будет использован количественный режим
